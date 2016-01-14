@@ -1,7 +1,8 @@
 /// <reference path="../typings/rx.all.d.ts" />
 define(["require", "exports", './KeyboardInput'], function (require, exports, KeyboardInput) {
-    return (function () {
-        function Game() {
+    var Game = (function () {
+        function Game(canvas) {
+            this.canvas = canvas;
             this.start();
         }
         Game.prototype.start = function () {
@@ -11,4 +12,6 @@ define(["require", "exports", './KeyboardInput'], function (require, exports, Ke
         };
         return Game;
     })();
+    ;
+    return Game;
 });

@@ -1,3 +1,4 @@
 import Game = require('./Game');
+import CanvasElement = require('./CanvasElement');
 
-new Game();
+let game = new Game(new CanvasElement(document.body));

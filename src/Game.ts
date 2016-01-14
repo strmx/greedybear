@@ -1,9 +1,10 @@
 /// <reference path="../typings/rx.all.d.ts" />
 
+import CanvasElement = require('./CanvasElement');
 import KeyboardInput = require('./KeyboardInput');
 
-export = class Game {
-  constructor() {
+class Game {
+  constructor(private canvas : CanvasElement) {
     this.start();
   }
   private start() {
@@ -12,3 +13,5 @@ export = class Game {
     });
   }
 };
+
+export = Game;

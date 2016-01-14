@@ -1,27 +1,26 @@
 
+# NOW
+- add canvas
+- connect babylon rendering to it
+- render a cube (red)
+- render a world cube (wireframe)
+- move the cube using the keyboard left, right, top, bottom
+- add camera that is sticked (directed) to the cube c<[] and moves with it
+- constrain movement by cell size
 
-# ADD NEW NOTE
 
-- click on el
-  - add note to ceneter of the view
-- mouse down on note
-  - &:start dragging
-    - mouse up
-      - stop dragging
-    - mouse leave
-      - move note on original place
-- click on el
-  - add note
-    - :start dragging
 
+
+
+
+
+
+================================================================
 
 # ENVIRONMENT
-
 - http-server --cors -o -p 9999
 
-
-
-# desktop chrome
+# DESKTOP CHROME
 devicemotion: true
 deviceorientation: true
 fullscreen: true
@@ -33,5 +32,5 @@ pointerevents: false
 proximity: false
 touchevents: false
 
-# desktop ff
+# DESKTOP FF
 batteryapi: true

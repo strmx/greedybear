@@ -8,7 +8,7 @@ define(["require", "exports"], function (require, exports) {
         32: 'space',
         27: 'escape',
     };
-    return (function () {
+    var KeyboardInput = (function () {
         function KeyboardInput() {
         }
         Object.defineProperty(KeyboardInput, "Name", {
@@ -42,4 +42,6 @@ define(["require", "exports"], function (require, exports) {
         });
         return KeyboardInput;
     })();
+    ;
+    return KeyboardInput;
 });

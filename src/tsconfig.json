@@ -13,9 +13,9 @@
 	],
 	"files": [
 		"app.ts",
+		"CanvasElement.ts",
 		"Game.ts",
-		"KeyboardInput.ts",
-		"RenderCanvas.ts"
+		"KeyboardInput.ts"
 	],
 	"atom": {
 		"rewriteTsconfig": true

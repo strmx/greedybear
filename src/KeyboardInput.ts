@@ -9,7 +9,7 @@ const KEY_MAP = {
   27: 'escape',
 }
 
-export = class KeyboardInput {
+class KeyboardInput {
   static get Name() {
     return 'Foo._name';
   }
@@ -34,3 +34,5 @@ export = class KeyboardInput {
       .map((e:KeyboardEvent) => (KEY_MAP[e.keyCode]));
   }
 };
+
+export = KeyboardInput;
