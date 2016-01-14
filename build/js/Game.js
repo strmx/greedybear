@@ -6,8 +6,21 @@ define(["require", "exports", './KeyboardInput'], function (require, exports, Ke
             this.start();
         }
         Game.prototype.start = function () {
-            KeyboardInput.getObservable.forEach(function (e) {
-                console.info(e);
+            KeyboardInput.getObservable.forEach(function (key) {
+                switch (key) {
+                    case KeyboardInput.KEYS.left:
+                        console.log('L');
+                        break;
+                    case KeyboardInput.KEYS.up:
+                        console.log('U');
+                        break;
+                    case KeyboardInput.KEYS.right:
+                        console.log('R');
+                        break;
+                    case KeyboardInput.KEYS.down:
+                        console.log('D');
+                        break;
+                }
             });
         };
         return Game;
