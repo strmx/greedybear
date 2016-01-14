@@ -1,9 +1,5 @@
 
 # NOW
-- add canvas
-- connect babylon rendering to it
-- render a cube (red)
-- render a world cube (wireframe)
 - move the cube using the keyboard left, right, top, bottom
 - add camera that is sticked (directed) to the cube c<[] and moves with it
 - constrain movement by cell size

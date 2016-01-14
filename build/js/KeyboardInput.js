@@ -20,18 +20,6 @@ define(["require", "exports"], function (require, exports) {
         Object.defineProperty(KeyboardInput, "getObservable", {
             get: function () {
                 var keydown = Rx.Observable.fromEvent(document, 'keydown');
-                // // for testing
-                // let subscription = keydown.subscribe(
-                //   x => {
-                //     console.log('Next: keydown!', x);
-                //   },
-                //   err => {
-                //     console.log('Error: %s', err);
-                //   },
-                //   () => {
-                //     console.log('Completed keydown');
-                //   }
-                // );
                 return keydown
                     .filter(function (e) { return (KeyboardInput.KEY_MAP[e.keyCode] !== undefined); })
                     .map(function (e) { return (KeyboardInput.KEY_MAP[e.keyCode]); });

@@ -15,6 +15,7 @@
 		"app.ts",
 		"CanvasElement.ts",
 		"Game.ts",
+		"GameWorld.ts",
 		"KeyboardInput.ts"
 	],
 	"atom": {

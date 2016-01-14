@@ -1,11 +1,12 @@
 /// <reference path="../typings/rx.all.d.ts" />
-define(["require", "exports", './KeyboardInput'], function (require, exports, KeyboardInput) {
+define(["require", "exports", './KeyboardInput', './GameWorld'], function (require, exports, KeyboardInput, GameWorld) {
     var Game = (function () {
         function Game(canvas) {
             this.canvas = canvas;
-            this.start();
+            new GameWorld(canvas.element);
+            this.run();
         }
-        Game.prototype.start = function () {
+        Game.prototype.run = function () {
             KeyboardInput.getObservable.forEach(function (key) {
                 switch (key) {
                     case KeyboardInput.KEYS.left:

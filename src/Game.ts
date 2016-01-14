@@ -2,12 +2,15 @@
 
 import CanvasElement = require('./CanvasElement');
 import KeyboardInput = require('./KeyboardInput');
+import GameWorld = require('./GameWorld');
 
 class Game {
   constructor(private canvas : CanvasElement) {
-    this.start();
+    new GameWorld(canvas.element);
+
+    this.run();
   }
-  private start() {
+  private run() {
     KeyboardInput.getObservable.forEach(key => {
       switch (key) {
         case KeyboardInput.KEYS.left:
