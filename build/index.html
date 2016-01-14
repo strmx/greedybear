@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
+	<link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+
+	<!-- IE10 and IE11 on Windows Phone have a small tap highlight when you tap an element. Adding this meta tag removes this. -->
+	<meta name="msapplication-tap-highlight" content="no" />
+	<title>Title of the document</title>
+	<style>
+		html,
+		body {
+			margin: 0;
+			padding: 0;
+			overflow-x: hidden;
+			overflow-y: auto;
+			width: 100%;
+			height: 100%;
+			background: black;
+		}
+
+		.canvas3d {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			cursor: crosshair;
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		.output {
+			position: fixed;
+			right: 2rem;
+			bottom: 2rem;
+			z-index: 1000;
+			color: green;
+		}
+	</style>
+</head>
+<body>
+	<canvas class="canvas3d" touch-action="manipulation">
+	<pre class="output"></pre>
+
+	<script src="vendors/modernizr.js"></script>
+	<script src="vendors/jquery-2.1.4.min.js"></script>
+	<script src="vendors/rx.all.js"></script>
+	<script src="vendors/babylon.js"></script>
+	<script data-main="js/app" src="vendors/require.js"></script>
+	<script>
+		// buster
+		window.require.config({
+		    urlArgs: Date.now()
+		});
+	</script>
+</body>

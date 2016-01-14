@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"module": "amd",
+		"jsx": "react",
+		"outDir": "../build/js"
+	},
+	"compileOnSave": false,
+	"filesGlob": [
+		"**/*.ts",
+		"**/*.tsx",
+		"!node_modules/**"
+	],
+	"files": [
+		"app.ts",
+		"Game.ts",
+		"KeyboardInput.ts",
+		"RenderCanvas.ts"
+	],
+	"atom": {
+		"rewriteTsconfig": true
+	}
+}
