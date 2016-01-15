@@ -1,20 +1,24 @@
 /// <reference path="../typings/rx.all.d.ts" />
 
 enum KEYS {
-  left,
-  up,
-  right,
-  down,
+  LEFT,
+  UP,
+  RIGHT,
+  DOWN,
+  A,
+  Z,
 }
 
 class KeyboardInput {
   public static KEYS = KEYS;
 
   public static KEY_MAP = {
-    37: KEYS.left,
-    38: KEYS.up,
-    39: KEYS.right,
-    40: KEYS.down,
+    37: KEYS.LEFT,
+    38: KEYS.UP,
+    39: KEYS.RIGHT,
+    40: KEYS.DOWN,
+    65: KEYS.A,
+    90: KEYS.Z,
   }
 
   static get Name() {
@@ -23,6 +27,19 @@ class KeyboardInput {
 
   static get getObservable() {
     let keydown = Rx.Observable.fromEvent(document, 'keydown');
+
+    // // for testing
+    // let subscription = keydown.subscribe(
+    //   x => {
+    //     console.log('Next: keydown!', x);
+    //     },
+    //   err => {
+    //     console.log('Error: %s', err);
+    //   },
+    //   () => {
+    //     console.log('Completed keydown');
+    //   }
+    // );
 
     return keydown
       .filter((e:KeyboardEvent) => (KeyboardInput.KEY_MAP[e.keyCode] !== undefined))

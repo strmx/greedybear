@@ -1,4 +1,5 @@
 /// <reference path="../typings/babylon.2.2.d.ts" />
+/// <reference path="../typings/rx.all.d.ts" />
 
 class GameWorld {
   private engine: BABYLON.Engine;
@@ -7,6 +8,9 @@ class GameWorld {
   private light: BABYLON.HemisphericLight;
 
   private _isMouseOnScene : boolean = false;
+
+  public subject = new Rx.Subject();
+  public cube : BABYLON.Mesh;
 
   constructor(private canvas : HTMLCanvasElement) {
     this._constructWorld();
@@ -50,13 +54,13 @@ class GameWorld {
     //
     // cube
     //
-    let cube = BABYLON.Mesh.CreateBox('cube', 1, this.scene);
-    cube.position = BABYLON.Vector3.Zero();
+    this.cube = BABYLON.Mesh.CreateBox('cube', 1, this.scene);
+    this.cube.position = BABYLON.Vector3.Zero();
     let cubeMat = new BABYLON.StandardMaterial('cubeMat', this.scene);
     // cubeMat.specularColor = BABYLON.Color3.Blue();
     // cubeMat.diffuseColor = BABYLON.Color3.Red();
     cubeMat.wireframe = true;
-    cube.material = cubeMat;
+    this.cube.material = cubeMat;
 
     //
     // camera
@@ -81,11 +85,16 @@ class GameWorld {
     // render
     //
     this.engine.runRenderLoop(() => {
-      let t = this.engine.getDeltaTime();
+      let sec = this.engine.getDeltaTime() / 1000;
+      this.subject.onNext(sec);
       this.scene.render();
     });
 
     this.scene.render();
+  }
+
+  public destroy() {
+    this.subject.dispose();
   }
 }
 

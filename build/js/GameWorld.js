@@ -1,10 +1,12 @@
 /// <reference path="../typings/babylon.2.2.d.ts" />
+/// <reference path="../typings/rx.all.d.ts" />
 define(["require", "exports"], function (require, exports) {
     var GameWorld = (function () {
         function GameWorld(canvas) {
             var _this = this;
             this.canvas = canvas;
             this._isMouseOnScene = false;
+            this.subject = new Rx.Subject();
             this._constructWorld();
             // resize scene
             window.addEventListener('resize', function (e) {
@@ -42,13 +44,13 @@ define(["require", "exports"], function (require, exports) {
             //
             // cube
             //
-            var cube = BABYLON.Mesh.CreateBox('cube', 1, this.scene);
-            cube.position = BABYLON.Vector3.Zero();
+            this.cube = BABYLON.Mesh.CreateBox('cube', 1, this.scene);
+            this.cube.position = BABYLON.Vector3.Zero();
             var cubeMat = new BABYLON.StandardMaterial('cubeMat', this.scene);
             // cubeMat.specularColor = BABYLON.Color3.Blue();
             // cubeMat.diffuseColor = BABYLON.Color3.Red();
             cubeMat.wireframe = true;
-            cube.material = cubeMat;
+            this.cube.material = cubeMat;
             //
             // camera
             //
@@ -70,10 +72,14 @@ define(["require", "exports"], function (require, exports) {
             // render
             //
             this.engine.runRenderLoop(function () {
-                var t = _this.engine.getDeltaTime();
+                var sec = _this.engine.getDeltaTime() / 1000;
+                _this.subject.onNext(sec);
                 _this.scene.render();
             });
             this.scene.render();
+        };
+        GameWorld.prototype.destroy = function () {
+            this.subject.dispose();
         };
         return GameWorld;
     })();

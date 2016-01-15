@@ -2,10 +2,12 @@
 define(["require", "exports"], function (require, exports) {
     var KEYS;
     (function (KEYS) {
-        KEYS[KEYS["left"] = 0] = "left";
-        KEYS[KEYS["up"] = 1] = "up";
-        KEYS[KEYS["right"] = 2] = "right";
-        KEYS[KEYS["down"] = 3] = "down";
+        KEYS[KEYS["LEFT"] = 0] = "LEFT";
+        KEYS[KEYS["UP"] = 1] = "UP";
+        KEYS[KEYS["RIGHT"] = 2] = "RIGHT";
+        KEYS[KEYS["DOWN"] = 3] = "DOWN";
+        KEYS[KEYS["A"] = 4] = "A";
+        KEYS[KEYS["Z"] = 5] = "Z";
     })(KEYS || (KEYS = {}));
     var KeyboardInput = (function () {
         function KeyboardInput() {
@@ -20,6 +22,18 @@ define(["require", "exports"], function (require, exports) {
         Object.defineProperty(KeyboardInput, "getObservable", {
             get: function () {
                 var keydown = Rx.Observable.fromEvent(document, 'keydown');
+                // // for testing
+                // let subscription = keydown.subscribe(
+                //   x => {
+                //     console.log('Next: keydown!', x);
+                //     },
+                //   err => {
+                //     console.log('Error: %s', err);
+                //   },
+                //   () => {
+                //     console.log('Completed keydown');
+                //   }
+                // );
                 return keydown
                     .filter(function (e) { return (KeyboardInput.KEY_MAP[e.keyCode] !== undefined); })
                     .map(function (e) { return (KeyboardInput.KEY_MAP[e.keyCode]); });
@@ -29,10 +43,12 @@ define(["require", "exports"], function (require, exports) {
         });
         KeyboardInput.KEYS = KEYS;
         KeyboardInput.KEY_MAP = {
-            37: KEYS.left,
-            38: KEYS.up,
-            39: KEYS.right,
-            40: KEYS.down,
+            37: KEYS.LEFT,
+            38: KEYS.UP,
+            39: KEYS.RIGHT,
+            40: KEYS.DOWN,
+            65: KEYS.A,
+            90: KEYS.Z,
         };
         return KeyboardInput;
     })();
