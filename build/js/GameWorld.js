@@ -44,13 +44,13 @@ define(["require", "exports"], function (require, exports) {
             //
             // cube
             //
-            this.cube = BABYLON.Mesh.CreateBox('cube', 1, this.scene);
-            this.cube.position = BABYLON.Vector3.Zero();
-            var cubeMat = new BABYLON.StandardMaterial('cubeMat', this.scene);
+            this._head = BABYLON.Mesh.CreateCylinder("cylinder", 1, .1, 1, 6, 1, this.scene, false);
+            this._head.position = BABYLON.Vector3.Zero();
+            var headMat = new BABYLON.StandardMaterial('cubeMat', this.scene);
             // cubeMat.specularColor = BABYLON.Color3.Blue();
             // cubeMat.diffuseColor = BABYLON.Color3.Red();
-            cubeMat.wireframe = true;
-            this.cube.material = cubeMat;
+            headMat.wireframe = true;
+            this._head.material = headMat;
             //
             // camera
             //

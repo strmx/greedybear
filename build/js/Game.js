@@ -6,6 +6,7 @@ define(["require", "exports", './KeyboardInput', './GameWorld'], function (requi
             this._moveSpeed = new BABYLON.Vector3(5, 5, 5);
             this._moveDirection = new BABYLON.Vector3(0, 0, 0);
             this.world = new GameWorld(canvas.element);
+            this._head = this.world._head;
             this.run();
         }
         Game.prototype.run = function () {
@@ -13,29 +14,29 @@ define(["require", "exports", './KeyboardInput', './GameWorld'], function (requi
             KeyboardInput.getObservable.forEach(function (key) {
                 switch (key) {
                     case KeyboardInput.KEYS.LEFT:
-                        _this._moveDirection.copyFromFloats(-1, 0, 0);
+                        // BABYLON.Vector3.RotationFromAxis()
+                        var mesh;
+                        _this._head.rotate(BABYLON.Axis.Y, -90 * (Math.PI / 180), BABYLON.Space.WORLD);
+                        console.log(_this._head.rotation);
                         break;
                     case KeyboardInput.KEYS.UP:
-                        _this._moveDirection.copyFromFloats(0, 0, 1);
+                        _this._head.rotate(BABYLON.Axis.X, -90 * (Math.PI / 180), BABYLON.Space.WORLD);
+                        console.log(_this._head.rotation);
                         break;
                     case KeyboardInput.KEYS.RIGHT:
-                        _this._moveDirection.copyFromFloats(1, 0, 0);
+                        _this._head.rotate(BABYLON.Axis.Y, 90 * (Math.PI / 180), BABYLON.Space.WORLD);
+                        console.log(_this._head.rotation);
                         break;
                     case KeyboardInput.KEYS.DOWN:
-                        _this._moveDirection.copyFromFloats(0, 0, -1);
-                        break;
-                    case KeyboardInput.KEYS.A:
-                        _this._moveDirection.copyFromFloats(0, 1, 0);
-                        break;
-                    case KeyboardInput.KEYS.Z:
-                        _this._moveDirection.copyFromFloats(0, -1, 0);
+                        _this._head.rotate(BABYLON.Axis.X, 90 * (Math.PI / 180), BABYLON.Space.WORLD);
+                        console.log(_this._head.rotation);
                         break;
                 }
             });
             this.world.subject.subscribe(function (sec) {
                 var shift = _this._moveSpeed.multiplyByFloats(sec, sec, sec);
                 shift.multiplyInPlace(_this._moveDirection);
-                _this.world.cube.position.addInPlace(shift);
+                _this.world._head.position.addInPlace(shift);
             }, function (err) {
             }, function () {
             });
