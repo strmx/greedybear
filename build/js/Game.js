@@ -1,5 +1,5 @@
 /// <reference path="../typings/rx.all.d.ts" />
-define(["require", "exports", './KeyboardInput', './GameWorld'], function (require, exports, KeyboardInput, GameWorld) {
+define(["require", "exports", './KeyboardInput', './GameWorld', './tools/d2r'], function (require, exports, KeyboardInput, GameWorld, d2r) {
     var Game = (function () {
         function Game(canvas) {
             this.canvas = canvas;
@@ -14,32 +14,31 @@ define(["require", "exports", './KeyboardInput', './GameWorld'], function (requi
             KeyboardInput.getObservable.forEach(function (key) {
                 switch (key) {
                     case KeyboardInput.KEYS.LEFT:
-                        // BABYLON.Vector3.RotationFromAxis()
-                        var mesh;
-                        _this._head.rotate(BABYLON.Axis.Y, -90 * (Math.PI / 180), BABYLON.Space.WORLD);
+                        _this._head.rotation.addInPlace(new BABYLON.Vector3(0, d2r(-90), 0));
+                        // this._head.rotation.x = this._head.rotation.x % Math.PI;
+                        // this._head.rotation.y = this._head.rotation.y % Math.PI;
+                        // this._head.rotation.z = this._head.rotation.z % Math.PI;
                         console.log(_this._head.rotation);
                         break;
                     case KeyboardInput.KEYS.UP:
-                        _this._head.rotate(BABYLON.Axis.X, -90 * (Math.PI / 180), BABYLON.Space.WORLD);
+                        _this._head.rotation.addInPlace(new BABYLON.Vector3(d2r(-90), 0, 0));
                         console.log(_this._head.rotation);
                         break;
                     case KeyboardInput.KEYS.RIGHT:
-                        _this._head.rotate(BABYLON.Axis.Y, 90 * (Math.PI / 180), BABYLON.Space.WORLD);
+                        _this._head.rotation.addInPlace(new BABYLON.Vector3(0, d2r(90), 0));
                         console.log(_this._head.rotation);
                         break;
                     case KeyboardInput.KEYS.DOWN:
-                        _this._head.rotate(BABYLON.Axis.X, 90 * (Math.PI / 180), BABYLON.Space.WORLD);
+                        _this._head.rotation.addInPlace(new BABYLON.Vector3(d2r(90), 0, 0));
                         console.log(_this._head.rotation);
                         break;
                 }
             });
-            this.world.subject.subscribe(function (sec) {
+            this.world.observable.subscribe(function (sec) {
                 var shift = _this._moveSpeed.multiplyByFloats(sec, sec, sec);
                 shift.multiplyInPlace(_this._moveDirection);
                 _this.world._head.position.addInPlace(shift);
-            }, function (err) {
-            }, function () {
-            });
+            }, function (err) { }, function () { });
         };
         return Game;
     })();

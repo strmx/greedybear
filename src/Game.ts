@@ -3,6 +3,7 @@
 import CanvasElement = require('./CanvasElement');
 import KeyboardInput = require('./KeyboardInput');
 import GameWorld = require('./GameWorld');
+import d2r = require('./tools/d2r');
 
 class Game {
   private world: GameWorld;
@@ -19,39 +20,35 @@ class Game {
     KeyboardInput.getObservable.forEach(key => {
       switch (key) {
         case KeyboardInput.KEYS.LEFT:
-
-          // BABYLON.Vector3.RotationFromAxis()
-          let mesh : BABYLON.Mesh;
-          this._head.rotate(BABYLON.Axis.Y, -90 * (Math.PI / 180), BABYLON.Space.WORLD);
+          this._head.rotation.addInPlace(new BABYLON.Vector3(0, d2r(-90), 0));
+          // this._head.rotation.x = this._head.rotation.x % Math.PI;
+          // this._head.rotation.y = this._head.rotation.y % Math.PI;
+          // this._head.rotation.z = this._head.rotation.z % Math.PI;
           console.log(this._head.rotation);
           break;
         case KeyboardInput.KEYS.UP:
-          this._head.rotate(BABYLON.Axis.X, -90 * (Math.PI / 180), BABYLON.Space.WORLD);
+          this._head.rotation.addInPlace(new BABYLON.Vector3(d2r(-90),0, 0));
           console.log(this._head.rotation);
           break;
         case KeyboardInput.KEYS.RIGHT:
-          this._head.rotate(BABYLON.Axis.Y, 90 * (Math.PI / 180), BABYLON.Space.WORLD);
+          this._head.rotation.addInPlace(new BABYLON.Vector3(0, d2r(90), 0));
           console.log(this._head.rotation);
           break;
         case KeyboardInput.KEYS.DOWN:
-          this._head.rotate(BABYLON.Axis.X, 90 * (Math.PI / 180), BABYLON.Space.WORLD);
+          this._head.rotation.addInPlace(new BABYLON.Vector3(d2r(90), 0, 0));
           console.log(this._head.rotation);
           break;
       }
     });
 
-    this.world.subject.subscribe(
+    this.world.observable.subscribe(
       (sec : number) => {
         let shift = this._moveSpeed.multiplyByFloats(sec, sec, sec);
         shift.multiplyInPlace(this._moveDirection);
         this.world._head.position.addInPlace(shift);
       },
-      (err) => {
-
-      },
-      () => {
-
-      }
+      (err) => {},
+      () => {}
     );
   }
 };

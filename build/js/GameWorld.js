@@ -1,12 +1,12 @@
 /// <reference path="../typings/babylon.2.2.d.ts" />
 /// <reference path="../typings/rx.all.d.ts" />
-define(["require", "exports"], function (require, exports) {
+define(["require", "exports", './tools/d2r'], function (require, exports, d2r) {
     var GameWorld = (function () {
         function GameWorld(canvas) {
             var _this = this;
             this.canvas = canvas;
             this._isMouseOnScene = false;
-            this.subject = new Rx.Subject();
+            this.observable = new Rx.Subject();
             this._constructWorld();
             // resize scene
             window.addEventListener('resize', function (e) {
@@ -31,6 +31,15 @@ define(["require", "exports"], function (require, exports) {
             this.light.intensity = .7;
             // this.light.groundColor = BABYLON.Color3.Black();
             //
+            // ground
+            //
+            var ground = BABYLON.Mesh.CreateGround('grd', 150, 150, 1, this.scene);
+            ground.position = new BABYLON.Vector3(0, -200, 0);
+            var groundMat = new BABYLON.StandardMaterial('gmat', this.scene);
+            groundMat.diffuseTexture = new BABYLON.Texture('assets/textures/orient.jpg', this.scene);
+            groundMat.emissiveTexture = new BABYLON.Texture('assets/textures/orient.jpg', this.scene);
+            ground.material = groundMat;
+            //
             // sky
             //
             // (name, height, diamTop, diamBottom, tessellation, [optional height subdivs], scene, updatable)
@@ -42,15 +51,21 @@ define(["require", "exports"], function (require, exports) {
             skyMat.wireframe = true;
             sky.material = skyMat;
             //
-            // cube
+            // head
             //
-            this._head = BABYLON.Mesh.CreateCylinder("cylinder", 1, .1, 1, 6, 1, this.scene, false);
-            this._head.position = BABYLON.Vector3.Zero();
-            var headMat = new BABYLON.StandardMaterial('cubeMat', this.scene);
-            // cubeMat.specularColor = BABYLON.Color3.Blue();
-            // cubeMat.diffuseColor = BABYLON.Color3.Red();
-            headMat.wireframe = true;
-            this._head.material = headMat;
+            this._head = BABYLON.Mesh.CreateBox('head', 0, this.scene);
+            this._head.isVisible = false;
+            var cube = BABYLON.Mesh.CreateCylinder("cylinder", 1, .1, 1, 6, 1, this.scene, false);
+            cube.parent = this._head;
+            cube.position = BABYLON.Vector3.Zero();
+            var cubeMat = new BABYLON.StandardMaterial('cubeMat', this.scene);
+            cubeMat.specularColor = BABYLON.Color3.Blue();
+            cubeMat.diffuseColor = BABYLON.Color3.Red();
+            cubeMat.wireframe = true;
+            cube.material = cubeMat;
+            cube.rotation = new BABYLON.Vector3(0, 0, d2r(-90));
+            // orient right by default
+            // cube.rotate(BABYLON.Axis.Z, -90 * (Math.PI / 180), BABYLON.Space.LOCAL);
             //
             // camera
             //
@@ -73,13 +88,13 @@ define(["require", "exports"], function (require, exports) {
             //
             this.engine.runRenderLoop(function () {
                 var sec = _this.engine.getDeltaTime() / 1000;
-                _this.subject.onNext(sec);
+                _this.observable.onNext(sec);
                 _this.scene.render();
             });
             this.scene.render();
         };
         GameWorld.prototype.destroy = function () {
-            this.subject.dispose();
+            this.observable.dispose();
         };
         return GameWorld;
     })();

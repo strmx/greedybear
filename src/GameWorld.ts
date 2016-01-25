@@ -1,6 +1,8 @@
 /// <reference path="../typings/babylon.2.2.d.ts" />
 /// <reference path="../typings/rx.all.d.ts" />
 
+import d2r = require('./tools/d2r');
+
 class GameWorld {
   private engine: BABYLON.Engine;
   private scene: BABYLON.Scene;
@@ -9,7 +11,7 @@ class GameWorld {
 
   private _isMouseOnScene : boolean = false;
 
-  public subject = new Rx.Subject();
+  public observable = new Rx.Subject();
   public _head : BABYLON.Mesh;
 
   constructor(private canvas : HTMLCanvasElement) {
@@ -40,6 +42,16 @@ class GameWorld {
     // this.light.groundColor = BABYLON.Color3.Black();
 
     //
+    // ground
+    //
+    let ground = BABYLON.Mesh.CreateGround('grd', 150, 150, 1, this.scene);
+	  ground.position = new BABYLON.Vector3(0, -200, 0);
+    let groundMat = new BABYLON.StandardMaterial('gmat', this.scene);
+    groundMat.diffuseTexture = new BABYLON.Texture('assets/textures/orient.jpg', this.scene);
+    groundMat.emissiveTexture = new BABYLON.Texture('assets/textures/orient.jpg', this.scene);
+	  ground.material = groundMat;
+
+    //
     // sky
     //
     // (name, height, diamTop, diamBottom, tessellation, [optional height subdivs], scene, updatable)
@@ -52,15 +64,23 @@ class GameWorld {
     sky.material = skyMat;
 
     //
-    // cube
+    // head
     //
-    this._head = BABYLON.Mesh.CreateCylinder("cylinder", 1, .1, 1, 6, 1, this.scene, false);
-    this._head.position = BABYLON.Vector3.Zero();
-    let headMat = new BABYLON.StandardMaterial('cubeMat', this.scene);
-    // cubeMat.specularColor = BABYLON.Color3.Blue();
-    // cubeMat.diffuseColor = BABYLON.Color3.Red();
-    headMat.wireframe = true;
-    this._head.material = headMat;
+    this._head = BABYLON.Mesh.CreateBox('head', 0, this.scene);
+    this._head.isVisible = false;
+
+    let cube = BABYLON.Mesh.CreateCylinder("cylinder", 1, .1, 1, 6, 1, this.scene, false);
+    cube.parent = this._head;
+    cube.position = BABYLON.Vector3.Zero();
+    let cubeMat = new BABYLON.StandardMaterial('cubeMat', this.scene);
+    cubeMat.specularColor = BABYLON.Color3.Blue();
+    cubeMat.diffuseColor = BABYLON.Color3.Red();
+    cubeMat.wireframe = true;
+    cube.material = cubeMat;
+    cube.rotation = new BABYLON.Vector3(0, 0, d2r(-90));
+    // orient right by default
+    // cube.rotate(BABYLON.Axis.Z, -90 * (Math.PI / 180), BABYLON.Space.LOCAL);
+
 
     //
     // camera
@@ -86,7 +106,7 @@ class GameWorld {
     //
     this.engine.runRenderLoop(() => {
       let sec = this.engine.getDeltaTime() / 1000;
-      this.subject.onNext(sec);
+      this.observable.onNext(sec);
       this.scene.render();
     });
 
@@ -94,7 +114,7 @@ class GameWorld {
   }
 
   public destroy() {
-    this.subject.dispose();
+    this.observable.dispose();
   }
 }
 

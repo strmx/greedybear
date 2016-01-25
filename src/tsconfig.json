@@ -16,7 +16,8 @@
 		"CanvasElement.ts",
 		"Game.ts",
 		"GameWorld.ts",
-		"KeyboardInput.ts"
+		"KeyboardInput.ts",
+		"tools/d2r.ts"
 	],
 	"atom": {
 		"rewriteTsconfig": true
