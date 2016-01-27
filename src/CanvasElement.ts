@@ -2,8 +2,8 @@
 
 const CSS_STYLES = `
   position: absolute;
-  width: 100%;
-  height: 100%;
+  _width: 100%;
+  _height: 100%;
 `;
 
 class CanvasElement {
