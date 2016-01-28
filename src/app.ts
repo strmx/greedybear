@@ -8,5 +8,7 @@ import CanvasElement = require('./CanvasElement');
 //
 
 import CaveGenerator = require('./map/CaveGenerator');
-
 new CaveGenerator();
+
+// import CaveGenerator = require('./map/Test');
+// new CaveGenerator();

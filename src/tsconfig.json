@@ -18,6 +18,7 @@
 		"GameWorld.ts",
 		"KeyboardInput.ts",
 		"map/CaveGenerator.ts",
+		"map/Test.ts",
 		"tools/d2r.ts"
 	],
 	"atom": {
