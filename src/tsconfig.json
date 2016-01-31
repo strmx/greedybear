@@ -19,8 +19,7 @@
 		"KeyboardInput.ts",
 		"map/CaveGenerator.ts",
 		"map/MapHelper.ts",
-		"map/Test.ts",
-		"spec/CaveGenerationSpec.ts",
+		"test/CaveGeneration.ts",
 		"tools/d2r.ts",
 		"utils/Randomizer.ts"
 	],

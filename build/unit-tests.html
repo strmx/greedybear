@@ -24,11 +24,11 @@
   <script src="vendors/require.js"></script>
   <script>
     window.require.config({
-        baseUrl: 'js/spec/',
+        baseUrl: 'js/test/',
         urlArgs: Date.now(),
     });
 
-    require(['CaveGenerationSpec'], function(foo) {
+    require(['CaveGeneration'], function(foo) {
       mocha.run();
     });
   </script>
