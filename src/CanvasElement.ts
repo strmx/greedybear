@@ -2,8 +2,8 @@
 
 const CSS_STYLES = `
   position: absolute;
-  _width: 100%;
-  _height: 100%;
+  width: 100%;
+  height: 100%;
 `;
 
 class CanvasElement {
@@ -19,9 +19,15 @@ class CanvasElement {
         return this.canvas;
     }
 
-    public destroy() {
+    public destroy(): void {
       this.canvas.parentElement.removeChild(this.canvas);
     }
+
+    public resize(w?: number, h?: number): void {
+      this.canvas.height = w || window.innerHeight;
+      this.canvas.width = h || window.innerWidth;
+    }
+
 }
 
 export = CanvasElement;
