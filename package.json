@@ -1,0 +1,17 @@
+{
+  "name": "snake3d",
+  "version": "0.0.1",
+  "description": "A snake like game",
+  "dependencies": {
+    "react": "^0.14.6",
+    "react-dom": "^0.14.6",
+    "typescript": "^1.7.3"
+  },
+  "devDependencies": {
+  },
+  "scripts": {
+    "server": "http-server ./build/",
+    "dev-build": "tsc -w"
+  },
+  "author": "m.strasinskis@gmail.com"
+}
