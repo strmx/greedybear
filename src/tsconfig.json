@@ -19,7 +19,8 @@
 		"KeyboardInput.ts",
 		"map/CaveGenerator.ts",
 		"map/Test.ts",
-		"tools/d2r.ts"
+		"tools/d2r.ts",
+		"utils/Randomizer.ts"
 	],
 	"atom": {
 		"rewriteTsconfig": true

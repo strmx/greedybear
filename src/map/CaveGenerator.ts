@@ -1,10 +1,11 @@
-'use strict';
-
+import Randomizer = require('../utils/Randomizer');
 
 enum CELL_TYPE {
   WALL = 1,
   ROAD = 0,
 };
+
+const nextReal = Randomizer.generateNextRealFunction(16);
 
 // TODO: move to MapHelper.ts
 function createFilledMap(n : number, m : number, defautValue : any) {
@@ -36,7 +37,8 @@ function fillMapUniform(map : any[][], chance : number, fillValue : any) : void 
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < m; j++) {
-      if (Math.random() < chance) {
+      // TODO: implement radius based border chance
+      if (nextReal() < chance) {
         count++;
         map[i][j] = isFunction ? fillValue(i, j, count, map) : fillValue;
       }
@@ -164,7 +166,7 @@ class A {
       this.updateCanvasSize(canvas);
     });
 
-    const CELL_SIZE = 2;
+    const CELL_SIZE = 8;
     const BIRTH_LIMIT = 4;
     const DEATH_LIMIT = 3;
     let map = createFilledMap(~~(canvas.width / CELL_SIZE), ~~(canvas.height / CELL_SIZE), CELL_TYPE.ROAD);
