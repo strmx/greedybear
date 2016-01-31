@@ -7,7 +7,7 @@ import MapHelper = require('../map/MapHelper');
 declare var describe: Function, it: Function;
 var assert = chai.assert;
 
-const SHOULD_MAP =
+const DUMMY_MAP =
 `111111111111111111111111111···11
 ···111·111111111111111········11
 ···11··11111111··111··········11
@@ -52,6 +52,6 @@ const GENERATOR_OPTIONS = {
 describe("CaveGenerator", function() {
   it("generates random cave map", function() {
     let map = CaveGenerator.generate(GENERATOR_OPTIONS);
-    assert.equal(MapHelper.mapToString(map), SHOULD_MAP);
+    assert.equal(MapHelper.mapToString(map), DUMMY_MAP);
   });
 });
