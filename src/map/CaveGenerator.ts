@@ -1,6 +1,10 @@
 'use strict';
 
-const EMPTY_CELL_VALUE : number = 0;
+
+enum CELL_TYPE {
+  WALL = 1,
+  ROAD = 0,
+};
 
 // TODO: move to MapHelper.ts
 function createFilledMap(n : number, m : number, defautValue : any) {
@@ -40,6 +44,31 @@ function fillMapUniform(map : any[][], chance : number, fillValue : any) : void 
   }
 }
 
+// flood into fillMap
+function floodFill(map : number[][], x : number, y : number, fillMap : number[][]) : number {
+  let n = map.length;
+  let m = map[0].length;
+  let filledCount = 0;
+  let fill = (i : number, j : number) => {
+    // out of bounds
+    if (i < 0 || j < 0 || i >= n || j >= m) {
+      return;
+    }
+    if (map[i][j] === 0 && fillMap[i][j] === 0) {
+      filledCount++;
+      fillMap[i][j] = 1;
+      fill(i - 1, j);
+      fill(i + 1, j);
+      fill(i, j - 1);
+      fill(i, j + 1);
+    }
+  }
+
+  fill(x, y);
+
+  return filledCount;
+}
+
 function countNotEmptyNeighbours(map : any[][], x : number, y : number) : number {
   if (!map || !map.length || !map[0] || !map[0].length) {
     return 0;
@@ -59,8 +88,7 @@ function countNotEmptyNeighbours(map : any[][], x : number, y : number) : number
         neighbourY = y + j;
         outOfBound = neighbourX < 0 || neighbourY < 0 || neighbourX >= n || neighbourY >= m;
 
-        // if (map[neighbourX][neighbourY] !== EMPTY_CELL_VALUE){
-        if (outOfBound || map[neighbourX][neighbourY] !== EMPTY_CELL_VALUE){
+        if (outOfBound || map[neighbourX][neighbourY] === CELL_TYPE.WALL){
             neighbourCount ++;
         }
       }
@@ -78,24 +106,26 @@ function generateNextStepCaveMap(map : any[][], birthLimit : number, deathLimit 
   let n = map.length;
   let m = map[0].length;
   let neighbourCount = 0;
-  let nextStepMap = createFilledMap(n, m, EMPTY_CELL_VALUE);
+  let nextStepMap = createFilledMap(n, m, CELL_TYPE.ROAD);
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < m; j++) {
 
       neighbourCount = countNotEmptyNeighbours(map, i, j);
 
-      if(map[i][j] !== EMPTY_CELL_VALUE) {
+      if(map[i][j] === CELL_TYPE.WALL) {
         if(neighbourCount < deathLimit) {
-          nextStepMap[i][j] = EMPTY_CELL_VALUE;
+          nextStepMap[i][j] = CELL_TYPE.ROAD;
+        // } if(neighbourCount < starvationLimit) {
+        //   nextStepMap[i][j] = EMPTY_CELL_VALUE;
         } else {
-          nextStepMap[i][j] = 1;
+          nextStepMap[i][j] = CELL_TYPE.WALL;
         }
       } else {
         if(neighbourCount > birthLimit) {
-          nextStepMap[i][j] = 1;
+          nextStepMap[i][j] = CELL_TYPE.WALL;
         } else {
-          nextStepMap[i][j] = EMPTY_CELL_VALUE;
+          nextStepMap[i][j] = CELL_TYPE.ROAD;
         }
       }
     }
@@ -104,7 +134,7 @@ function generateNextStepCaveMap(map : any[][], birthLimit : number, deathLimit 
   return nextStepMap;
 }
 
-function redrawMap(map : any[][], canvas : HTMLCanvasElement, cellSize : number = 1) : void {
+function redrawMap(map : any[][], canvas : HTMLCanvasElement, cellSize : number) : void {
   let n = map.length;
   let m = map[0].length;
   let ctx = canvas.getContext('2d');
@@ -115,7 +145,7 @@ function redrawMap(map : any[][], canvas : HTMLCanvasElement, cellSize : number 
 
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < m; j++) {
-      if (map[i][j] !== EMPTY_CELL_VALUE) {
+      if (map[i][j] === CELL_TYPE.WALL) {
         ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
       }
     }
@@ -137,16 +167,15 @@ class A {
     const CELL_SIZE = 2;
     const BIRTH_LIMIT = 4;
     const DEATH_LIMIT = 3;
-    let map = createFilledMap(~~(canvas.width / CELL_SIZE), ~~(canvas.height / CELL_SIZE), EMPTY_CELL_VALUE);
-    fillMapUniform(map, .4, 1);
+    let map = createFilledMap(~~(canvas.width / CELL_SIZE), ~~(canvas.height / CELL_SIZE), CELL_TYPE.ROAD);
+    fillMapUniform(map, .4, CELL_TYPE.WALL);
 
-    // for (let i=0; i<10; i++) {
     let redrawCount = 0;
-    setInterval(() => {
+    for (let i=0; i<2; i++) {
       map = generateNextStepCaveMap(map, BIRTH_LIMIT, DEATH_LIMIT);
       redrawMap(map, canvas, CELL_SIZE);
       console.log('redrawCount', ++redrawCount);
-    }, 500);
+    }
   }
 
   updateCanvasSize(canvas) {
