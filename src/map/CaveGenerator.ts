@@ -8,7 +8,7 @@ enum CELL_TYPE {
 class CaveGenerator {
   static CELL_TYPE = CELL_TYPE;
 
-  public static generate(options: {n: number, m: number, nextReal: Function, birthLimit: number, deathLimit: number}) : number[][] {
+  public static generateCaveLikeMap(options: {n: number, m: number, nextReal: Function, birthLimit: number, deathLimit: number}): number[][] {
     let map = MapHelper.createFilledMap(options.n, options.m, CELL_TYPE.ROAD);
     MapHelper.fillMapUniform(map, .4, options.nextReal, CELL_TYPE.WALL);
 
@@ -19,7 +19,31 @@ class CaveGenerator {
     return map;
   }
 
-  public static generateNextStepCaveMap(map : any[][], birthLimit : number, deathLimit : number) : any[][] {
+  // leave only biggest one on arg:map
+  // returns list of open area cells
+  public static removeSmallOpenAreas(map: number[][]): {x: number, y:number}[] {
+    let openAreas = MapHelper.findOpenAreas(map, CELL_TYPE.ROAD);
+
+    if (openAreas.length === 0) {
+      return null;
+    }
+
+    if (openAreas.length > 1) {
+      // remove open areas
+      openAreas
+        // except biggest area
+        .slice(1)
+        .forEach((cells) => {
+          cells.forEach((pos) => {
+            map[pos.x][pos.y] = CELL_TYPE.WALL;
+          });
+        });
+    }
+
+    return openAreas[0];
+  }
+
+  public static generateNextStepCaveMap(map: number[][], birthLimit: number, deathLimit: number): number[][] {
     if (!map || !map.length || !map[0] || !map[0].length) {
       return null;
     }
@@ -55,7 +79,7 @@ class CaveGenerator {
     return nextStepMap;
   }
 
-  public static redrawMap(map : number[][], canvas : HTMLCanvasElement, cellSize : number) : void {
+  public static redrawMap(map: number[][], canvas: HTMLCanvasElement, cellSize: number): void {
     let n = map.length;
     let m = map[0].length;
     let ctx = canvas.getContext('2d');

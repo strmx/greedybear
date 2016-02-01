@@ -16,14 +16,19 @@ canvas.resize();
 
 const CELL_SIZE = 4;
 let generatorOptions = {
-  n: ~~(canvas.element.width / CELL_SIZE),
-  m: ~~(canvas.element.height / CELL_SIZE),
+  n: 32, //~~(canvas.element.width / CELL_SIZE),
+  m: 32, //~~(canvas.element.height / CELL_SIZE),
   // nextReal: Math.random,
   nextReal: Randomizer.generateNextRealFunction(13),
   birthLimit: 4,
   deathLimit: 3,
 };
-let caveMap = CaveGenerator.generate(generatorOptions);
+let caveMap = CaveGenerator.generateCaveLikeMap(generatorOptions);
+
+console.log(MapHelper.stringifyMap(caveMap));
+
+CaveGenerator.removeSmallOpenAreas(caveMap);
+console.log(MapHelper.stringifyMap(caveMap));
 
 // draw
-CaveGenerator.redrawMap(caveMap, canvas.element, CELL_SIZE);
+// CaveGenerator.redrawMap(caveMap, canvas.element, CELL_SIZE);
