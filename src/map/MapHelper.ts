@@ -73,32 +73,54 @@ class MapHelper {
 
   // flood into fillMap (w/o diagonal)
   public static floodFill(map: number[][], x: number, y: number, emptyValue: number, checkedMap: boolean[][]): {x: number, y: number}[] {
+    let filledCells: {x: number, y: number}[] = [];
     let n = map.length;
     let m = map[0].length;
-    // 'x:y' = true
-    let filledCells = [];
-    let fillAround = (i: number, j: number) => {
-      // out of bounds
-      if (i < 0 || j < 0 || i >= n || j >= m) {
-        return;
-      }
-      if (map[i][j] === 0 && !checkedMap[i][j]) {
-        checkedMap[i][j] = true;
-        filledCells.push({x: i, y: j});
+    let i: number, j: number, cx: number, cy: number;
 
-        fillAround(i - 1, j);
-        fillAround(i + 1, j);
-        fillAround(i, j - 1);
-        fillAround(i, j + 1);
+    let cellsToCheckX = [x];
+    let cellsToCheckY = [y];
+    let newCellsToCheckX = [];
+    let newCellsToCheckY = [];
+
+    while(cellsToCheckX.length) {
+      newCellsToCheckX = [];
+      newCellsToCheckY = [];
+
+      for (i=cellsToCheckX.length - 1; i >= 0; i--) {
+        cx = cellsToCheckX[i];
+        cy = cellsToCheckY[i];
+
+        if (cx >= 0 && cy >= 0 && cx < n && cy < m) {
+          // if empty and was not checked before
+          if (checkedMap[cx][cy] === false && map[cx][cy] === emptyValue) {
+            // mark as flooded
+            checkedMap[cx][cy] = true;
+            filledCells.push({x: cx, y: cy});
+            // check top
+            newCellsToCheckX.push(cx);
+            newCellsToCheckY.push(cy - 1);
+            // check right
+            newCellsToCheckX.push(cx + 1);
+            newCellsToCheckY.push(cy);
+            // check bottom
+            newCellsToCheckX.push(cx);
+            newCellsToCheckY.push(cy + 1);
+            // check left
+            newCellsToCheckX.push(cx - 1);
+            newCellsToCheckY.push(cy);
+          }
+        }
       }
+
+      cellsToCheckX = newCellsToCheckX;
+      cellsToCheckY = newCellsToCheckY;
     }
-
-    // start
-    fillAround(x, y);
 
     return filledCells;
   }
 
+  // return sorted by size list of open areas
   public static findOpenAreas(map: number[][], emptyValue: number): {x: number, y: number}[][] {
     let n = map.length;
     let m = map[0].length;

@@ -14,20 +14,23 @@ import MapHelper = require('./map/MapHelper');
 let canvas = new CanvasElement(document.body);
 canvas.resize();
 
-const CELL_SIZE = 4;
+let t = Date.now();
+
+const CELL_SIZE = 1;
 let generatorOptions = {
-  n: 32, //~~(canvas.element.width / CELL_SIZE),
-  m: 32, //~~(canvas.element.height / CELL_SIZE),
+  n: 64,//~~(canvas.element.width / CELL_SIZE),
+  m: 64,//~~(canvas.element.height / CELL_SIZE),
   // nextReal: Math.random,
-  nextReal: Randomizer.generateNextRealFunction(13),
+  nextReal: Randomizer.generateNextRealFunction(3),
   birthLimit: 4,
   deathLimit: 3,
 };
 let caveMap = CaveGenerator.generateCaveLikeMap(generatorOptions);
+console.info(Date.now() - t);
 
-console.log(MapHelper.stringifyMap(caveMap));
-
+t = Date.now();
 CaveGenerator.removeSmallOpenAreas(caveMap);
+console.info(Date.now() - t);
 console.log(MapHelper.stringifyMap(caveMap));
 
 // draw
