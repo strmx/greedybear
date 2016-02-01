@@ -9,14 +9,9 @@ class CaveGenerator {
   static CELL_TYPE = CELL_TYPE;
 
   public static generate(options: {n: number, m: number, nextReal: Function, birthLimit: number, deathLimit: number}) : number[][] {
-    // const options.birthLimit = 4;
-    // const options.deathLimit = 3;
-    // const nextReal = options.seed >= 0 ? Randomizer.generateNextRealFunction(options.seed) : Math.random;
-
     let map = MapHelper.createFilledMap(options.n, options.m, CELL_TYPE.ROAD);
     MapHelper.fillMapUniform(map, .4, options.nextReal, CELL_TYPE.WALL);
 
-    let redrawCount = 0;
     for (let i=0; i<2; i++) {
       map = CaveGenerator.generateNextStepCaveMap(map, options.birthLimit, options.deathLimit);
     }
@@ -24,7 +19,7 @@ class CaveGenerator {
     return map;
   }
 
-  private static generateNextStepCaveMap(map : any[][], birthLimit : number, deathLimit : number) : any[][] {
+  public static generateNextStepCaveMap(map : any[][], birthLimit : number, deathLimit : number) : any[][] {
     if (!map || !map.length || !map[0] || !map[0].length) {
       return null;
     }

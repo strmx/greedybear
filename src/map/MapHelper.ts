@@ -92,7 +92,10 @@ class MapHelper {
   }
 
   public static mapToString(map: number[][]): string {
-    return map.map(col => (col.join(''))).join('\n').replace(/0/g, '·');
+    return map
+            .map(col => (col.join(''))).join('\n')
+            .replace(/0/g, '░')
+            .replace(/1/g, '█');
   }
 }
 
