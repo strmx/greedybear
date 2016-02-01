@@ -20,6 +20,7 @@
 		"map/CaveGenerator.ts",
 		"map/MapHelper.ts",
 		"test/CaveGeneration.ts",
+		"test/MapHelper.ts",
 		"tools/d2r.ts",
 		"utils/Randomizer.ts"
 	],
