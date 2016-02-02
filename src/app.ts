@@ -9,7 +9,7 @@ import CanvasElement = require('./CanvasElement');
 
 import Randomizer = require('./utils/Randomizer');
 import CaveGenerator = require('./map/CaveGenerator');
-import MapHelper = require('./map/MapHelper');
+import PatternHelper = require('./map/PatternHelper');
 
 let canvas = new CanvasElement(document.body);
 canvas.resize();
@@ -39,7 +39,7 @@ console.info(Date.now() - t);
 
 
 t = Date.now();
-let positions = MapHelper.collectFreeAroundPositions(caveMap, 0);
+let positions = PatternHelper.collectFreeAroundPositions(caveMap, 0);
 console.info(Date.now() - t);
 
 positions.forEach(p => {
@@ -47,7 +47,7 @@ positions.forEach(p => {
 });
 
 console.log(positions[0].distance, positions.length);
-let tm = MapHelper.stringifyMap(caveMap)
+let tm = PatternHelper.stringifyMap(caveMap)
           .split('')
           .map(s => {
             let d = parseInt(s, 10);
@@ -55,6 +55,7 @@ let tm = MapHelper.stringifyMap(caveMap)
             return s;
           })
           .join('');
+
 
 console.log(tm);
 

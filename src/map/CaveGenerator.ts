@@ -1,4 +1,4 @@
-import MapHelper = require('./MapHelper');
+import PatternHelper = require('./PatternHelper');
 
 enum CELL_TYPE {
   WALL = 1,
@@ -9,8 +9,8 @@ class CaveGenerator {
   static CELL_TYPE = CELL_TYPE;
 
   public static generateCaveLikeMap(options: {n: number, m: number, wallChance: number, stepCount: number, nextReal: Function, birthLimit: number, deathLimit: number}): number[][] {
-    let map = MapHelper.createFilledMap(options.n, options.m, CELL_TYPE.ROAD);
-    MapHelper.fillMapUniform(map, options.wallChance, options.nextReal, CELL_TYPE.WALL);
+    let map = PatternHelper.createFilledMap(options.n, options.m, CELL_TYPE.ROAD);
+    PatternHelper.fillMapUniform(map, options.wallChance, options.nextReal, CELL_TYPE.WALL);
 
     for (let i=0; i<options.stepCount; i++) {
       map = CaveGenerator.generateNextStepCaveMap(map, options.birthLimit, options.deathLimit);
@@ -22,7 +22,7 @@ class CaveGenerator {
   // leave only biggest one on arg:map
   // returns list of open area cells
   public static removeSmallOpenAreas(map: number[][]): {x: number, y:number}[] {
-    let openAreas = MapHelper.findOpenAreas(map, CELL_TYPE.ROAD);
+    let openAreas = PatternHelper.findOpenAreas(map, CELL_TYPE.ROAD);
 
     if (openAreas.length === 0) {
       return null;
@@ -51,18 +51,16 @@ class CaveGenerator {
     let n = map.length;
     let m = map[0].length;
     let neighbourCount = 0;
-    let nextStepMap = MapHelper.createFilledMap(n, m, 0);
+    let nextStepMap = PatternHelper.createFilledMap(n, m, 0);
 
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < m; j++) {
 
-        neighbourCount = MapHelper.countNotEmptyNeighbours(map, i, j, CELL_TYPE.ROAD);
+        neighbourCount = PatternHelper.countNotEmptyNeighbours(map, i, j, CELL_TYPE.ROAD);
 
         if(map[i][j] === CELL_TYPE.WALL) {
           if(neighbourCount < deathLimit) {
             nextStepMap[i][j] = CELL_TYPE.ROAD;
-          // } if(neighbourCount < starvationLimit) {
-          //   nextStepMap[i][j] = EMPTY_CELL_VALUE;
           } else {
             nextStepMap[i][j] = CELL_TYPE.WALL;
           }

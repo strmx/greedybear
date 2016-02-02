@@ -2,7 +2,7 @@
 
 import Randomizer = require('../utils/Randomizer');
 import CaveGenerator = require('../map/CaveGenerator');
-import MapHelper = require('../map/MapHelper');
+import PatternHelper = require('../map/PatternHelper');
 
 declare var describe: Function, it: Function, beforeEach: Function;
 var assert = chai.assert;
@@ -88,26 +88,26 @@ const CELL_TYPE = CaveGenerator.CELL_TYPE;
 
 describe("CaveGenerator", function() {
   // should be generated once because of seeded randomizer
-  let initialMap = MapHelper.createFilledMap(GENERATOR_OPTIONS.n, GENERATOR_OPTIONS.m, CELL_TYPE.ROAD);
-  MapHelper.fillMapUniform(initialMap, .4, GENERATOR_OPTIONS.nextReal, CELL_TYPE.WALL);
+  let initialMap = PatternHelper.createFilledMap(GENERATOR_OPTIONS.n, GENERATOR_OPTIONS.m, CELL_TYPE.ROAD);
+  PatternHelper.fillMapUniform(initialMap, .4, GENERATOR_OPTIONS.nextReal, CELL_TYPE.WALL);
   for (let i=0; i<2; i++) {
     initialMap = CaveGenerator.generateNextStepCaveMap(initialMap, GENERATOR_OPTIONS.birthLimit, GENERATOR_OPTIONS.deathLimit);
   }
   let map: number[][] = null;
 
   beforeEach(function() {
-    map = MapHelper.cloneMap(initialMap);
+    map = PatternHelper.cloneMap(initialMap);
   });
 
   it("generates random cave map (raw)", function() {
-    console.log(MapHelper.stringifyMap(map));
-    assert.equal(MapHelper.stringifyMap(map), DUMMY_MAP);
+    console.log(PatternHelper.stringifyMap(map));
+    assert.equal(PatternHelper.stringifyMap(map), DUMMY_MAP);
   });
 
   it("finds biggest area", function() {
     CaveGenerator.removeSmallOpenAreas(map);
-    console.log(MapHelper.stringifyMap(map));
-    assert.equal(MapHelper.stringifyMap(map), BIGGEST_AREA_MAP);
+    console.log(PatternHelper.stringifyMap(map));
+    assert.equal(PatternHelper.stringifyMap(map), BIGGEST_AREA_MAP);
   });
 
   /*
@@ -275,7 +275,7 @@ describe("CaveGenerator", function() {
 
   it("generate start points", function() {
     CaveGenerator.removeSmallOpenAreas(map);
-    let positions = MapHelper.collectFreeAroundPositions(map, 0);
+    let positions = PatternHelper.collectFreeAroundPositions(map, 0);
     assert.deepEqual(positions, START_POINTS);
   });
 

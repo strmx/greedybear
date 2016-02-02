@@ -18,7 +18,7 @@
 		"GameWorld.ts",
 		"KeyboardInput.ts",
 		"map/CaveGenerator.ts",
-		"map/MapHelper.ts",
+		"map/PatternHelper.ts",
 		"test/CaveGeneration.ts",
 		"test/MapHelper.ts",
 		"tools/d2r.ts",
