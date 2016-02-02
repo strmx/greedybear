@@ -18,20 +18,47 @@ let t = Date.now();
 
 const CELL_SIZE = 1;
 let generatorOptions = {
-  n: 64,//~~(canvas.element.width / CELL_SIZE),
-  m: 64,//~~(canvas.element.height / CELL_SIZE),
+  n: 160,//~~(canvas.element.width / CELL_SIZE),
+  m: 40,//~~(canvas.element.height / CELL_SIZE),
+  wallChance: .4,
+  stepCount: 2,
   // nextReal: Math.random,
-  nextReal: Randomizer.generateNextRealFunction(3),
+  nextReal: Randomizer.generateNextRealFunction(0),
   birthLimit: 4,
   deathLimit: 3,
 };
 let caveMap = CaveGenerator.generateCaveLikeMap(generatorOptions);
 console.info(Date.now() - t);
 
+
+
 t = Date.now();
 CaveGenerator.removeSmallOpenAreas(caveMap);
 console.info(Date.now() - t);
-console.log(MapHelper.stringifyMap(caveMap));
+
+
+
+t = Date.now();
+let positions = MapHelper.collectFreeAroundPositions(caveMap, 0);
+console.info(Date.now() - t);
+
+positions.forEach(p => {
+  caveMap[p.x][p.y] = Math.round(p.distance) + 3;
+});
+
+console.log(positions[0].distance, positions.length);
+let tm = MapHelper.stringifyMap(caveMap)
+          .split('')
+          .map(s => {
+            let d = parseInt(s, 10);
+            if (d > 0) return d - 3;
+            return s;
+          })
+          .join('');
+
+console.log(tm);
+
+
 
 // draw
 // CaveGenerator.redrawMap(caveMap, canvas.element, CELL_SIZE);

@@ -8,11 +8,11 @@ enum CELL_TYPE {
 class CaveGenerator {
   static CELL_TYPE = CELL_TYPE;
 
-  public static generateCaveLikeMap(options: {n: number, m: number, nextReal: Function, birthLimit: number, deathLimit: number}): number[][] {
+  public static generateCaveLikeMap(options: {n: number, m: number, wallChance: number, stepCount: number, nextReal: Function, birthLimit: number, deathLimit: number}): number[][] {
     let map = MapHelper.createFilledMap(options.n, options.m, CELL_TYPE.ROAD);
-    MapHelper.fillMapUniform(map, .4, options.nextReal, CELL_TYPE.WALL);
+    MapHelper.fillMapUniform(map, options.wallChance, options.nextReal, CELL_TYPE.WALL);
 
-    for (let i=0; i<2; i++) {
+    for (let i=0; i<options.stepCount; i++) {
       map = CaveGenerator.generateNextStepCaveMap(map, options.birthLimit, options.deathLimit);
     }
 
