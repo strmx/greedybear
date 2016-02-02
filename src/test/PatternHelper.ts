@@ -1,13 +1,54 @@
 /// <reference path='../../typings/chai.d.ts' />
 
 import Randomizer = require('../utils/Randomizer');
-import CaveGenerator = require('../map/CaveGenerator');
+import CavePatternGenerator = require('../map/CavePatternGenerator');
 import PatternHelper = require('../map/PatternHelper');
 
 declare var describe: Function, it: Function, beforeEach: Function;
 var assert = chai.assert;
 
-const DUMMY_MAP =
+describe("PatternHelper", function() {
+
+  const GENERATOR_OPTIONS = {
+    n: 32,
+    m: 32,
+    wallChance: .4,
+    stepCount: 2,
+    nextReal: Randomizer.generateNextRealFunction(13),
+    birthLimit: 4,
+    deathLimit: 3,
+  };
+  const CELL_TYPE = CavePatternGenerator.CELL_TYPE;
+
+  // test pattern
+  // test pattern should be generated once because of seeded randomizer
+  let initialPattern = PatternHelper.createFilled(GENERATOR_OPTIONS.n, GENERATOR_OPTIONS.m, CELL_TYPE.ROAD);
+  PatternHelper.fillUniform(initialPattern, .4, GENERATOR_OPTIONS.nextReal, CELL_TYPE.WALL);
+  for (let i=0; i<2; i++) {
+    initialPattern = CavePatternGenerator.applyCAStep(initialPattern, GENERATOR_OPTIONS.birthLimit, GENERATOR_OPTIONS.deathLimit);
+  }
+  let pattern: number[][] = null;
+
+  beforeEach(function() {
+    pattern = PatternHelper.clone(initialPattern);
+  });
+
+  it("clones", function() {
+    let dummyPattern = [[0,0,0],[1,2,3], [4,5,6], [1,2,1]];
+    let clonePattern = PatternHelper.clone(dummyPattern);
+    assert.deepEqual(dummyPattern, clonePattern, 'pattern are equal');
+    assert.notEqual(dummyPattern[0], clonePattern[0], 'arrays are different objects');
+  });
+
+  it("stringify and parse", function() {
+    let dummyPattern = [[0,0,0],[1,2,3], [4,5,6], [1,2,1]];
+    let patternText = PatternHelper.stringify(dummyPattern);
+    let parsedPattern = PatternHelper.parse(PatternHelper.stringify(dummyPattern));
+    assert.deepEqual(dummyPattern, parsedPattern, 'pattern are equal');
+    assert.notEqual(dummyPattern[0], parsedPattern[0], 'arrays are different objects');
+  });
+
+  const DUMMY_PATTERN =
 `█░░░███████████░░░░░░░█░░░██████
 █░░░░████░░░██░░░░░░░░░░░░░░░███
 █░░░░░░░░░░░░█░░░░░░░░░░░░░░░░░█
@@ -41,7 +82,12 @@ const DUMMY_MAP =
 ███████████░░░░░░░░█████████████
 █████████████░░░░░██████████████`;
 
-const BIGGEST_AREA_MAP =
+  it("generates random cave pattern (raw)", function() {
+    console.log(PatternHelper.stringify(pattern));
+    assert.equal(PatternHelper.stringify(pattern), DUMMY_PATTERN);
+  });
+
+  const BIGGEST_AREA_PATTERN =
 `███████████████░░░░░░░█░░░██████
 ██████████████░░░░░░░░░░░░░░░███
 ██████████████░░░░░░░░░░░░░░░░░█
@@ -75,39 +121,10 @@ const BIGGEST_AREA_MAP =
 ███████████░░░░░░░░█████████████
 █████████████░░░░░██████████████`;
 
-const GENERATOR_OPTIONS = {
-  n: 32,
-  m: 32,
-  wallChance: .4,
-  stepCount: 2,
-  nextReal: Randomizer.generateNextRealFunction(13),
-  birthLimit: 4,
-  deathLimit: 3,
-};
-const CELL_TYPE = CaveGenerator.CELL_TYPE;
-
-describe("CaveGenerator", function() {
-  // should be generated once because of seeded randomizer
-  let initialMap = PatternHelper.createFilledMap(GENERATOR_OPTIONS.n, GENERATOR_OPTIONS.m, CELL_TYPE.ROAD);
-  PatternHelper.fillMapUniform(initialMap, .4, GENERATOR_OPTIONS.nextReal, CELL_TYPE.WALL);
-  for (let i=0; i<2; i++) {
-    initialMap = CaveGenerator.generateNextStepCaveMap(initialMap, GENERATOR_OPTIONS.birthLimit, GENERATOR_OPTIONS.deathLimit);
-  }
-  let map: number[][] = null;
-
-  beforeEach(function() {
-    map = PatternHelper.cloneMap(initialMap);
-  });
-
-  it("generates random cave map (raw)", function() {
-    console.log(PatternHelper.stringifyMap(map));
-    assert.equal(PatternHelper.stringifyMap(map), DUMMY_MAP);
-  });
-
   it("finds biggest area", function() {
-    CaveGenerator.removeSmallOpenAreas(map);
-    console.log(PatternHelper.stringifyMap(map));
-    assert.equal(PatternHelper.stringifyMap(map), BIGGEST_AREA_MAP);
+    PatternHelper.removeSmallOpenAreas(pattern);
+    console.log(PatternHelper.stringify(pattern));
+    assert.equal(PatternHelper.stringify(pattern), BIGGEST_AREA_PATTERN);
   });
 
   /*
@@ -143,6 +160,7 @@ describe("CaveGenerator", function() {
   ██████████░░░░░░██░░████████████
   ███████████░░░░░░░░█████████████
   █████████████░░░░░██████████████*/
+
   const START_POINTS = [{
     "x": 24,
     "y": 4,
@@ -274,8 +292,8 @@ describe("CaveGenerator", function() {
   }];
 
   it("generate start points", function() {
-    CaveGenerator.removeSmallOpenAreas(map);
-    let positions = PatternHelper.collectFreeAroundPositions(map, 0);
+    PatternHelper.removeSmallOpenAreas(pattern);
+    let positions = PatternHelper.collectFreeAroundPositions(pattern, 0);
     assert.deepEqual(positions, START_POINTS);
   });
 

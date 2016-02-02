@@ -8,7 +8,7 @@ import CanvasElement = require('./CanvasElement');
 //
 
 import Randomizer = require('./utils/Randomizer');
-import CaveGenerator = require('./map/CaveGenerator');
+import CavePatternGenerator = require('./map/CavePatternGenerator');
 import PatternHelper = require('./map/PatternHelper');
 
 let canvas = new CanvasElement(document.body);
@@ -27,13 +27,13 @@ let generatorOptions = {
   birthLimit: 4,
   deathLimit: 3,
 };
-let caveMap = CaveGenerator.generateCaveLikeMap(generatorOptions);
+let caveMap = CavePatternGenerator.generateCavePattern(generatorOptions);
 console.info(Date.now() - t);
 
 
 
 t = Date.now();
-CaveGenerator.removeSmallOpenAreas(caveMap);
+PatternHelper.removeSmallOpenAreas(caveMap);
 console.info(Date.now() - t);
 
 
@@ -47,7 +47,7 @@ positions.forEach(p => {
 });
 
 console.log(positions[0].distance, positions.length);
-let tm = PatternHelper.stringifyMap(caveMap)
+let tm = PatternHelper.stringify(caveMap)
           .split('')
           .map(s => {
             let d = parseInt(s, 10);
@@ -63,3 +63,20 @@ console.log(tm);
 
 // draw
 // CaveGenerator.redrawMap(caveMap, canvas.element, CELL_SIZE);
+// public static redrawMap(pattern: number[][], canvas: HTMLCanvasElement, cellSize: number): void {
+//   let n = pattern.length;
+//   let m = pattern[0].length;
+//   let ctx = canvas.getContext('2d');
+//
+//   ctx.fillStyle = '#996633';
+//   ctx.fillRect(0, 0, canvas.width, canvas.height);
+//   ctx.fillStyle = '#000';
+//
+//   for (let i = 0; i < n; i++) {
+//     for (let j = 0; j < m; j++) {
+//       if (pattern[i][j] === CELL_TYPE.WALL) {
+//         ctx.fillRect(i * cellSize, j * cellSize, cellSize, cellSize);
+//       }
+//     }
+//   }
+// }

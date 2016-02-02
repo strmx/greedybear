@@ -17,10 +17,10 @@
 		"Game.ts",
 		"GameWorld.ts",
 		"KeyboardInput.ts",
-		"map/CaveGenerator.ts",
+		"map/CavePatternGenerator.ts",
+		"map/MapPattern.ts",
 		"map/PatternHelper.ts",
-		"test/CaveGeneration.ts",
-		"test/MapHelper.ts",
+		"test/PatternHelper.ts",
 		"tools/d2r.ts",
 		"utils/Randomizer.ts"
 	],
