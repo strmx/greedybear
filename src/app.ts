@@ -39,7 +39,7 @@ console.info(Date.now() - t);
 
 
 t = Date.now();
-let positions = PatternHelper.collectFreeAroundPositions(caveMap, 0);
+let positions = PatternHelper.collectFreeAroundPositions(caveMap);
 console.info(Date.now() - t);
 
 positions.forEach(p => {
@@ -56,10 +56,7 @@ let tm = PatternHelper.stringify(caveMap)
           })
           .join('');
 
-
 console.log(tm);
-
-
 
 // draw
 // CaveGenerator.redrawMap(caveMap, canvas.element, CELL_SIZE);

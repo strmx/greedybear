@@ -1,6 +1,6 @@
-/// <reference path='../typings/chai.d.ts' />
-/// <reference path="../typings/rx.all.d.ts" />
-/// <reference path="../typings/babylon.2.2.d.ts" />
+/// <reference path='./chai.d.ts' />
+/// <reference path="./rx.all.d.ts" />
+/// <reference path="./babylon.2.2.d.ts" />
 
 //
 // pattern
