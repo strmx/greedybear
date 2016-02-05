@@ -57,6 +57,9 @@ interface Bypass {
 //
 // export = Interface;
 
+
+declare var Random: any;
+
 //
 // unit tests
 //

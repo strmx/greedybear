@@ -12,7 +12,7 @@ class Game {
   private _moveSpeed: BABYLON.Vector3 = new BABYLON.Vector3(5, 5, 5);
   private _moveDirection: BABYLON.Vector3 = new BABYLON.Vector3(0, 0, 0);
 
-  constructor(private canvas : CanvasElement) {
+  constructor(private canvas : CanvasElement, pattern: number[][]) {
     this.world = new GameWorld(canvas.element);
     this._head = this.world._head;
     this.run();
@@ -23,9 +23,6 @@ class Game {
       switch (key) {
         case enums.KEYS.LEFT:
           this._head.rotation.addInPlace(new BABYLON.Vector3(0, d2r(-90), 0));
-          // this._head.rotation.x = this._head.rotation.x % Math.PI;
-          // this._head.rotation.y = this._head.rotation.y % Math.PI;
-          // this._head.rotation.z = this._head.rotation.z % Math.PI;
           console.log(this._head.rotation);
           break;
         case enums.KEYS.UP:

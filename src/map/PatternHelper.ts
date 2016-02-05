@@ -57,8 +57,7 @@ class Bypass {
 }
 
 class PatternHelper {
-  public static createFilled(n: number, m: number, defautValue: any): any[][] {
-    let isFunction = typeof defautValue === 'function';
+  public static createFilled(n: number, m: number, defautValue: number): number[][] {
     let pattern = [];
     let count = 0;
 
@@ -74,11 +73,6 @@ class PatternHelper {
   }
 
   public static fillUniform(pattern: number[][], chance: number, randomFunction: Function, fillValue: number): void {
-    if (!pattern || !pattern.length || !pattern[0] || !pattern[0].length) {
-      return;
-    }
-
-    let isFunction = typeof fillValue === 'function';
     let n = pattern.length;
     let m = pattern[0].length;
     let count = 0;
@@ -95,10 +89,6 @@ class PatternHelper {
   }
 
   public static countNotEmptyNeighbours(pattern: number[][], x: number, y: number): number {
-    if (!pattern || !pattern.length || !pattern[0] || !pattern[0].length) {
-      return 0;
-    }
-
     let n = pattern.length;
     let m = pattern[0].length;
     let neighbourX: number, neighbourY: number;
@@ -124,7 +114,7 @@ class PatternHelper {
   }
 
   // flood into fillPattern (w/o diagonal)
-  public static floodFill(pattern: number[][], x: number, y: number, checkedPattern: boolean[][]): Point[] {
+  public static floodFill(pattern: number[][], x: number, y: number, checkedPattern: number[][]): Point[] {
     let filledCells: Point[] = [];
     let n = pattern.length;
     let m = pattern[0].length;
@@ -145,9 +135,9 @@ class PatternHelper {
 
         if (cx >= 0 && cy >= 0 && cx < n && cy < m) {
           // if empty and was not checked before
-          if (checkedPattern[cx][cy] === false && pattern[cx][cy] === 0) {
+          if (checkedPattern[cx][cy] === 0 && pattern[cx][cy] === 0) {
             // mark as flooded
-            checkedPattern[cx][cy] = true;
+            checkedPattern[cx][cy] = 1;
             filledCells.push({x: cx, y: cy});
             // check top
             newCellsToCheckX.push(cx);
@@ -273,11 +263,11 @@ class PatternHelper {
     let n = pattern.length;
     let m = pattern[0].length;
     let openAreas = [];
-    let checkedPattern = PatternHelper.createFilled(n, m, false);
+    let checkedPattern = PatternHelper.createFilled(n, m, 0);
 
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < m; j++) {
-        if (checkedPattern[i][j] === false && pattern[i][j] === 0) {
+        if (checkedPattern[i][j] === 0 && pattern[i][j] === 0) {
           let area = PatternHelper.floodFill(pattern, i, j, checkedPattern);
           openAreas.push(area);
         }
@@ -314,7 +304,7 @@ class PatternHelper {
     return openAreas[0];
   }
 
-  public static clone(pattern: any[][]): any[][] {
+  public static clone(pattern: number[][]): number[][] {
     return pattern.map(col => (col.map(cell => (cell))));
   }
 
