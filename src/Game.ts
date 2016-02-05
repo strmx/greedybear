@@ -1,5 +1,6 @@
-/// <reference path="../typings/rx.all.d.ts" />
+/// <reference path="../typings/interfaces.d.ts"/>
 
+import enums = require('./enums');
 import CanvasElement = require('./CanvasElement');
 import KeyboardInput = require('./KeyboardInput');
 import GameWorld = require('./GameWorld');
@@ -16,25 +17,26 @@ class Game {
     this._head = this.world._head;
     this.run();
   }
+
   private run() {
     KeyboardInput.getObservable.forEach(key => {
       switch (key) {
-        case KeyboardInput.KEYS.LEFT:
+        case enums.KEYS.LEFT:
           this._head.rotation.addInPlace(new BABYLON.Vector3(0, d2r(-90), 0));
           // this._head.rotation.x = this._head.rotation.x % Math.PI;
           // this._head.rotation.y = this._head.rotation.y % Math.PI;
           // this._head.rotation.z = this._head.rotation.z % Math.PI;
           console.log(this._head.rotation);
           break;
-        case KeyboardInput.KEYS.UP:
+        case enums.KEYS.UP:
           this._head.rotation.addInPlace(new BABYLON.Vector3(d2r(-90),0, 0));
           console.log(this._head.rotation);
           break;
-        case KeyboardInput.KEYS.RIGHT:
+        case enums.KEYS.RIGHT:
           this._head.rotation.addInPlace(new BABYLON.Vector3(0, d2r(90), 0));
           console.log(this._head.rotation);
           break;
-        case KeyboardInput.KEYS.DOWN:
+        case enums.KEYS.DOWN:
           this._head.rotation.addInPlace(new BABYLON.Vector3(d2r(90), 0, 0));
           console.log(this._head.rotation);
           break;

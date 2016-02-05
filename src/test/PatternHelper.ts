@@ -1,11 +1,8 @@
-/// <reference path='../../typings/chai.d.ts' />
+/// <reference path="../../typings/Interfaces.d.ts" />
 
 import Randomizer = require('../utils/Randomizer');
 import CavePatternGenerator = require('../map/CavePatternGenerator');
 import PatternHelper = require('../map/PatternHelper');
-
-declare var describe: Function, it: Function, beforeEach: Function;
-var assert = chai.assert;
 
 describe("PatternHelper", function() {
 
@@ -18,12 +15,11 @@ describe("PatternHelper", function() {
     birthLimit: 4,
     deathLimit: 3,
   };
-  const CELL_TYPE = CavePatternGenerator.CELL_TYPE;
 
   // test pattern
   // test pattern should be generated once because of seeded randomizer
-  let initialPattern = PatternHelper.createFilled(GENERATOR_OPTIONS.n, GENERATOR_OPTIONS.m, CELL_TYPE.ROAD);
-  PatternHelper.fillUniform(initialPattern, .4, GENERATOR_OPTIONS.nextReal, CELL_TYPE.WALL);
+  let initialPattern = PatternHelper.createFilled(GENERATOR_OPTIONS.n, GENERATOR_OPTIONS.m, 0);
+  PatternHelper.fillUniform(initialPattern, .4, GENERATOR_OPTIONS.nextReal, 1);
   for (let i=0; i<2; i++) {
     initialPattern = CavePatternGenerator.applyCAStep(initialPattern, GENERATOR_OPTIONS.birthLimit, GENERATOR_OPTIONS.deathLimit);
   }

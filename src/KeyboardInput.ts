@@ -1,16 +1,10 @@
-/// <reference path="../typings/rx.all.d.ts" />
+/// <reference path="../typings/interfaces.d.ts"/>
 
-enum KEYS {
-  LEFT,
-  UP,
-  RIGHT,
-  DOWN,
-  A,
-  Z,
-}
+import enums = require('./enums');
+
+const KEYS = enums.KEYS;
 
 class KeyboardInput {
-  public static KEYS = KEYS;
 
   public static KEY_MAP = {
     37: KEYS.LEFT,

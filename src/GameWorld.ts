@@ -1,5 +1,4 @@
-/// <reference path="../typings/babylon.2.2.d.ts" />
-/// <reference path="../typings/rx.all.d.ts" />
+/// <reference path="../typings/interfaces.d.ts"/>
 
 import d2r = require('./tools/d2r');
 

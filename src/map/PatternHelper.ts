@@ -1,3 +1,5 @@
+/// <reference path="../../typings/Interfaces.d.ts" />
+// import Interface = require('../Interface');
 import Randomizer = require('../utils/Randomizer');
 
 enum CELL_TYPE {
@@ -5,12 +7,7 @@ enum CELL_TYPE {
   ROAD = 0,
 };
 
-interface Point {
-  x: number;
-  y: number;
-}
-
-class DistancePoint {
+class DistancePoint implements DistancePoint {
   constructor(public x: number, public y: number, public distance: number) {}
 }
 

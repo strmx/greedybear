@@ -6,8 +6,6 @@ enum CELL_TYPE {
 };
 
 class CavePatternGenerator {
-  static CELL_TYPE = CELL_TYPE;
-
   public static generateCavePattern(options: {n: number, m: number, wallChance: number, stepCount: number, nextReal: Function, birthLimit: number, deathLimit: number}): number[][] {
     let pattern = PatternHelper.createFilled(options.n, options.m, CELL_TYPE.ROAD);
     PatternHelper.fillUniform(pattern, options.wallChance, options.nextReal, CELL_TYPE.WALL);

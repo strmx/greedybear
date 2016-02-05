@@ -14,10 +14,12 @@
 	"files": [
 		"app.ts",
 		"CanvasElement.ts",
+		"enums.ts",
 		"Game.ts",
 		"GameWorld.ts",
 		"KeyboardInput.ts",
 		"map/CavePatternGenerator.ts",
+		"map/Map.ts",
 		"map/MapPattern.ts",
 		"map/PatternHelper.ts",
 		"test/PatternHelper.ts",
