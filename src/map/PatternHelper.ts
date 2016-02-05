@@ -2,11 +2,6 @@
 // import Interface = require('../Interface');
 import Randomizer = require('../utils/Randomizer');
 
-enum CELL_TYPE {
-  WALL = 1,
-  ROAD = 0,
-};
-
 class DistancePoint implements DistancePoint {
   constructor(public x: number, public y: number, public distance: number) {}
 }
@@ -99,7 +94,7 @@ class PatternHelper {
     }
   }
 
-  public static countNotEmptyNeighbours(pattern: number[][], x: number, y: number, emptyValue: number): number {
+  public static countNotEmptyNeighbours(pattern: number[][], x: number, y: number): number {
     if (!pattern || !pattern.length || !pattern[0] || !pattern[0].length) {
       return 0;
     }
@@ -118,7 +113,7 @@ class PatternHelper {
           neighbourY = y + j;
           outOfBound = neighbourX < 0 || neighbourY < 0 || neighbourX >= n || neighbourY >= m;
 
-          if (outOfBound || pattern[neighbourX][neighbourY] !== emptyValue) {
+          if (outOfBound || pattern[neighbourX][neighbourY] !== 0) {
             neighbourCount++;
           }
         }
@@ -129,7 +124,7 @@ class PatternHelper {
   }
 
   // flood into fillPattern (w/o diagonal)
-  public static floodFill(pattern: number[][], x: number, y: number, emptyValue: number, checkedPattern: boolean[][]): Point[] {
+  public static floodFill(pattern: number[][], x: number, y: number, checkedPattern: boolean[][]): Point[] {
     let filledCells: Point[] = [];
     let n = pattern.length;
     let m = pattern[0].length;
@@ -150,7 +145,7 @@ class PatternHelper {
 
         if (cx >= 0 && cy >= 0 && cx < n && cy < m) {
           // if empty and was not checked before
-          if (checkedPattern[cx][cy] === false && pattern[cx][cy] === emptyValue) {
+          if (checkedPattern[cx][cy] === false && pattern[cx][cy] === 0) {
             // mark as flooded
             checkedPattern[cx][cy] = true;
             filledCells.push({x: cx, y: cy});
@@ -177,13 +172,13 @@ class PatternHelper {
     return filledCells;
   }
 
-  public static calculateFreeAroundRadius(x: number, y: number, pattern: number[][], emptyValue: number, bypass: Bypass): number {
+  public static calculateFreeAroundRadius(x: number, y: number, pattern: number[][], bypass: Bypass): number {
     let n = pattern.length;
     let m = pattern[0].length;
     let bPoint: FreeAroundPoint;
     let cx: number, cy: number;
     let checkCollision = (x: number, y: number) => {
-      return (cx < 0 || cy < 0 || cx >= n || cy >= m) || (pattern[cx][cy] !== emptyValue)
+      return (cx < 0 || cy < 0 || cx >= n || cy >= m) || (pattern[cx][cy] !== 0)
     };
 
     for (let i=0, l=bypass.length; i < l; i++) {
@@ -213,7 +208,7 @@ class PatternHelper {
     return 0;
   }
 
-  public static collectFreeAroundPositions(pattern: number[][], emptyValue: number): DistancePoint[] {
+  public static collectFreeAroundPositions(pattern: number[][]): DistancePoint[] {
     let n = pattern.length;
     let m = pattern[0].length;
     let freeAroundPositions: DistancePoint[] = [];
@@ -223,8 +218,8 @@ class PatternHelper {
     // calculate radius for all free points
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < m; j++) {
-        if (pattern[i][j] === emptyValue) {
-          let distance = PatternHelper.calculateFreeAroundRadius(i, j, pattern, emptyValue, bypass);
+        if (pattern[i][j] === 0) {
+          let distance = PatternHelper.calculateFreeAroundRadius(i, j, pattern, bypass);
           // filter small free areas
           if (distance > 1) {
             freeAroundPositions.push(new DistancePoint(i, j, distance));
@@ -274,7 +269,7 @@ class PatternHelper {
   }
 
   // return sorted by size list of open areas
-  public static findOpenAreas(pattern: number[][], emptyValue: number): Point[][] {
+  public static findOpenAreas(pattern: number[][]): Point[][] {
     let n = pattern.length;
     let m = pattern[0].length;
     let openAreas = [];
@@ -282,8 +277,8 @@ class PatternHelper {
 
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < m; j++) {
-        if (checkedPattern[i][j] === false && pattern[i][j] === emptyValue) {
-          let area = PatternHelper.floodFill(pattern, i, j, emptyValue, checkedPattern);
+        if (checkedPattern[i][j] === false && pattern[i][j] === 0) {
+          let area = PatternHelper.floodFill(pattern, i, j, checkedPattern);
           openAreas.push(area);
         }
       }
@@ -298,7 +293,7 @@ class PatternHelper {
   // leave only biggest one on arg: pattern
   // returns list of open area cells
   public static removeSmallOpenAreas(pattern: number[][]): {x: number, y:number}[] {
-    let openAreas = PatternHelper.findOpenAreas(pattern, CELL_TYPE.ROAD);
+    let openAreas = PatternHelper.findOpenAreas(pattern);
 
     if (openAreas.length === 0) {
       return null;
@@ -311,7 +306,7 @@ class PatternHelper {
         .slice(1)
         .forEach((cells) => {
           cells.forEach((pos) => {
-            pattern[pos.x][pos.y] = CELL_TYPE.WALL;
+            pattern[pos.x][pos.y] = 1;
           });
         });
     }

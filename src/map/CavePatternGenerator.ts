@@ -31,7 +31,7 @@ class CavePatternGenerator {
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < m; j++) {
 
-        neighbourCount = PatternHelper.countNotEmptyNeighbours(pattern, i, j, CELL_TYPE.ROAD);
+        neighbourCount = PatternHelper.countNotEmptyNeighbours(pattern, i, j);
 
         if(pattern[i][j] === CELL_TYPE.WALL) {
           if(neighbourCount < deathLimit) {

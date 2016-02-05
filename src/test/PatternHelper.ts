@@ -289,7 +289,7 @@ describe("PatternHelper", function() {
 
   it("generate start points", function() {
     PatternHelper.removeSmallOpenAreas(pattern);
-    let positions = PatternHelper.collectFreeAroundPositions(pattern, 0);
+    let positions = PatternHelper.collectFreeAroundPositions(pattern);
     assert.deepEqual(positions, START_POINTS);
   });
 
