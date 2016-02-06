@@ -58,11 +58,17 @@ interface Bypass {
 // export = Interface;
 
 
+//
+// globals
+//
+
+declare var Stats: any;
 declare var Random: any;
 
 //
 // unit tests
 //
+
 declare var describe: Function;
 declare var it: Function;
 declare var beforeEach: Function;
