@@ -49,10 +49,11 @@ console.info(Date.now() - t);
 t = Date.now();
 let positions = PatternHelper.collectFreeAroundPositions(pattern);
 console.info(Date.now() - t);
-//
-// positions.forEach(p => {
-//   pattern[p.x][p.y] = Math.round(p.distance) + 3;
-// });
+
+
+positions.forEach(p => {
+  pattern[p.x][p.y] = 10;
+});
 
 // console.log(positions[0].distance, positions.length);
 // let tm = PatternHelper.stringify(pattern)
@@ -126,7 +127,7 @@ groundOriginal.material = groundMat;
 
 for (let i = 0; i < n; i++) {
   for (let j = 0; j < m; j++) {
-    let clone = (pattern[i][j] ? wallOriginal : groundOriginal).createInstance(`cell${i}:${j}`);
+    let clone = (pattern[i][j] === 1 ? wallOriginal : groundOriginal).createInstance(`cell${i}:${j}`);
     clone.position.x = i;
     clone.position.z = j;
   }
@@ -150,6 +151,7 @@ positions.slice(1).forEach(p => {
   clone.position.x = p.x;
   clone.position.z = p.y;
   let size =p.distance / biggestAppleSize;
+  console.log(clone);
   // clone.scaling = new V3(size, size, size);
 });
 
@@ -264,16 +266,16 @@ function shiftAgent() {
     // used switch to use integers
     switch(rotation.y) {
       case ANGLE_RIGHT:
-        aCellPos.x = aCellPos.x + 1;
+        aCellPos.x++;
         break;
       case ANGLE_BOTTOM:
-        aCellPos.y = aCellPos.y - 1;
+        aCellPos.y--;
         break;
       case ANGLE_LEFT:
-        aCellPos.x = aCellPos.x - 1;
+        aCellPos.x--;
         break;
       case ANGLE_TOP:
-        aCellPos.y = aCellPos.y + 1;
+        aCellPos.y++;
         break;
     }
 
@@ -322,8 +324,42 @@ function shiftAgent() {
     }
 
     //
-    // TODO: check collision
+    // check collision
+    //
+
+    let nextCell = aCellPos.clone();
+    switch(rotation.y) {
+      case ANGLE_RIGHT:
+        nextCell.x++;
+        break;
+      case ANGLE_BOTTOM:
+        nextCell.y--;
+        break;
+      case ANGLE_LEFT:
+        nextCell.x--;
+        break;
+      case ANGLE_TOP:
+        nextCell.y++;
+        break;
+    }
+    let cellObjectType = pattern[nextCell.x][nextCell.y];
+    if (cellObjectType === 1) {
+      console.log('collision on', nextCell);
+    } else if (cellObjectType === 10) {
+      // eat the apple
+      let apple = scene.getMeshByName(`apple${nextCell.x}:${nextCell.y}`);
+
+      if (!apple) {
+        throw('awnf');
+      }
+
+      // remove the apple
+      pattern[nextCell.x][nextCell.y] = 0;
+      scene.removeMesh(apple);
+    }
+
     // calculate future cell
+
     // check availability on pattern
 
     //
