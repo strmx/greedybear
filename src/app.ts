@@ -89,15 +89,6 @@ stats.domElement.style.cssText='position:fixed;left:0;top:0;z-index:10000';
 document.body.appendChild(stats.domElement);
 
 
-engine.runRenderLoop(() => {
-  stats.begin();
-  // let sec = engine.getDeltaTime() / 1000;
-  scene.render();
-
-  stats.end();
-});
-
-
 // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
 var light = new BABYLON.HemisphericLight("light1", new V3(0, 10, 0), scene);
 // var light = new BABYLON.DirectionalLight("Dir0", new V3(0, -1, 0), scene);
@@ -199,38 +190,27 @@ scene.activeCamera = agentCamera;
 let ____CONTROLLS____;
 
 let speed = 1;
-let speedV2 = new V2(speed, speed);
-let speedV3 = new V3(speed, speed, speed);
 let directionV2 = new V2(1, 0);
-let directionV3 = new V3(1, 0, 0);
 let rotation = agentOrigin.rotation;
-let aPos: BABYLON.Vector2 = new V2(agentOrigin.position.x, agentOrigin.position.z);
-let aCellPos: BABYLON.Vector2 = aPos.clone();
+let distanceFromCell: number = 0;
+let aCellPos: BABYLON.Vector2 = new V2(agentOrigin.position.x, agentOrigin.position.z);
 let lastPressedNavigationKey = null;
 
 function rotateToLeft() {
-  directionV3 = new V3(-1, 0, 0);
   directionV2 = new V2(-1, 0);
   rotation.y = ANGLE_LEFT;
-  console.log(rotation.y, directionV3);
 }
 function rotateToBottom() {
-  directionV3 = new V3(0, 0, -1);
   directionV2 = new V2(0, -1);
   rotation.y = ANGLE_BOTTOM;
-  console.log(rotation.y, directionV3);
 }
 function rotateToRight() {
-  directionV3 = new V3(1, 0, 0);
   directionV2 = new V2(1, 0);
   rotation.y = ANGLE_RIGHT;
-  console.log(rotation.y, directionV3);
 }
 function rotateToTop() {
-  directionV3 = new V3(0, 0, 1);
   directionV2 = new V2(0, 1);
   rotation.y = ANGLE_TOP;
-  console.log(rotation.y, directionV3);
 }
 
 KeyboardInput.getObservable.forEach(key => {
@@ -244,53 +224,65 @@ KeyboardInput.getObservable.forEach(key => {
       break;
     // speed (TODO: remove for production)
     case enums.KEYS.UP:
-      speedV3.addInPlace(new V3(.5, .5, .5));
+      speed += 1;
       break;
     case enums.KEYS.DOWN:
-      speedV3.subtractInPlace(new V3(.5, .5, .5));
+      speed -= 1;
       break;
     default:
   }
 });
 
-function shiftAgent(tickDistance: number) {
-  let shift = new V2(tickDistance, tickDistance).multiply(directionV2);
-  let nextPos = aPos.add(shift);
-  let cellDiff = nextPos.subtract(aCellPos);
-  let fromPrevCellDistance = cellDiff.length();
+function shiftAgent() {
+  if (distanceFromCell < 1) {
+    let nextPos = aCellPos.clone();
 
-  if (fromPrevCellDistance < 1) {
-    aPos = nextPos;
+    switch(rotation.y) {
+      case ANGLE_RIGHT:
+        nextPos.x = aCellPos.x + distanceFromCell;
+        break;
+      case ANGLE_BOTTOM:
+        nextPos.y = aCellPos.y - distanceFromCell;
+        break;
+      case ANGLE_LEFT:
+        nextPos.x = aCellPos.x - distanceFromCell;
+        break;
+      case ANGLE_TOP:
+        nextPos.y = aCellPos.y + distanceFromCell;
+        break;
+    }
+
     agentOrigin.position.x = nextPos.x;
     agentOrigin.position.z = nextPos.y;
+
   } else {
+
     //
-    // 1. move to next cell
+    // 1. move 1 cell to the direction
     //
-    let beforeNextCellDistance = 1 - aPos.subtract(aCellPos).length();
+
     // used switch to use integers
     switch(rotation.y) {
       case ANGLE_RIGHT:
-        nextPos.x = aCellPos.x + 1;
+        aCellPos.x = aCellPos.x + 1;
         break;
       case ANGLE_BOTTOM:
-        nextPos.y = aCellPos.y - 1;
+        aCellPos.y = aCellPos.y - 1;
         break;
       case ANGLE_LEFT:
-        nextPos.x = aCellPos.x - 1;
+        aCellPos.x = aCellPos.x - 1;
         break;
       case ANGLE_TOP:
-        nextPos.y = aCellPos.y + 1;
+        aCellPos.y = aCellPos.y + 1;
         break;
     }
-    aCellPos.x = nextPos.x;
-    aCellPos.y = nextPos.y;
+
+    distanceFromCell -= 1;
 
     //
     // apply navigation change (afte keypress)
     //
     if (lastPressedNavigationKey !== null) {
-      console.log('apply ', lastPressedNavigationKey);
       switch (lastPressedNavigationKey) {
         case enums.KEYS.LEFT:
           switch(rotation.y) {
@@ -337,16 +329,20 @@ function shiftAgent(tickDistance: number) {
     //
     // move further
     //
-    let remainDistance = fromPrevCellDistance - 1;
-    shiftAgent(remainDistance);
+    shiftAgent();
   }
 }
 
-
 engine.runRenderLoop(() => {
-  let sec = engine.getDeltaTime() / 1000;
-  let distance = sec * speed;
-  shiftAgent(distance);
+  stats.begin();
+
+  let delta = engine.getDeltaTime();
+  let distance = (delta * speed) / 1000;
+  distanceFromCell += distance;
+  shiftAgent();
+
+  scene.render();
+  stats.end();
 });
 
 
