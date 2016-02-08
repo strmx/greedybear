@@ -12,6 +12,26 @@ const ANGLE_BOTTOM = 1.5707963267948966;
 const ANGLE_LEFT = 3.141592653589793;
 const ANGLE_TOP = -1.5707963267948966;
 
+// TODO: update all angle with directions (to avoid switches)
+enum Directions {
+  NORD=1,
+  EAST,
+  SOUTH,
+  WEST
+};
+
+const DIRECTION_ANGLES = [];
+DIRECTION_ANGLES[Directions.NORD] = ANGLE_TOP;
+DIRECTION_ANGLES[Directions.EAST] = ANGLE_RIGHT;
+DIRECTION_ANGLES[Directions.SOUTH] = ANGLE_BOTTOM;
+DIRECTION_ANGLES[Directions.WEST] = ANGLE_LEFT;
+
+const DIRECTION_MULTIPLIERS = [];
+DIRECTION_MULTIPLIERS[Directions.NORD] =  { x: 1, y: 0 };
+DIRECTION_MULTIPLIERS[Directions.EAST] =  { x: 0, y:-1 };
+DIRECTION_MULTIPLIERS[Directions.SOUTH] = { x:-1, y: 0 };
+DIRECTION_MULTIPLIERS[Directions.WEST] =  { x: 0, y: 1 };
+
 //////////////////////
 // MAP GENERATION
 ////////////////////
@@ -150,8 +170,7 @@ positions.slice(1).forEach(p => {
   let clone = appleOrigin.createInstance(`apple${p.x}:${p.y}`);
   clone.position.x = p.x;
   clone.position.z = p.y;
-  let size =p.distance / biggestAppleSize;
-  console.log(clone);
+  let size = p.distance / biggestAppleSize;
   // clone.scaling = new V3(size, size, size);
 });
 
@@ -198,6 +217,23 @@ let distanceFromCell: number = 0;
 let aCellPos: BABYLON.Vector2 = new V2(agentOrigin.position.x, agentOrigin.position.z);
 let lastPressedNavigationKey = null;
 
+// body
+interface Path {
+  x: number;
+  y: number;
+  rotation: number;
+}
+let agentPath: Path[] = [];
+// TODO: rename into party
+let partyMembers: BABYLON.AbstractMesh[] = [];
+
+// add current agent position
+agentPath.push({
+  x: aCellPos.x,
+  y: aCellPos.y,
+  rotation: rotation.y,
+});
+
 function rotateToLeft() {
   directionV2 = new V2(-1, 0);
   rotation.y = ANGLE_LEFT;
@@ -237,6 +273,11 @@ KeyboardInput.getObservable.forEach(key => {
 
 function shiftAgent() {
   if (distanceFromCell < 1) {
+
+    //
+    // update agent mesh position
+    //
+
     let nextPos = aCellPos.clone();
 
     switch(rotation.y) {
@@ -256,6 +297,42 @@ function shiftAgent() {
 
     agentOrigin.position.x = nextPos.x;
     agentOrigin.position.z = nextPos.y;
+
+    //
+    // update party mesh position
+    //
+
+    //
+    // update party
+    //
+    for (let i = 0, l = partyMembers.length, pathLength = agentPath.length; i < l; i++) {
+      // prev as agent.current cell
+      let pathCell = agentPath[pathLength - 1 - (i + 1)];
+      let member = partyMembers[i];
+
+      // update direction
+      member.rotation.y = pathCell.rotation;
+
+      // update position on pg
+      switch (pathCell.rotation) {
+        case ANGLE_RIGHT:
+          member.position.x = pathCell.x + distanceFromCell;
+          member.position.z = pathCell.y;
+          break;
+        case ANGLE_BOTTOM:
+          member.position.x = pathCell.x;
+          member.position.z = pathCell.y - distanceFromCell;
+          break;
+        case ANGLE_LEFT:
+          member.position.x = pathCell.x - distanceFromCell;
+          member.position.z = pathCell.y;
+          break;
+        case ANGLE_TOP:
+          member.position.x = pathCell.x;
+          member.position.z = pathCell.y + distanceFromCell;
+          break;
+      }
+    }
 
   } else {
 
@@ -323,6 +400,13 @@ function shiftAgent() {
         lastPressedNavigationKey = null;
     }
 
+    // update agent path
+    agentPath.push({
+      x: aCellPos.x,
+      y: aCellPos.y,
+      rotation: rotation.y,
+    });
+
     //
     // check collision
     //
@@ -348,19 +432,24 @@ function shiftAgent() {
     } else if (cellObjectType === 10) {
       // eat the apple
       let apple = scene.getMeshByName(`apple${nextCell.x}:${nextCell.y}`);
-
       if (!apple) {
         throw('awnf');
       }
 
-      // remove the apple
+      // remove the apple from pg
       pattern[nextCell.x][nextCell.y] = 0;
-      scene.removeMesh(apple);
+      // scene.removeMesh(apple);
+
+      // add body part
+      let memberMesh = apple;
+      memberMesh.name = 'team-member-' + partyMembers.length;
+      // scene.addMesh(memberMesh);
+      partyMembers.push(memberMesh);
     }
 
-    // calculate future cell
+    // calculate future cell ???
 
-    // check availability on pattern
+    // check availability on pattern ???
 
     //
     // move further
