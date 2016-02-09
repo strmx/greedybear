@@ -12,31 +12,10 @@ const ANGLE_BOTTOM = 1.5707963267948966;
 const ANGLE_LEFT = 3.141592653589793;
 const ANGLE_TOP = -1.5707963267948966;
 
-// TODO: update all angle with directions (to avoid switches)
-enum Directions {
-  NORD=1,
-  EAST,
-  SOUTH,
-  WEST
-};
-
-const DIRECTION_ANGLES = [];
-DIRECTION_ANGLES[Directions.NORD] = ANGLE_TOP;
-DIRECTION_ANGLES[Directions.EAST] = ANGLE_RIGHT;
-DIRECTION_ANGLES[Directions.SOUTH] = ANGLE_BOTTOM;
-DIRECTION_ANGLES[Directions.WEST] = ANGLE_LEFT;
-
-const DIRECTION_MULTIPLIERS = [];
-DIRECTION_MULTIPLIERS[Directions.NORD] =  { x: 1, y: 0 };
-DIRECTION_MULTIPLIERS[Directions.EAST] =  { x: 0, y:-1 };
-DIRECTION_MULTIPLIERS[Directions.SOUTH] = { x:-1, y: 0 };
-DIRECTION_MULTIPLIERS[Directions.WEST] =  { x: 0, y: 1 };
-
 //////////////////////
 // MAP GENERATION
 ////////////////////
 let ____PATTERN____;
-
 
 import Randomizer = require('./utils/Randomizer');
 import CavePatternGenerator = require('./map/CavePatternGenerator');
@@ -92,7 +71,6 @@ positions.forEach(p => {
 //////////////////////
 // RENDER
 ////////////////////
-
 let ____RENDER____;
 
 
@@ -100,7 +78,14 @@ let canvas = new CanvasElement(document.body);
 canvas.resize();
 
 let engine: BABYLON.Engine = new BABYLON.Engine(canvas.element, true, {}, true);
-var scene = new BABYLON.Scene(engine);
+let scene = new BABYLON.Scene(engine);
+// show debug information
+(<any>window).dm = () => {
+  if (scene.debugLayer.isVisible())
+    scene.debugLayer.hide();
+  else
+    scene.debugLayer.show();
+};
 
 // engine.resize();
 
@@ -188,6 +173,8 @@ let agentPos = positions[0];
 agentOrigin.position.x = agentPos.x;
 agentOrigin.position.z = agentPos.y;
 
+let scores = 0;
+
 //
 // agent camera
 //
@@ -211,8 +198,7 @@ scene.activeCamera = agentCamera;
 let ____CONTROLLS____;
 
 let speed = 1;
-let directionV2 = new V2(1, 0);
-let rotation = agentOrigin.rotation;
+let rotation = agentOrigin.rotation.y;
 let distanceFromCell: number = 0;
 let aCellPos: BABYLON.Vector2 = new V2(agentOrigin.position.x, agentOrigin.position.z);
 let lastPressedNavigationKey = null;
@@ -231,25 +217,8 @@ let partyMembers: BABYLON.AbstractMesh[] = [];
 agentPath.push({
   x: aCellPos.x,
   y: aCellPos.y,
-  rotation: rotation.y,
+  rotation: rotation,
 });
-
-function rotateToLeft() {
-  directionV2 = new V2(-1, 0);
-  rotation.y = ANGLE_LEFT;
-}
-function rotateToBottom() {
-  directionV2 = new V2(0, -1);
-  rotation.y = ANGLE_BOTTOM;
-}
-function rotateToRight() {
-  directionV2 = new V2(1, 0);
-  rotation.y = ANGLE_RIGHT;
-}
-function rotateToTop() {
-  directionV2 = new V2(0, 1);
-  rotation.y = ANGLE_TOP;
-}
 
 KeyboardInput.getObservable.forEach(key => {
   switch (key) {
@@ -280,58 +249,44 @@ function shiftAgent() {
 
     let nextPos = aCellPos.clone();
 
-    switch(rotation.y) {
-      case ANGLE_RIGHT:
-        nextPos.x = aCellPos.x + distanceFromCell;
-        break;
-      case ANGLE_BOTTOM:
-        nextPos.y = aCellPos.y - distanceFromCell;
-        break;
-      case ANGLE_LEFT:
-        nextPos.x = aCellPos.x - distanceFromCell;
-        break;
-      case ANGLE_TOP:
-        nextPos.y = aCellPos.y + distanceFromCell;
-        break;
-    }
+    if (rotation === ANGLE_RIGHT)       nextPos.x = aCellPos.x + distanceFromCell;
+    else if (rotation === ANGLE_BOTTOM) nextPos.y = aCellPos.y - distanceFromCell;
+    else if (rotation === ANGLE_LEFT)   nextPos.x = aCellPos.x - distanceFromCell;
+    else if (rotation === ANGLE_TOP)    nextPos.y = aCellPos.y + distanceFromCell;
+    else debugger;
 
     agentOrigin.position.x = nextPos.x;
     agentOrigin.position.z = nextPos.y;
+    agentOrigin.rotation.y = rotation;
 
     //
     // update party mesh position
     //
 
-    //
-    // update party
-    //
     for (let i = 0, l = partyMembers.length, pathLength = agentPath.length; i < l; i++) {
       // prev as agent.current cell
       let pathCell = agentPath[pathLength - 1 - (i + 1)];
       let member = partyMembers[i];
+      let pathRotation = pathCell.rotation;
 
-      // update direction
-      member.rotation.y = pathCell.rotation;
-
-      // update position on pg
-      switch (pathCell.rotation) {
-        case ANGLE_RIGHT:
-          member.position.x = pathCell.x + distanceFromCell;
-          member.position.z = pathCell.y;
-          break;
-        case ANGLE_BOTTOM:
-          member.position.x = pathCell.x;
-          member.position.z = pathCell.y - distanceFromCell;
-          break;
-        case ANGLE_LEFT:
-          member.position.x = pathCell.x - distanceFromCell;
-          member.position.z = pathCell.y;
-          break;
-        case ANGLE_TOP:
-          member.position.x = pathCell.x;
-          member.position.z = pathCell.y + distanceFromCell;
-          break;
-      }
+      // update direction and position on pg
+      if (pathRotation === ANGLE_RIGHT) {
+        member.position.x = pathCell.x + distanceFromCell;
+        member.position.z = pathCell.y;
+        member.rotation.y = pathRotation;
+      } else if (pathRotation === ANGLE_BOTTOM) {
+        member.position.x = pathCell.x;
+        member.position.z = pathCell.y - distanceFromCell;
+        member.rotation.y = pathRotation;
+      } else if (pathRotation === ANGLE_LEFT) {
+        member.position.x = pathCell.x - distanceFromCell;
+        member.position.z = pathCell.y;
+        member.rotation.y = pathRotation;
+      } else if (pathRotation === ANGLE_TOP) {
+        member.position.x = pathCell.x;
+        member.position.z = pathCell.y + distanceFromCell;
+        member.rotation.y = pathRotation;
+      } else debugger;
     }
 
   } else {
@@ -341,20 +296,11 @@ function shiftAgent() {
     //
 
     // used switch to use integers
-    switch(rotation.y) {
-      case ANGLE_RIGHT:
-        aCellPos.x++;
-        break;
-      case ANGLE_BOTTOM:
-        aCellPos.y--;
-        break;
-      case ANGLE_LEFT:
-        aCellPos.x--;
-        break;
-      case ANGLE_TOP:
-        aCellPos.y++;
-        break;
-    }
+    if (rotation === ANGLE_RIGHT)       aCellPos.x++;
+    else if (rotation === ANGLE_BOTTOM) aCellPos.y--;
+    else if (rotation === ANGLE_LEFT)   aCellPos.x--;
+    else if (rotation === ANGLE_TOP)    aCellPos.y++;
+    else debugger;
 
     distanceFromCell -= 1;
 
@@ -364,47 +310,28 @@ function shiftAgent() {
     if (lastPressedNavigationKey !== null) {
       switch (lastPressedNavigationKey) {
         case enums.KEYS.LEFT:
-          switch(rotation.y) {
-            case ANGLE_RIGHT:
-              rotateToTop();
-              break;
-            case ANGLE_BOTTOM:
-              rotateToRight();
-              break;
-            case ANGLE_LEFT:
-              rotateToBottom();
-              break;
-            case ANGLE_TOP:
-              rotateToLeft();
-              break;
-          }
+          if (rotation === ANGLE_RIGHT)       rotation = ANGLE_TOP;
+          else if (rotation === ANGLE_BOTTOM) rotation = ANGLE_RIGHT;
+          else if (rotation === ANGLE_LEFT)   rotation = ANGLE_BOTTOM;
+          else if (rotation === ANGLE_TOP)    rotation = ANGLE_LEFT;
+          else debugger;
           break;
         case enums.KEYS.RIGHT:
-          switch(rotation.y) {
-            case ANGLE_RIGHT:
-              rotateToBottom();
-              break;
-            case ANGLE_BOTTOM:
-              rotateToLeft();
-              break;
-            case ANGLE_LEFT:
-              rotateToTop();
-              break;
-            case ANGLE_TOP:
-              rotateToRight();
-              break;
-          }
+          if (rotation === ANGLE_RIGHT)       rotation = ANGLE_BOTTOM;
+          else if (rotation === ANGLE_BOTTOM) rotation = ANGLE_LEFT;
+          else if (rotation === ANGLE_LEFT)   rotation = ANGLE_TOP;
+          else if (rotation === ANGLE_TOP)    rotation = ANGLE_RIGHT;
+          else debugger;
           break;
       }
-
-        lastPressedNavigationKey = null;
+      lastPressedNavigationKey = null;
     }
 
     // update agent path
     agentPath.push({
       x: aCellPos.x,
       y: aCellPos.y,
-      rotation: rotation.y,
+      rotation: rotation,
     });
 
     //
@@ -412,20 +339,12 @@ function shiftAgent() {
     //
 
     let nextCell = aCellPos.clone();
-    switch(rotation.y) {
-      case ANGLE_RIGHT:
-        nextCell.x++;
-        break;
-      case ANGLE_BOTTOM:
-        nextCell.y--;
-        break;
-      case ANGLE_LEFT:
-        nextCell.x--;
-        break;
-      case ANGLE_TOP:
-        nextCell.y++;
-        break;
-    }
+    if (rotation === ANGLE_RIGHT)       nextCell.x++;
+    else if (rotation === ANGLE_BOTTOM) nextCell.y--;
+    else if (rotation === ANGLE_LEFT)   nextCell.x--;
+    else if (rotation === ANGLE_TOP)    nextCell.y++;
+    else debugger;
+
     let cellObjectType = pattern[nextCell.x][nextCell.y];
     if (cellObjectType === 1) {
       console.log('collision on', nextCell);
@@ -433,8 +352,10 @@ function shiftAgent() {
       // eat the apple
       let apple = scene.getMeshByName(`apple${nextCell.x}:${nextCell.y}`);
       if (!apple) {
-        throw('awnf');
+        debugger;
       }
+
+      scores++;
 
       // remove the apple from pg
       pattern[nextCell.x][nextCell.y] = 0;
@@ -442,14 +363,11 @@ function shiftAgent() {
 
       // add body part
       let memberMesh = apple;
+      memberMesh.scaling.multiplyInPlace(new V3(.75, .75, .75));
       memberMesh.name = 'team-member-' + partyMembers.length;
       // scene.addMesh(memberMesh);
       partyMembers.push(memberMesh);
     }
-
-    // calculate future cell ???
-
-    // check availability on pattern ???
 
     //
     // move further
@@ -469,7 +387,6 @@ engine.runRenderLoop(() => {
   scene.render();
   stats.end();
 });
-
 
 
 // this.world.observable.subscribe(
