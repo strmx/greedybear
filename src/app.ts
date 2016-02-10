@@ -22,13 +22,14 @@ import CavePatternGenerator = require('./map/CavePatternGenerator');
 import PatternHelper = require('./map/PatternHelper');
 
 let t = Date.now();
+let pseudoRealRandomizer = Randomizer.generateNextRealFunction(13); //Math.random,
 
 let generatorOptions = {
   n: 100,
   m: 100,
   wallChance: .4,
   stepCount: 2,
-  nextReal: Randomizer.generateNextRealFunction(13), //Math.random,
+  nextReal: pseudoRealRandomizer,
   birthLimit: 4,
   deathLimit: 3,
 };
@@ -106,6 +107,24 @@ light.intensity = 0.7;
 
 
 
+
+/////////////////////////
+// skybox
+///////////////////////
+let ____SKYBOX____;
+
+let skybox = BABYLON.Mesh.CreateBox("skyBox", 500.0, scene);
+let skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
+skyboxMaterial.backFaceCulling = false;
+skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay", scene);
+// skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("textures/skybox", scene);
+skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+skyboxMaterial.disableLighting = true;
+skybox.material = skyboxMaterial;
+
+
 /////////////////////////
 // add game  elements
 ///////////////////////
@@ -126,9 +145,15 @@ let wallOriginal = BABYLON.Mesh.CreateBox("wallOriginal", 1, scene, false, BABYL
 wallOriginal.position.y = .5;
 wallOriginal.rotation.x = Math.PI / 2;
 wallOriginal.material = wallMat;
+
+var boxMaterial = new BABYLON.StandardMaterial("boxMaterail", scene);
+boxMaterial.diffuseTexture = new BABYLON.Texture("textures/grass.jpg", scene);
+boxMaterial.specularColor = BABYLON.Color3.Black();
+boxMaterial.emissiveColor = BABYLON.Color3.White();
+
 let groundOriginal = BABYLON.Mesh.CreatePlane("groundOriginal", 1, scene, false, BABYLON.Mesh.FRONTSIDE);
 groundOriginal.rotation.x = Math.PI / 2;
-groundOriginal.material = groundMat;
+groundOriginal.material = boxMaterial;
 
 for (let i = 0; i < n; i++) {
   for (let j = 0; j < m; j++) {
@@ -143,16 +168,112 @@ for (let i = 0; i < n; i++) {
 //
 let ____APPLES____;
 
-// Our built-in 'sphere' shape. Params: name, subdivs, size, scene
-var appleOrigin = BABYLON.Mesh.CreateSphere("appleOrigin", 8, 1, scene, false, BABYLON.Mesh.FRONTSIDE);
-appleOrigin.position.y = .5;
+//
+// apple materials
+//
+
+
 let appleMat = new BABYLON.StandardMaterial('appleMat', scene);
 appleMat.diffuseColor = BABYLON.Color3.Red();
-appleOrigin.material = appleMat;
+
+// reflaction mat
+// Sphere1 material
+var appleMat0 = new BABYLON.StandardMaterial("kosh", scene);
+appleMat0.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay", scene);
+appleMat0.diffuseColor = new BABYLON.Color3(0, 0, 0);
+appleMat0.specularPower = 128;
+appleMat0.reflectionFresnelParameters = new BABYLON.FresnelParameters();
+appleMat0.reflectionFresnelParameters.power = 2;
+appleMat0.reflectionFresnelParameters.leftColor = BABYLON.Color3.Black();
+appleMat0.reflectionFresnelParameters.rightColor = BABYLON.Color3.White();
+
+
+// Sphere 1 material
+var appleMat1 = new BABYLON.StandardMaterial("kosh", scene);
+appleMat1 = new BABYLON.StandardMaterial("kosh2", scene);
+appleMat1.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay", scene);
+appleMat1.diffuseColor = new BABYLON.Color3(0, 0, 0);
+appleMat1.emissiveColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+appleMat1.specularPower = 32;
+
+// Fresnel
+appleMat1.reflectionFresnelParameters = new BABYLON.FresnelParameters();
+appleMat1.reflectionFresnelParameters.bias = 0.1;
+
+appleMat1.emissiveFresnelParameters = new BABYLON.FresnelParameters();
+appleMat1.emissiveFresnelParameters.bias = 0.5;
+appleMat1.emissiveFresnelParameters.power = 4;
+appleMat1.emissiveFresnelParameters.leftColor = BABYLON.Color3.White();
+appleMat1.emissiveFresnelParameters.rightColor = BABYLON.Color3.Black();
+
+// Sphere3 material
+var appleMat2 = new BABYLON.StandardMaterial("kosh3", scene);
+appleMat2.diffuseColor = new BABYLON.Color3(0, 0, 0);
+appleMat2.emissiveColor = BABYLON.Color3.White();
+appleMat2.specularPower = 64;
+appleMat2.alpha = 0.2;
+
+// Fresnel
+appleMat2.emissiveFresnelParameters = new BABYLON.FresnelParameters();
+appleMat2.emissiveFresnelParameters.bias = 0.2;
+appleMat2.emissiveFresnelParameters.leftColor = BABYLON.Color3.White();
+appleMat2.emissiveFresnelParameters.rightColor = BABYLON.Color3.Black();
+
+appleMat2.opacityFresnelParameters = new BABYLON.FresnelParameters();
+appleMat2.opacityFresnelParameters.power = 4;
+appleMat2.opacityFresnelParameters.leftColor = BABYLON.Color3.White();
+appleMat2.opacityFresnelParameters.rightColor = BABYLON.Color3.Black();
+
+// Sphere4 material
+var appleMat3 = new BABYLON.StandardMaterial("kosh4", scene);
+appleMat3.diffuseColor = new BABYLON.Color3(0, 0, 0);
+appleMat3.emissiveColor = BABYLON.Color3.White();
+appleMat3.specularPower = 64;
+
+// Fresnel
+appleMat3.emissiveFresnelParameters = new BABYLON.FresnelParameters();
+appleMat3.emissiveFresnelParameters.power = 4;
+appleMat3.emissiveFresnelParameters.bias = 0.5;
+appleMat3.emissiveFresnelParameters.leftColor = BABYLON.Color3.White();
+appleMat3.emissiveFresnelParameters.rightColor = BABYLON.Color3.Black();
+
+// Sphere5 material
+var appleMat4 = new BABYLON.StandardMaterial("kosh5", scene);
+appleMat4.diffuseColor = new BABYLON.Color3(0, 0, 0);
+appleMat4.reflectionTexture = new BABYLON.CubeTexture("textures/TropicalSunnyDay", scene);
+appleMat4.reflectionTexture.level = 0.5;
+appleMat4.specularPower = 64;
+appleMat4.emissiveColor = new BABYLON.Color3(0.2, 0.2, 0.2);
+
+// Fresnel
+appleMat4.emissiveFresnelParameters = new BABYLON.FresnelParameters();
+appleMat4.emissiveFresnelParameters.bias = 0.4;
+appleMat4.emissiveFresnelParameters.power = 2;
+appleMat4.emissiveFresnelParameters.leftColor = BABYLON.Color3.Black();
+appleMat4.emissiveFresnelParameters.rightColor = BABYLON.Color3.White();
+
+let appleMaterials = [
+  appleMat,
+  appleMat0,
+  appleMat1,
+  appleMat2,
+  appleMat3,
+  appleMat4
+];
+
+// apples
+
+var appleOrigins = appleMaterials.map(mat => {
+  var appleOrigin = BABYLON.Mesh.CreateSphere("appleOrigin", 6, 1, scene, false, BABYLON.Mesh.FRONTSIDE);
+  appleOrigin.position.y = .5;
+  appleOrigin.material = mat;
+  return appleOrigin;
+});
 
 let biggestAppleSize = (positions[1] && positions[1].distance) || 1;
 positions.slice(1).forEach(p => {
-  let clone = appleOrigin.createInstance(`apple${p.x}:${p.y}`);
+  let origin = appleOrigins[Math.floor(pseudoRealRandomizer() * 4)];
+  let clone = origin.createInstance(`apple${p.x}:${p.y}`);
   clone.position.x = p.x;
   clone.position.z = p.y;
   let size = p.distance / biggestAppleSize;
@@ -406,13 +527,24 @@ engine.runRenderLoop(() => {
 let ____ALLCAMERA____;
 
 // var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-var freeCamera = new BABYLON.FreeCamera("freeCamera", new V3(n/2, Math.min(n, m), m/2), scene);
+var freeCamera = new BABYLON.FreeCamera("freeCamera", new V3(n/2, Math.min(n, m) / 2, m/2), scene);
 freeCamera.setTarget(new V3(n/2, 0, m/2));
 freeCamera.attachControl(canvas.element, true);
 
 canvas.element.onclick = (e) => {
   scene.activeCamera = scene.activeCamera !== agentCamera ? agentCamera : freeCamera;
 }
+
+
+// var hdr = new BABYLON.HDRRenderingPipeline("hdr", scene, 1.0, null, [freeCamera, agentCamera]);
+// hdr.brightThreshold = 1.0;
+// hdr.gaussCoeff = 0.3;
+// hdr.gaussMean = 1.0;
+// hdr.gaussStandDev = 6.0;
+// hdr.minimumLuminance = 0.5;
+// hdr.luminanceDecreaseRate = 0.5;
+// hdr.luminanceIncreaserate = 0.5;
+// hdr.exposure = 1.0;
 
 
 // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
