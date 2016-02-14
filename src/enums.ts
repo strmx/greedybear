@@ -1,10 +1,11 @@
 
 enum KEYS {
-  LEFT,
+  LEFT = 1,
   UP,
   RIGHT,
   DOWN,
   A,
+  C,
   Z,
 }
 

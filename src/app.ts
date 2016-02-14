@@ -357,6 +357,9 @@ KeyboardInput.getObservable.forEach(key => {
     case enums.KEYS.DOWN:
       speed -= 1;
       break;
+    case enums.KEYS.C:
+      scene.activeCamera = scene.activeCamera !== agentCamera ? agentCamera : freeCamera;
+      break;
     default:
   }
 });
@@ -563,24 +566,20 @@ scorePlane.parent = agentCamera;
 let ____ALLCAMERA____;
 
 // var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-var freeCamera = new BABYLON.FreeCamera("freeCamera", new V3(n/2, Math.min(n, m) / 2, m/2), scene);
+var freeCamera = new BABYLON.FreeCamera("freeCamera", new V3(n/2, Math.min(n, m), m/2), scene);
 freeCamera.setTarget(new V3(n/2, 0, m/2));
-freeCamera.attachControl(canvas.element, true);
-
-canvas.element.onclick = (e) => {
-  scene.activeCamera = scene.activeCamera !== agentCamera ? agentCamera : freeCamera;
-}
+// freeCamera.attachControl(canvas.element, true);
 
 
-// var hdr = new BABYLON.HDRRenderingPipeline("hdr", scene, 1.0, null, [freeCamera, agentCamera]);
-// hdr.brightThreshold = 1.0;
-// hdr.gaussCoeff = 0.3;
-// hdr.gaussMean = 1.0;
-// hdr.gaussStandDev = 6.0;
-// hdr.minimumLuminance = 0.5;
-// hdr.luminanceDecreaseRate = 0.5;
-// hdr.luminanceIncreaserate = 0.5;
-// hdr.exposure = 1.0;
+var hdr = new BABYLON.HDRRenderingPipeline("hdr", scene, 1.0, null, [freeCamera, agentCamera]);
+hdr.brightThreshold = 1.0;
+hdr.gaussCoeff = 0.3;
+hdr.gaussMean = 1.0;
+hdr.gaussStandDev = 6.0;
+hdr.minimumLuminance = 0.5;
+hdr.luminanceDecreaseRate = 0.5;
+hdr.luminanceIncreaserate = 0.5;
+hdr.exposure = 1.0;
 
 
 // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene

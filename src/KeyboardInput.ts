@@ -12,6 +12,7 @@ class KeyboardInput {
     39: KEYS.RIGHT,
     40: KEYS.DOWN,
     65: KEYS.A,
+    67: KEYS.C,
     90: KEYS.Z,
   }
 
@@ -21,23 +22,27 @@ class KeyboardInput {
 
   static get getObservable() {
     let keydown = Rx.Observable.fromEvent(document, 'keydown');
+    let touchStart = Rx.Observable.fromEvent(document, 'touchstart');
 
-    // // for testing
-    // let subscription = keydown.subscribe(
-    //   x => {
-    //     console.log('Next: keydown!', x);
-    //     },
-    //   err => {
-    //     console.log('Error: %s', err);
-    //   },
-    //   () => {
-    //     console.log('Completed keydown');
-    //   }
-    // );
+    // translate to <-- and -->
+    let touchTranslated = touchStart.map((e: TouchEvent) => {
+      try {
+        let pageX = e.touches[0].pageX;
+        let isLeftSide = pageX < window.innerWidth / 2;
+        return isLeftSide ? KEYS.LEFT : KEYS.RIGHT;
+      } catch (err) {
+        console.log(err);
+        alert('touch translation problem:' + err.message);
+      }
+      return null;
+    });
 
-    return keydown
+    let keyDownTranslated = keydown
       .filter((e:KeyboardEvent) => (KeyboardInput.KEY_MAP[e.keyCode] !== undefined))
       .map((e:KeyboardEvent) => (KeyboardInput.KEY_MAP[e.keyCode]));
+
+    return Rx.Observable.merge(keyDownTranslated, touchTranslated)
+      .filter((key) => (key !== null));
   }
 };
 
