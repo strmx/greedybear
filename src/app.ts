@@ -477,6 +477,7 @@ function shiftAgent() {
       }
 
       scores++;
+      updateScoresText(scores);
 
       // remove the apple from pg
       pattern[nextCell.x][nextCell.y] = 0;
@@ -519,6 +520,41 @@ engine.runRenderLoop(() => {
 //   (err) => {},
 //   () => {}
 // );
+
+
+
+
+function createScoresTextPlane(): BABYLON.Mesh {
+  let plane = BABYLON.Mesh.CreatePlane("ScoresPlane", 1, scene);
+  // let plane = BABYLON.Mesh.CreateBox("ScoresPlane", 10, scene);
+  let mat = new BABYLON.StandardMaterial("ScoresPlaneMat", scene);
+  // mat.diffuseColor = BABYLON.Color3.Red();
+  plane.material = mat;
+
+  let pos = agentOrigin.position;
+  // plane.position = new V3(pos.x - 3, 10, pos.z - 1);
+  plane.position.z = 8;
+  plane.position.y = 2.75;
+
+  var tex = new BABYLON.DynamicTexture("ScoresPlaneTex", 512, scene, true);
+  // outputplane.material.diffuseTexture = outputplaneTexture;
+	// outputplane.material.specularColor = new BABYLON.Color3(0, 0, 0);
+	// outputplane.material.emissiveColor = new BABYLON.Color3(1, 1, 1);
+  mat.diffuseTexture = tex;
+  tex.hasAlpha = true;
+
+  return plane;
+}
+
+function updateScoresText(scores) {
+  let mat = <BABYLON.StandardMaterial>scorePlane.material;
+  let tex = <BABYLON.DynamicTexture>mat.diffuseTexture;
+  tex.getContext().clearRect(0, 0, 512, 512);
+  tex.drawText('' + scores, null, 350, '256px bold Verdana', '#fff', 'transparent');
+}
+
+let scorePlane = createScoresTextPlane();
+scorePlane.parent = agentCamera;
 
 
 //
