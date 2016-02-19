@@ -57,7 +57,7 @@ class Bypass {
 }
 
 class PatternHelper {
-  public static createFilled(n: number, m: number, defautValue: number): number[][] {
+  public static createFilled(n: number, m: number, defautValue: any): any[][] {
     let pattern = [];
     let count = 0;
 

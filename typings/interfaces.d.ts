@@ -26,6 +26,31 @@ interface Bypass {
   points: FreeAroundPoint[];
 }
 
+// interface ThingParams {
+//   id: number
+//   type: number
+//   x0: number
+//   y0: number
+//   x: number
+//   y: number
+//   w: number
+//   h: number
+//   rotation: number
+// }
+
+interface Playground {
+  map: number[][],
+  boundaries: number[][],
+  startPoints: DistancePoint[],
+}
+
+// interface Game {
+//   playground: Playground
+//   things: ThingParams[]
+//   thingMap: ThingParams[][]
+// }
+
+
   //
   // map
   //

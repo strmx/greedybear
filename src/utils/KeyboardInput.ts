@@ -1,8 +1,8 @@
-/// <reference path="../typings/interfaces.d.ts"/>
+/// <reference path="../../typings/interfaces.d.ts"/>
 
-import enums = require('./enums');
+import types = require('../types');
 
-const KEYS = enums.KEYS;
+const KEYS = types.KEYS;
 
 class KeyboardInput {
 

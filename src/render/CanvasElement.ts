@@ -1,4 +1,4 @@
-/// <reference path="../typings/interfaces.d.ts"/>
+/// <reference path="../../typings/interfaces.d.ts"/>
 
 const CSS_STYLES = `
   position: absolute;
