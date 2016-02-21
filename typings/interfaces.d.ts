@@ -38,11 +38,11 @@ interface Bypass {
 //   rotation: number
 // }
 
-interface Playground {
-  map: number[][],
-  boundaries: number[][],
-  startPoints: DistancePoint[],
-}
+// interface Playground {
+//   map: number[][],
+//   boundaries: number[][],
+//   startPoints: DistancePoint[],
+// }
 
 // interface Game {
 //   playground: Playground

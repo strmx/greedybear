@@ -1,6 +1,6 @@
 
 enum KEYS {
-  LEFT = 1,
+  LEFT,
   UP,
   RIGHT,
   DOWN,
@@ -13,7 +13,6 @@ enum ThingType {
   SKY,
   GROUND,
   WALL,
-  APPLE,
   AGENT,
   COMPANION,
 }

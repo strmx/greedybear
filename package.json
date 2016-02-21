@@ -8,6 +8,7 @@
     "typescript": "^1.7.3"
   },
   "devDependencies": {
+    "typedoc": "^0.3.12"
   },
   "scripts": {
     "server": "http-server ./build/",

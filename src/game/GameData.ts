@@ -1,10 +1,11 @@
 /// <reference path="../../typings/Interfaces.d.ts" />
 
 import Thing = require('./Thing');
-import PlaygroundGenerator = require('../map/PlaygroundGenerator');
+import Playground = require('../map/Playground');
 import PatternHelper = require('../map/PatternHelper');
 import types = require('../types');
 
+const V3 = BABYLON.Vector3;
 const ThingType = types.ThingType;
 
 class GameData {
@@ -13,7 +14,7 @@ class GameData {
   thingMap: Thing[][]
 
   constructor() {
-    this.playground = PlaygroundGenerator.generatePlayground();
+    this.playground = new Playground();
 
     //
     // initial things
@@ -34,18 +35,31 @@ class GameData {
       for (let j = 0; j < m; j++) {
         let value: number = map[i][j];
         let type = value === 0 ? ThingType.GROUND : ThingType.WALL;
-        this.things.push(new Thing(type, i, j));
+        if (type === ThingType.GROUND) {
+          let ground = new Thing(type, new V3(i, 0, j));
+          ground.rotation.x = Math.PI / 2;
+          this.things.push(ground);
+        }
+        if (type === ThingType.WALL) {
+          let wall = new Thing(type, new V3(i, .5, j));
+          wall.rotation.x = Math.PI / 2;
+          this.things.push(wall);
+          this.thingMap[i][j] = wall;
+        }
       }
     }
 
     // agent
     let agentPos = this.playground.startPoints[0];
-    this.things.push(new Thing(ThingType.AGENT, agentPos.x, agentPos.y));
+    let agent = new Thing(ThingType.AGENT, new V3(agentPos.x, .5, agentPos.y));
+    this.things.push(agent);
+    agent.rotation.y = 0;
+    this.thingMap[agent.pos0.x][agent.pos0.z] = agent;
 
     // companions
     this.playground.startPoints.slice(1).forEach(pos => {
-      let companion = new Thing(ThingType.COMPANION, pos.x, pos.y);
-      this.thingMap[pos.x][pos.y] = companion;
+      let companion = new Thing(ThingType.COMPANION, new V3(pos.x, .5, pos.y));
+      this.thingMap[companion.pos0.x][companion.pos0.z] = companion;
       this.things.push(companion);
     });
   }

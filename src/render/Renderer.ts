@@ -37,9 +37,6 @@ class Renderer {
     // });
 
 
-
-
-
     this.canvas = new CanvasElement(document.body);
     this.canvas.resize();
 
@@ -100,7 +97,6 @@ class Renderer {
     this.zoomOutCamera = new BABYLON.FreeCamera("zoomOutCamera", new V3(n / 2, Math.min(n, m), m / 2), this.scene);
     this.zoomOutCamera.setTarget(new V3(n/2, 0, m/2));
 
-
     //
     // SCORES
     //
@@ -130,8 +126,8 @@ class Renderer {
   }
 
   showThing(thing: Thing) {
-    let meshName = '' + thing.type;
-    let matName = 'M' + thing.type;
+    let meshName = 'M' + thing.type;
+    let matName = 'm' + thing.type;
     let mesh = this.scene.getMeshByName(meshName);
     let mat = this.scene.getMaterialByName(matName);
 
@@ -142,26 +138,20 @@ class Renderer {
       case ThingType.GROUND:
 
       if (!mat) {
-        // mat = new BABYLON.StandardMaterial(matName, this.scene);
+        mat = new BABYLON.StandardMaterial(matName, this.scene);
         // mat.diffuseColor = BABYLON.Color3.White();
-        (<BABYLON.StandardMaterial>mat).diffuseTexture = new BABYLON.Texture("textures/grass.jpg", this.scene);
+        // (<BABYLON.StandardMaterial>mat).diffuseTexture = new BABYLON.Texture("textures/grass.jpg", this.scene);
         (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.Black();
         (<BABYLON.StandardMaterial>mat).emissiveColor = BABYLON.Color3.White();
       }
 
       if (!mesh) {
         mesh = BABYLON.Mesh.CreatePlane(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
-        mesh.rotation.x = Math.PI / 2;
         mesh.material = mat;
         mesh.isVisible = false;
-
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      mesh.isVisible = true;
-      mesh.position.x = thing.x;
-      mesh.position.z = thing.y;
-
       break;
 
       //
@@ -176,19 +166,12 @@ class Renderer {
       }
 
       if (!mesh) {
-        let mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
-        mesh.position.y = .5;
-        mesh.rotation.x = Math.PI / 2;
+        mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
         mesh.material = mat;
         mesh.isVisible = false;
-
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      mesh.isVisible = true;
-      mesh.position.x = thing.x;
-      mesh.position.z = thing.y;
-
       break;
 
       //
@@ -215,11 +198,6 @@ class Renderer {
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      // TODO: check is it necessary (visibility)?
-      mesh.isVisible = true;
-      mesh.position.x = thing.x;
-      mesh.position.z = thing.y;
-
       break;
 
       //
@@ -240,9 +218,9 @@ class Renderer {
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      mesh.isVisible = true;
-      mesh.position.x = thing.x;
-      mesh.position.z = thing.y;
+
+      // adjust follow camera
+      this.camera.target = mesh;
 
       break;
 
@@ -266,12 +244,18 @@ class Renderer {
         // mesh
         mesh = BABYLON.Mesh.CreateBox(meshName, 500.0, this.scene);
         mesh.material = mat;
-
         break;
 
       default:
-        throw 'uktt';
+        debugger;
     }
+
+    if (!mesh || !mat) {
+      debugger;
+    }
+
+    mesh.position = thing.position;
+    mesh.rotation = thing.rotation;
 
   }
 

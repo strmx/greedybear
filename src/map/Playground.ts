@@ -2,6 +2,7 @@ import Randomizer = require('../utils/Randomizer');
 import CavePatternGenerator = require('./CavePatternGenerator');
 import PatternHelper = require('./PatternHelper');
 import types = require('../types');
+import Thing = require('../game/Thing');
 
 const WORLD_OBJECT = types.ThingType;
 const V2 = BABYLON.Vector2;
@@ -19,28 +20,25 @@ const DEFAULT_PATTERN_OPTIONS = {
 
 let createdObjectsCount = 0;
 
-class PlaygroundGenerator {
-  constructor() { throw 'damn'; }
+class Playground {
+  map: number[][];
+  boundaries: number[][];
+  startPoints: DistancePoint[];
 
-  static generatePlayground(): Playground {
-
+  constructor() {
     // initialise cave pattern
     let pattern = CavePatternGenerator.generateCavePattern(DEFAULT_PATTERN_OPTIONS);
-    let map = PatternHelper.clone(pattern);
-    let n = pattern.length;
-    let m = pattern[0].length;
-
     PatternHelper.removeSmallOpenAreas(pattern);
 
     // boundaries
 
     // scale 2
     // (dirty way to get rid of unreachable cells)
-    // let boundaries = PatternHelper.clone(map);
+    // let boundaries = PatternHelper.clone(this.map);
     // let boundaries = PatternHelper.createFilled(n * 2, m * 2, 0);
     // for (let i = 0; i < n; i++) {
     //   for (let j = 0; j < m; j++) {
-    //     let value = map[i][j];
+    //     let value = this.map[i][j];
     //     let i2 = i * 2;
     //     let j2 = j * 2;
     //     boundaries[i2][j2] = value;
@@ -50,20 +48,10 @@ class PlaygroundGenerator {
     //   }
     // }
 
-    // scale 2 start positions
-    let freeAroundPositions =
-      PatternHelper.collectFreeAroundPositions(pattern).map(p => {
-        // p.x *= 2;
-        // p.y *= 2;
-        return p;
-      });
-
-    return {
-      map,
-      boundaries: PatternHelper.clone(map),
-      startPoints: freeAroundPositions,
-    };
+    this.map = PatternHelper.clone(pattern);
+    this.boundaries = PatternHelper.clone(pattern);
+    this.startPoints = PatternHelper.collectFreeAroundPositions(pattern);
   }
 }
 
-export = PlaygroundGenerator;
+export = Playground;
