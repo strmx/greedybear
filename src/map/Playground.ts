@@ -24,6 +24,7 @@ class Playground {
   map: number[][];
   boundaries: number[][];
   startPoints: DistancePoint[];
+  wallRects: RectArea[];
 
   constructor() {
     // initialise cave pattern
@@ -50,6 +51,7 @@ class Playground {
     // }
 
     this.map = PatternHelper.clone(pattern);
+    this.wallRects = PatternHelper.calculateRectBlocks(pattern, 1);
     this.boundaries = PatternHelper.clone(pattern);
     this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
   }

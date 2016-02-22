@@ -173,7 +173,7 @@ class Renderer {
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
+      // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
       break;
 
       //
@@ -258,7 +258,7 @@ class Renderer {
 
     mesh.position = thing.position;
     mesh.rotation = thing.rotation;
-
+    mesh.scaling = thing.scaling;
   }
 
   destroy() {

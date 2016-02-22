@@ -16,6 +16,7 @@ class Thing {
    */
   position: BABYLON.Vector3;
   rotation: BABYLON.Vector3 = BABYLON.Vector3.Zero();
+  scaling: BABYLON.Vector3 = new BABYLON.Vector3(1, 1, 1);
 
   w: number;
   h: number;

@@ -325,7 +325,7 @@ class PatternHelper {
     let map = this.clone(pattern);
     let biggestRects: RectArea[] = [];
 
-    let fillRect = (map: any[][], rectArea: RectArea): void => {
+    let fillRect = (map: number[][], rectArea: RectArea): void => {
       for (let i=rectArea.x, il=rectArea.x + rectArea.w; i < il; i++) {
         for (let j=rectArea.y, jl=rectArea.y + rectArea.h; j < jl; j++) {
           // set just not same value to mark it as used
@@ -344,17 +344,17 @@ class PatternHelper {
           cx = x + sideLength;
           cy = y + i;
           if ((cx >= n || cy >= m) || (map[cx][cy] !== combineValue)) {
-            return sideLength - 1;
+            return sideLength;
           }
           // next col
           cx = x + i;
           cy = y + sideLength;
           if ((cx >= n || cy >= m) || (map[cx][cy] !== combineValue)) {
-            return sideLength - 1;
+            return sideLength;
           }
         }
       }
-      return 0;
+      return 1;
     };
 
     // collect big rects
@@ -379,9 +379,9 @@ class PatternHelper {
           }
         }
       }
-      if (bigR > 0) {
+      if (bigR > 1) {
         // add rects bigger than 1 cell
-        let rect = new RectArea(biggestRects.length, bigX, bigY, bigR + 1, bigR + 1);
+        let rect = new RectArea(biggestRects.length, bigX, bigY, bigR, bigR);
         fillRect(map, rect);
         biggestRects.push(rect);
       } else {
@@ -394,7 +394,7 @@ class PatternHelper {
     // create 1 cell rects (that were skipped)
     for (let i=0; i < n; i++) {
       for (let j=0; j < m; j++) {
-        if (map[i][j] !== combineValue) {
+        if (map[i][j] === combineValue) {
           biggestRects.push(new RectArea(biggestRects.length, i, j, 1, 1));
         }
       }
@@ -407,12 +407,29 @@ class PatternHelper {
     return pattern.map(col => (col.map(cell => (cell))));
   }
 
-  public static stringify(pattern: number[][]): string {
+  public static stringify(pattern: number[][], notParsable?:boolean): string {
     let transposedPattern = pattern[0].map(function(col, i) {
       return pattern.map(function(row) {
         return row[i];
       });
     });
+    if (notParsable) {
+      return transposedPattern
+        .map(row => {
+          return row.map(cell => {
+            if (cell === 0) {
+              return '-';
+            }
+            if (cell === 1) {
+              return '+';
+            }
+            return Math.abs(cell);
+          });
+        })
+        .map(col => (col.join(''))).join('\n')
+          .replace(/\-/g, '░')
+          .replace(/\+/g, '█');
+    }
     return transposedPattern.map(col => (col.join(''))).join('\n')
             .replace(/0/g, '░')
             .replace(/1/g, '█');
