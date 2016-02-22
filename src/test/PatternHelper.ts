@@ -287,10 +287,62 @@ describe("PatternHelper", function() {
     "distance": 1.4142135623730951
   }];
 
-  it("generate start points", function() {
+  it("generate start points", () => {
     PatternHelper.removeSmallOpenAreas(pattern);
-    let positions = PatternHelper.collectFreeAroundPositions(pattern);
+    let bypass = PatternHelper.generateBypass(pattern);
+    let positions = PatternHelper.collectFreeAroundPositions(pattern, bypass);
     assert.deepEqual(positions, START_POINTS);
+  });
+
+
+const BIG_RECT_AREAS =
+`99999999955555█░░░░░░░█░░░███22█
+99999999955555░░░░░░░░░░░░░░░22█
+99999999955555░░░░░░░░░░░░░░░░░█
+99999999955555█░░░░░░░░░░░░░░░░░
+9999999995555522░░░░░░░░░░░░░░░█
+99999999922███22░░░░░░░░░░░░░░22
+99999999922█░░░░░░░░░░░░░░░░░░22
+99999999922░░░░░░░░░░░░░░░░░░░░█
+99999999922░░░░░░░░░░░░░░░░░██░░
+7777777█░░░░░░░░░░░░░22█░░░55555
+7777777█░░░░░░░░░333█22█░░█55555
+7777777░░░░░░░░░█333░░░░░░█55555
+7777777░░░░░░░░░█333░░░░░░░55555
+7777777░░░22░░░░██4444░░░░░55555
+7777777░░█22░░░░░█4444█░░░░55555
+7777777█░░██░░░░░░444422░░█55555
+999999999░░█░░░░░░444422░2255555
+99999999922░░░░░░░██░░22░2255555
+99999999922░░░░░░░░░░░22░░░55555
+999999999█░░░░░░░░░░░░22█░░░░░░█
+999999999░░░22░░░░░░░█22█░░░░░░░
+999999999░░░22░░░░░░░░██░░░░░░░░
+999999999░░██░░2222░░░░░░░░░░░░░
+999999999333█░░2222░░░░░░░░░░░░█
+999999999333█░░░██░░░░░░░██░░███
+777777722333░░░░░█░░░░░░░7777777
+777777722█░░░░░░░░░░░░░░█7777777
+777777722░░░░░░░░░░░░░░██7777777
+777777722░░░░░░░22░░░44447777777
+7777777333░░░░░░22░░█44447777777
+7777777333█░░░░░░░░2244447777777
+7777777333███░░░░░█2244447777777`;
+  it('calculateRectBlocks', () => {
+    PatternHelper.removeSmallOpenAreas(pattern);
+    let rectAreas = PatternHelper.calculateRectBlocks(pattern, 1);
+    // mark on map
+    rectAreas.forEach(rect => {
+      if (rect.w > 1) {
+        for (let i=0; i<rect.w; i++) {
+          for (let j=0; j<rect.h; j++) {
+            pattern[rect.x + i][rect.y + j] = rect.w;
+          }
+        }
+      }
+    });
+    assert.equal(PatternHelper.stringify(pattern), BIG_RECT_AREAS);
+    console.log(PatternHelper.stringify(pattern));
   });
 
 });

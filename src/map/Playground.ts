@@ -28,6 +28,7 @@ class Playground {
   constructor() {
     // initialise cave pattern
     let pattern = CavePatternGenerator.generateCavePattern(DEFAULT_PATTERN_OPTIONS);
+    let bypass = PatternHelper.generateBypass(pattern);
     PatternHelper.removeSmallOpenAreas(pattern);
 
     // boundaries
@@ -50,7 +51,7 @@ class Playground {
 
     this.map = PatternHelper.clone(pattern);
     this.boundaries = PatternHelper.clone(pattern);
-    this.startPoints = PatternHelper.collectFreeAroundPositions(pattern);
+    this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
   }
 }
 

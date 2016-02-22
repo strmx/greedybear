@@ -6,6 +6,10 @@ class DistancePoint implements DistancePoint {
   constructor(public x: number, public y: number, public distance: number) {}
 }
 
+class RectArea implements RectArea {
+  constructor(public id: number, public x: number, public y: number, public w: number, public h: number) {}
+}
+
 class FreeAroundPoint implements DistancePoint {
   constructor(public x: number, public y: number, public radius: number, public distance: number) {}
   distanceTo(point: FreeAroundPoint) {
@@ -42,16 +46,24 @@ class Bypass {
     for (let radius = 1; radius < radiusLimit; radius++) {
       // TL->TR
       cy = -radius;
-      for (cx = -radius; cx <= radius; cx++) this.points.push(new FreeAroundPoint(cx, cy, radius, Math.sqrt(cx * cx + cy * cy)));
+      for (cx = -radius; cx <= radius; cx++) {
+        this.points.push(new FreeAroundPoint(cx, cy, radius, Math.sqrt(cx * cx + cy * cy)));
+      }
       // TR->BR
       cx = radius;
-      for (cy = -radius + 1; cy <= radius; cy++) this.points.push(new FreeAroundPoint(cx, cy, radius, Math.sqrt(cx * cx + cy * cy)));
+      for (cy = -radius + 1; cy <= radius; cy++) {
+        this.points.push(new FreeAroundPoint(cx, cy, radius, Math.sqrt(cx * cx + cy * cy)));
+      }
       // BR->BL
       cy = radius;
-      for (cx = radius - 1; cx >= -radius; cx--) this.points.push(new FreeAroundPoint(cx, cy, radius, Math.sqrt(cx * cx + cy * cy)));
+      for (cx = radius - 1; cx >= -radius; cx--) {
+        this.points.push(new FreeAroundPoint(cx, cy, radius, Math.sqrt(cx * cx + cy * cy)));
+      }
       // BL->TL
       cx = -radius;
-      for (cy = radius - 1; cy >= -radius + 1; cy--) this.points.push(new FreeAroundPoint(cx, cy, radius, Math.sqrt(cx * cx + cy * cy)));
+      for (cy = radius - 1; cy >= -radius + 1; cy--) {
+        this.points.push(new FreeAroundPoint(cx, cy, radius, Math.sqrt(cx * cx + cy * cy)));
+      }
     }
   }
 }
@@ -168,7 +180,7 @@ class PatternHelper {
     let bPoint: FreeAroundPoint;
     let cx: number, cy: number;
     let checkCollision = (x: number, y: number) => {
-      return (cx < 0 || cy < 0 || cx >= n || cy >= m) || (pattern[cx][cy] !== 0)
+      return (x < 0 || y < 0 || x >= n || y >= m) || (pattern[x][y] !== 0)
     };
 
     for (let i=0, l=bypass.length; i < l; i++) {
@@ -198,12 +210,15 @@ class PatternHelper {
     return 0;
   }
 
-  public static collectFreeAroundPositions(pattern: number[][]): DistancePoint[] {
+  public static generateBypass(pattern: number[][]): Bypass {
+    return new Bypass(Math.max(pattern.length, pattern[0].length));
+  }
+
+  public static collectFreeAroundPositions(pattern: number[][], bypass: Bypass): DistancePoint[] {
     let n = pattern.length;
     let m = pattern[0].length;
     let freeAroundPositions: DistancePoint[] = [];
     let removedAroundPositions: DistancePoint[] = [];
-    let bypass = new Bypass(Math.max(n, m));
 
     // calculate radius for all free points
     for (let i = 0; i < n; i++) {
@@ -302,6 +317,90 @@ class PatternHelper {
     }
 
     return openAreas[0];
+  }
+
+  public static calculateRectBlocks(pattern: number[][], combineValue: number): RectArea[] {
+    let n = pattern.length;
+    let m = pattern[0].length;
+    let map = this.clone(pattern);
+    let biggestRects: RectArea[] = [];
+
+    let fillRect = (map: any[][], rectArea: RectArea): void => {
+      for (let i=rectArea.x, il=rectArea.x + rectArea.w; i < il; i++) {
+        for (let j=rectArea.y, jl=rectArea.y + rectArea.h; j < jl; j++) {
+          // set just not same value to mark it as used
+          map[i][j] = combineValue + 1;
+        }
+      }
+    };
+
+    let calculateBiggestSide = (map: number[][], x: number, y: number): number => {
+      let cx: number;
+      let cy: number;
+      for (let sideLength=1; sideLength < n; sideLength++) {
+        // TODO: think about get rid of double checking of the last cell on the last loop iteration
+        for (let i=0; i <= sideLength; i++) {
+          // next row
+          cx = x + sideLength;
+          cy = y + i;
+          if ((cx >= n || cy >= m) || (map[cx][cy] !== combineValue)) {
+            return sideLength - 1;
+          }
+          // next col
+          cx = x + i;
+          cy = y + sideLength;
+          if ((cx >= n || cy >= m) || (map[cx][cy] !== combineValue)) {
+            return sideLength - 1;
+          }
+        }
+      }
+      return 0;
+    };
+
+    // collect big rects
+    // started from biggest
+    let iterationCount = 0;
+    while(iterationCount++ < 1000) {
+      let bigX: number = 0;
+      let bigY: number = 0;
+      let bigR: number = 0;
+      let currR: number = 0;
+
+      // find biggest rect area
+      for (let i=0; i < n; i++) {
+        for (let j=0; j < m; j++) {
+          if (map[i][j] === combineValue) {
+            currR = calculateBiggestSide(map, i, j);
+            if (currR > bigR) {
+              bigX = i;
+              bigY = j;
+              bigR = currR;
+            }
+          }
+        }
+      }
+      if (bigR > 0) {
+        // add rects bigger than 1 cell
+        let rect = new RectArea(biggestRects.length, bigX, bigY, bigR + 1, bigR + 1);
+        fillRect(map, rect);
+        biggestRects.push(rect);
+      } else {
+        // stop if biggest = 1 cell
+        // to skip small (performance++)
+        break;
+      }
+    }
+
+    // create 1 cell rects (that were skipped)
+    for (let i=0; i < n; i++) {
+      for (let j=0; j < m; j++) {
+        if (map[i][j] !== combineValue) {
+          biggestRects.push(new RectArea(biggestRects.length, i, j, 1, 1));
+        }
+      }
+    }
+
+    return biggestRects;
   }
 
   public static clone(pattern: number[][]): number[][] {

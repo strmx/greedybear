@@ -11,6 +11,12 @@ interface Point {
   y: number;
 }
 
+interface RectArea extends Point {
+  id: number;
+  w: number;
+  h: number;
+}
+
 interface DistancePoint extends Point {
   distance: number;
 }
