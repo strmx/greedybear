@@ -51,10 +51,10 @@ class GameData {
 
     console.log(this.playground.wallRects);
     this.playground.wallRects.forEach((rect: RectArea) => {
-      let centerX = rect.x + rect.w / 2;
-      let centerY = rect.y + rect.h / 2;
+      let centerX = rect.x + rect.w / 2 - .5;
+      let centerY = rect.y + rect.h / 2 - .5;
       let scale = (rect.w + rect.h) / 2;
-      let wall = new Thing(ThingType.WALL, new V3(centerX, scale / 2, centerY));
+      let wall = new Thing(ThingType.WALL, new V3(centerX, 0, centerY));
       wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
       this.things.push(wall);
       // this.thingMap[centerX][centerY] = wall;

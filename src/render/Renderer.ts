@@ -1,8 +1,9 @@
 /// <reference path="../../typings/interfaces.d.ts"/>
 
+import types = require('../types');
 import CanvasElement = require('./CanvasElement');
 import Thing = require('../game/Thing');
-import types = require('../types');
+import CustomMesh = require('./CustomMesh');
 
 const ThingType = types.ThingType;
 const V2 = BABYLON.Vector2;
@@ -72,9 +73,13 @@ class Renderer {
     // var light = new BABYLON.DirectionalLight("Dir0", new V3(0, -1, 0), this.scene);
     // light.diffuse = new BABYLON.Color3(1, 1, 1);
     // light.specular = new BABYLON.Color3(1, 1, 1);
-
-    // Default intensity is 1. Let's dim the light a small amount
     light.intensity = 0.7;
+
+    // let h = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0, 1, -1), this.scene);
+    // h.intensity = 0.5;
+    let d1 = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(1, -1, -2), this.scene);
+    d1.position = new BABYLON.Vector3(-300,300,600);
+
 
     //
     // CAMERAS
@@ -139,10 +144,10 @@ class Renderer {
 
       if (!mat) {
         mat = new BABYLON.StandardMaterial(matName, this.scene);
-        // mat.diffuseColor = BABYLON.Color3.White();
+        (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Black();
         // (<BABYLON.StandardMaterial>mat).diffuseTexture = new BABYLON.Texture("textures/grass.jpg", this.scene);
-        (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.Black();
-        (<BABYLON.StandardMaterial>mat).emissiveColor = BABYLON.Color3.White();
+        // (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.Black();
+        // (<BABYLON.StandardMaterial>mat).emissiveColor = BABYLON.Color3.White();
       }
 
       if (!mesh) {
@@ -152,7 +157,7 @@ class Renderer {
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
+      // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
       break;
 
       //
@@ -162,12 +167,14 @@ class Renderer {
 
       if (!mat) {
         mat = new BABYLON.StandardMaterial(matName, this.scene);
-        (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Black();
+        // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.White();
+        (<BABYLON.StandardMaterial>mat).diffuseColor = new BABYLON.Color3(.5, .75, .25);
         (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.White();
       }
 
       if (!mesh) {
-        mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        mesh = CustomMesh.createPyramid(meshName, 1, 1, this.scene);
+        // mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
         mesh.material = mat;
         mesh.isVisible = false;
       }
@@ -185,11 +192,11 @@ class Renderer {
         mat = new BABYLON.StandardMaterial(matName, this.scene);
         (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Red();
         // Fresnel
-        (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters = new BABYLON.FresnelParameters();
-        (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.bias = 0.4;
-        (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.power = 2;
-        (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.leftColor = BABYLON.Color3.Black();
-        (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.rightColor = BABYLON.Color3.White();
+        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters = new BABYLON.FresnelParameters();
+        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.bias = 0.4;
+        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.power = 2;
+        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.leftColor = BABYLON.Color3.Black();
+        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.rightColor = BABYLON.Color3.White();
       }
 
       if (!mesh) {
