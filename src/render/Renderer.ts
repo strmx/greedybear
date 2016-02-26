@@ -1,4 +1,4 @@
-/// <reference path="../../typings/interfaces.d.ts"/>
+/// <reference path='../../typings/interfaces.d.ts'/>
 
 import types = require('../types');
 import CanvasElement = require('./CanvasElement');
@@ -22,6 +22,7 @@ class Renderer {
   zoomOutCamera: BABYLON.FreeCamera;
   scoresPlane: BABYLON.AbstractMesh;
   stats: {begin: Function, end: Function, setMode: Function, domElement: HTMLElement};
+  shadowGenerator: BABYLON.ShadowGenerator;
 
   constructor() {
 
@@ -69,16 +70,16 @@ class Renderer {
     //
 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    let light = new BABYLON.HemisphericLight("light1", new V3(0, 10, 0), this.scene);
-    // var light = new BABYLON.DirectionalLight("Dir0", new V3(0, -1, 0), this.scene);
+    let light = new BABYLON.HemisphericLight('light1', new V3(0, 10, 0), this.scene);
+    // var light = new BABYLON.DirectionalLight('Dir0', new V3(0, -1, 0), this.scene);
     // light.diffuse = new BABYLON.Color3(1, 1, 1);
     // light.specular = new BABYLON.Color3(1, 1, 1);
     light.intensity = 0.7;
 
     // let h = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0, 1, -1), this.scene);
     // h.intensity = 0.5;
-    let d1 = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(1, -1, -2), this.scene);
-    d1.position = new BABYLON.Vector3(-300,300,600);
+    let directLight = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(1, -1, -2), this.scene);
+    directLight.position = new BABYLON.Vector3(-300,300,600);
 
 
     //
@@ -86,10 +87,10 @@ class Renderer {
     //
 
     // let pos = agentOrigin.position;
-    // var agentCamera = new BABYLON.FollowCamera("agentCamera", new V3(pos.x, 10, pos.z), this.scene);
+    // var agentCamera = new BABYLON.FollowCamera('agentCamera', new V3(pos.x, 10, pos.z), this.scene);
     let n = 100;
     let m = 100;
-    this.camera = new BABYLON.FollowCamera("this.camera", new V3(n / 2, 10, m / 2), this.scene);
+    this.camera = new BABYLON.FollowCamera('this.camera', new V3(n / 2, 10, m / 2), this.scene);
     this.camera.radius = 8; // how far from the object to follow
     this.camera.heightOffset = 10; // how high above the object to place the camera
     this.camera.rotationOffset = 270; // the viewing angle
@@ -99,19 +100,44 @@ class Renderer {
     this.scene.activeCamera = this.camera;
 
 
-    this.zoomOutCamera = new BABYLON.FreeCamera("zoomOutCamera", new V3(n / 2, Math.min(n, m), m / 2), this.scene);
+    this.zoomOutCamera = new BABYLON.FreeCamera('zoomOutCamera', new V3(n / 3, Math.min(n, m), m / 3), this.scene);
     this.zoomOutCamera.setTarget(new V3(n/2, 0, m/2));
+    this.zoomOutCamera.attachControl(this.canvas.element, true);
+
+    //
+    // SHADOW
+    //
+
+    // Ground
+  	let ground = BABYLON.Mesh.CreateGroundFromHeightMap('ground', 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
+  	let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
+    let groundTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
+    groundTexture.uScale = 16;
+    groundTexture.vScale = 16;
+  	groundMaterial.diffuseTexture = groundTexture;
+  	groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    ground.position.x = 50;
+    ground.position.z = 50;
+  	ground.material = groundMaterial;
+    ground.receiveShadows = true;
+
+
+    this.shadowGenerator = new BABYLON.ShadowGenerator(1024, directLight);
+    // render only once
+    this.shadowGenerator.getShadowMap().refreshRate = 0;
+  	// this.shadowGenerator.usePoissonSampling = true;
+    this.shadowGenerator.useVarianceShadowMap = true;
 
     //
     // SCORES
     //
 
-    let scoresTexture = new BABYLON.DynamicTexture("scoresPlaneTex", 512, this.scene, true);
+    let scoresTexture = new BABYLON.DynamicTexture('scoresPlaneTex', 512, this.scene, true);
     scoresTexture.hasAlpha = true;
-    let scoresMat = new BABYLON.StandardMaterial("scoresPlaneMat", this.scene);
+    let scoresMat = new BABYLON.StandardMaterial('scoresPlaneMat', this.scene);
     scoresMat.diffuseTexture = scoresTexture;
 
-    this.scoresPlane = BABYLON.Mesh.CreatePlane("ScoresPlane", 1, this.scene);
+    this.scoresPlane = BABYLON.Mesh.CreatePlane('ScoresPlane', 1, this.scene);
     this.scoresPlane.material = scoresMat;
 
     this.scoresPlane.position.z = 8;
@@ -141,11 +167,12 @@ class Renderer {
       // GROUND
       //
       case ThingType.GROUND:
+      return;
 
       if (!mat) {
         mat = new BABYLON.StandardMaterial(matName, this.scene);
-        (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Black();
-        // (<BABYLON.StandardMaterial>mat).diffuseTexture = new BABYLON.Texture("textures/grass.jpg", this.scene);
+        // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Black();
+        (<BABYLON.StandardMaterial>mat).diffuseTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
         // (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.Black();
         // (<BABYLON.StandardMaterial>mat).emissiveColor = BABYLON.Color3.White();
       }
@@ -157,6 +184,7 @@ class Renderer {
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
+      mesh.receiveShadows = true;
       // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
       break;
 
@@ -180,6 +208,7 @@ class Renderer {
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
+      this.shadowGenerator.getShadowMap().renderList.push(mesh);
       // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
       break;
 
