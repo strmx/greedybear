@@ -11,12 +11,12 @@ const V3 = BABYLON.Vector3;
 ///////////////////////////////////////
 
 // data: [[x, y, z, uvx, uvy]]
-function parseVDList(data: number[][]): {positions: number[], normals: number[], uvs: number[]} {
+function parseVDList(data: number[][]): { positions: number[], normals: number[], uvs: number[] } {
   let positions: number[] = [];
   let uvs: number[] = [];
   let normals: number[] = [];
 
-  data.forEach(function (v) {
+  data.forEach(function(v) {
     if (v.length < 3) {
       throw 'v parsing error';
     }
@@ -100,6 +100,29 @@ class CustomMesh {
     polygon.convertToFlatShadedMesh();
 
     return polygon;
+  }
+
+  static createGroundFromHeightMap(name: string, buffer: Uint8Array, bufferWidth: number, bufferHeight: number, width: number, height: number, subdivisions: number, minHeight: number, maxHeight: number, scene: BABYLON.Scene, updatable?: boolean): BABYLON.GroundMesh {
+    let ground = new BABYLON.GroundMesh(name, scene);
+    ground._subdivisions = subdivisions;
+    ground._width = width;
+    ground._height = height;
+    ground._maxX = ground._width / 2;
+    ground._maxZ = ground._height / 2;
+    ground._minX = -ground._maxX;
+    ground._minZ = -ground._maxZ;
+
+    // Create VertexData from map data
+    let vertexData = BABYLON.VertexData.CreateGroundFromHeightMap({
+      width, height,
+      subdivisions,
+      minHeight, maxHeight,
+      buffer, bufferWidth, bufferHeight
+    });
+
+    vertexData.applyToMesh(ground, updatable);
+
+    return ground;
   }
 };
 

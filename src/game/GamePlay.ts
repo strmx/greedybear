@@ -37,12 +37,13 @@ class GamePlay {
   agentPath: Path[] = [];
   partyMembers: Thing[] = [];
 
-  constructor(renderer: Renderer) {
+  constructor(gameData: GameData, renderer: Renderer) {
+    this.gameData = gameData;
     this.renderer = renderer;
 
-    this.gameData = new GameData();
     this.agent = this.gameData.things.filter(t => (t.type === ThingType.AGENT))[0];
 
+    this.renderer.addGround(this.gameData.playground);
 
     this.gameData.things.forEach(thing => {
       this.renderer.showThing(thing);

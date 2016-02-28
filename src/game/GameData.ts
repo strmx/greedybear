@@ -31,25 +31,31 @@ class GameData {
     const n = map.length;
     const m = map[0].length;
 
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < m; j++) {
-        let value: number = map[i][j];
-        let type = value === 0 ? ThingType.GROUND : ThingType.WALL;
-        if (type === ThingType.GROUND) {
-          let ground = new Thing(type, new V3(i, 0, j));
-          ground.rotation.x = Math.PI / 2;
-          this.things.push(ground);
-        }
-        // if (type === ThingType.WALL) {
-        //   let wall = new Thing(type, new V3(i, .5, j));
-        //   wall.rotation.x = Math.PI / 2;
-        //   this.things.push(wall);
-        //   this.thingMap[i][j] = wall;
-        // }
-      }
-    }
+    // for (let i = 0; i < n; i++) {
+    //   for (let j = 0; j < m; j++) {
+    //     let value: number = map[i][j];
+    //     let type = value === 0 ? ThingType.GROUND : ThingType.WALL;
+    //     if (type === ThingType.GROUND) {
+    //       let ground = new Thing(type, new V3(i, 0, j));
+    //       ground.rotation.x = Math.PI / 2;
+    //       this.things.push(ground);
+    //     }
+    //     // if (type === ThingType.WALL) {
+    //     //   let wall = new Thing(type, new V3(i, .5, j));
+    //     //   wall.rotation.x = Math.PI / 2;
+    //     //   this.things.push(wall);
+    //     //   this.thingMap[i][j] = wall;
+    //     // }
+    //   }
+    // }
 
-    console.log(this.playground.wallRects);
+
+    // ground
+    // let ground = new Thing(ThingType.GROUND, new V3(n / 2, 0,m / 2), n, m);
+    // this.things.push(ground);
+
+
+    // walls
     this.playground.wallRects.forEach((rect: RectArea) => {
       let centerX = rect.x + rect.w / 2 - .5;
       let centerY = rect.y + rect.h / 2 - .5;

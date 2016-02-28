@@ -13,7 +13,8 @@ const DEFAULT_PATTERN_OPTIONS = {
   m: 100,
   wallChance: .4,
   stepCount: 2,
-  nextReal: Randomizer.generateNextRealFunction(13), //Math.random
+  nextReal: Math.random,
+  // nextReal: Randomizer.generateNextRealFunction(13),
   birthLimit: 4,
   deathLimit: 3,
 };
@@ -23,6 +24,7 @@ let createdObjectsCount = 0;
 class Playground {
   map: number[][];
   boundaries: number[][];
+  elevations: Uint8Array;
   startPoints: DistancePoint[];
   wallRects: RectArea[];
 
@@ -53,6 +55,7 @@ class Playground {
     this.map = PatternHelper.clone(pattern);
     this.wallRects = PatternHelper.calculateRectBlocks(pattern, 1);
     this.boundaries = PatternHelper.clone(pattern);
+    this.elevations = PatternHelper.generateElevations(DEFAULT_PATTERN_OPTIONS.n, DEFAULT_PATTERN_OPTIONS.m, DEFAULT_PATTERN_OPTIONS.nextReal);
     this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
   }
 }

@@ -403,16 +403,99 @@ class PatternHelper {
     return biggestRects;
   }
 
+  //
+  // ELEVATIONS
+  //
+
+  public static generateElevations(n: number, m: number, randomFunction: Function): Uint8Array {
+    const MAX_ELEVATION = 255;
+    let map = PatternHelper.createFilled(n, m, 0);
+    let count = 0;
+    let halfN = n / 2;
+    let halfM = m / 2;
+    let chance = 0;
+    let maxElevationX, maxElevationY;
+
+    // add random heighest point
+    for (let i = 0; i < n; i++) {
+      // heighest in the center
+      maxElevationX = (i < halfN ? (i / halfN) : (n - i) / halfN) * MAX_ELEVATION;
+
+      for (let j = 0; j < m; j++) {
+        if (i === 0 || j === 0 || i === n - 1 || j === m - 1) {
+          map[i][j] = 0;
+        } else if (randomFunction() < .4) {
+          maxElevationY = (j < halfM ? (j / halfM) : (m - j) / halfM) * MAX_ELEVATION;
+          map[i][j] = ((maxElevationX + maxElevationY) / 2) * randomFunction();
+        }
+      }
+    }
+
+    // interpolate
+    // 8 cells around cell - TL>TR>BR>BL>TL
+    let cx, cy, lx, rx, ty, by, v;
+    for (let iter = 0; iter < 4; iter ++) {
+      for (let i = 0; i < n; i++) {
+        lx = i - 1 < 0 ? i : i - 1;
+        rx = i + 1 >= n ? i : i + 1;
+
+        for (let j = 0; j < m; j++) {
+          ty = j - 1 < 0 ? j : j - 1;
+          by = j + 1 >= m ? j : j + 1;
+
+          if (i === 0 || j === 0 || i === n - 1 || j === m - 1) {
+            map[i][j] = 0;
+          } else {
+            map[i][j] = (
+              // TL>TR
+              map[lx][ty] + map[i][ty] + map[rx][ty] +
+              // TR>BR
+              map[rx][j] + map[rx][by] +
+              // BR>BL
+              map[i][by] + map[lx][by] +
+              // BL>TL
+              map[lx][j]
+            ) / 8;
+          }
+        }
+      }
+    }
+
+    // number[][] -> Uint8Array
+    let bufferSource: number[] = [];
+    let color: number;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < m; j++) {
+        color = map[i][j];
+        // bufferSource[i * n + j] = color | (color << 8) | (color << 16);
+        bufferSource[i * (m * 4) + j * 4] = color;
+        bufferSource[i * (m * 4) + j * 4 + 1] = color;
+        bufferSource[i * (m * 4) + j * 4 + 2] = color;
+        bufferSource[i * (m * 4) + j * 4 + 3] = 255;
+      }
+    }
+
+    return new Uint8Array(bufferSource);
+  }
+
+  //
+  // TOOLS
+  //
+
   public static clone(pattern: number[][]): number[][] {
     return pattern.map(col => (col.map(cell => (cell))));
   }
 
-  public static stringify(pattern: number[][], notParsable?:boolean): string {
-    let transposedPattern = pattern[0].map(function(col, i) {
+  public static transpose(pattern: number[][]): number[][] {
+    return pattern[0].map(function(col, i) {
       return pattern.map(function(row) {
         return row[i];
       });
     });
+  }
+
+  public static stringify(pattern: number[][], notParsable?:boolean): string {
+    let transposedPattern = PatternHelper.transpose(pattern);
     if (notParsable) {
       return transposedPattern
         .map(row => {

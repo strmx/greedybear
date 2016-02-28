@@ -2,6 +2,7 @@
 
 import types = require('../types');
 import CanvasElement = require('./CanvasElement');
+import Playground = require('../map/Playground');
 import Thing = require('../game/Thing');
 import CustomMesh = require('./CustomMesh');
 
@@ -19,7 +20,7 @@ class Renderer {
   engine: BABYLON.Engine;
   scene: BABYLON.Scene;
   camera: BABYLON.FollowCamera;
-  zoomOutCamera: BABYLON.FreeCamera;
+  zoomOutCamera: BABYLON.ArcRotateCamera;
   scoresPlane: BABYLON.AbstractMesh;
   stats: {begin: Function, end: Function, setMode: Function, domElement: HTMLElement};
   shadowGenerator: BABYLON.ShadowGenerator;
@@ -41,6 +42,9 @@ class Renderer {
 
     this.canvas = new CanvasElement(document.body);
     this.canvas.resize();
+
+
+
 
     this.engine = new BABYLON.Engine(this.canvas.element, true, {}, true);
     this.scene = new BABYLON.Scene(this.engine);
@@ -90,7 +94,7 @@ class Renderer {
     // var agentCamera = new BABYLON.FollowCamera('agentCamera', new V3(pos.x, 10, pos.z), this.scene);
     let n = 100;
     let m = 100;
-    this.camera = new BABYLON.FollowCamera('this.camera', new V3(n / 2, 10, m / 2), this.scene);
+    this.camera = new BABYLON.FollowCamera('followCamera', new V3(n / 2, 10, m / 2), this.scene);
     this.camera.radius = 8; // how far from the object to follow
     this.camera.heightOffset = 10; // how high above the object to place the camera
     this.camera.rotationOffset = 270; // the viewing angle
@@ -99,27 +103,33 @@ class Renderer {
 
     this.scene.activeCamera = this.camera;
 
+    this.zoomOutCamera = new BABYLON.ArcRotateCamera("zoomOutCamera", 3 * Math.PI / 2, Math.PI / 8, ((n + m) / 2) * 1.1, new BABYLON.Vector3(n / 2, 0, m / 2), this.scene);
+  	this.zoomOutCamera.attachControl(this.canvas.element, true);
 
-    this.zoomOutCamera = new BABYLON.FreeCamera('zoomOutCamera', new V3(n / 3, Math.min(n, m), m / 3), this.scene);
-    this.zoomOutCamera.setTarget(new V3(n/2, 0, m/2));
-    this.zoomOutCamera.attachControl(this.canvas.element, true);
+    // this.zoomOutCamera = new BABYLON.FreeCamera('zoomOutCamera', new V3(n / 3, Math.min(n, m), m / 3), this.scene);
+    // this.zoomOutCamera.setTarget(new V3(n/2, 0, m/2));
+    // this.zoomOutCamera.attachControl(this.canvas.element, true);
 
     //
     // SHADOW
     //
 
-    // Ground
-  	let ground = BABYLON.Mesh.CreateGroundFromHeightMap('ground', 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
-  	let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
-    let groundTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
-    groundTexture.uScale = 16;
-    groundTexture.vScale = 16;
-  	groundMaterial.diffuseTexture = groundTexture;
-  	groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    ground.position.x = 50;
-    ground.position.z = 50;
-  	ground.material = groundMaterial;
-    ground.receiveShadows = true;
+    // // Ground
+    // // options: { width: number, height: number, subdivisions: number, minHeight: number, maxHeight: number, buffer: Uint8Array, bufferWidth: number, bufferHeight: number }): VertexData
+    // // let ground = BABYLON.VertexData.CreateGroundFromHeightMap({
+    // //
+    // // });
+  	// let ground = BABYLON.Mesh.CreateGroundFromHeightMap('ground', 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
+  	// let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
+    // let groundTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
+    // groundTexture.uScale = 16;
+    // groundTexture.vScale = 16;
+  	// groundMaterial.diffuseTexture = groundTexture;
+  	// groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    // ground.position.x = 50;
+    // ground.position.z = 50;
+  	// ground.material = groundMaterial;
+    // ground.receiveShadows = true;
 
 
     this.shadowGenerator = new BABYLON.ShadowGenerator(1024, directLight);
@@ -156,6 +166,45 @@ class Renderer {
     scoresTexture.drawText(scores, null, 350, '256px bold Verdana', '#fff', 'transparent');
   }
 
+  addGround(playground: Playground) {
+    let n = playground.map.length;
+    let m = playground.map[0].length;
+    let buffer = playground.elevations;
+    let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.min(n, m), 0, 10, this.scene, false)
+    // let ground = BABYLON.Mesh.CreateGroundFromHeightMap(matName, 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
+
+    let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
+    let groundTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
+
+    groundTexture.uScale = 16;
+    groundTexture.vScale = 16;
+
+    groundMaterial.diffuseTexture = groundTexture;
+    groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    ground.material = groundMaterial;
+
+    ground.receiveShadows = true;
+
+    ground.position.x = n / 2 - .5;
+    ground.position.z = m / 2 - .5;
+
+    // base
+    let baseMaterial = new BABYLON.StandardMaterial('ground', this.scene);
+    // let baseTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
+    // baseTexture.uScale = 16;
+    // baseTexture.vScale = 16;
+    // baseMaterial.diffuseTexture = baseTexture;
+    // baseMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+    baseMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+
+    let base = BABYLON.Mesh.CreateBox('base', 1, this.scene);
+    base.scaling = new BABYLON.Vector3(n, 1, m);
+    base.position.x = n / 2 - .5;
+    base.position.y = -(.5 + .1);
+    base.position.z = m / 2 - .5;
+    base.material = baseMaterial;
+  }
+
   showThing(thing: Thing) {
     let meshName = 'M' + thing.type;
     let matName = 'm' + thing.type;
@@ -167,7 +216,11 @@ class Renderer {
       // GROUND
       //
       case ThingType.GROUND:
-      return;
+
+      if (thing) {
+        console.warn('TBD: remove me');
+        return;
+      }
 
       if (!mat) {
         mat = new BABYLON.StandardMaterial(matName, this.scene);
