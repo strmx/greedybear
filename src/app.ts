@@ -23,5 +23,5 @@ let gameData = new GameData();
 // </TEST-ELEVATION>
 
 
-let renderer = new Renderer();
+let renderer = new Renderer(gameData.playground);
 let gameplay = new GamePlay(gameData, renderer);

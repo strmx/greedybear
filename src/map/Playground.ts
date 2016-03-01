@@ -1,6 +1,7 @@
 import Randomizer = require('../utils/Randomizer');
 import CavePatternGenerator = require('./CavePatternGenerator');
 import PatternHelper = require('./PatternHelper');
+import Elevation = require('./Elevation');
 import types = require('../types');
 import Thing = require('../game/Thing');
 
@@ -13,20 +14,20 @@ const DEFAULT_PATTERN_OPTIONS = {
   m: 100,
   wallChance: .4,
   stepCount: 2,
-  nextReal: Math.random,
-  // nextReal: Randomizer.generateNextRealFunction(13),
+  // nextReal: Math.random,
+  nextReal: Randomizer.generateNextRealFunction(13),
   birthLimit: 4,
   deathLimit: 3,
 };
 
-let createdObjectsCount = 0;
-
 class Playground {
-  map: number[][];
-  boundaries: number[][];
-  elevations: Uint8Array;
-  startPoints: DistancePoint[];
-  wallRects: RectArea[];
+  map: number[][]
+  boundaries: number[][]
+  heightMap: number[][]
+  maxHeight: number = 16
+  elevationMap: Elevation[][]
+  startPoints: DistancePoint[]
+  wallRects: RectArea[]
 
   constructor() {
     // initialise cave pattern
@@ -55,8 +56,30 @@ class Playground {
     this.map = PatternHelper.clone(pattern);
     this.wallRects = PatternHelper.calculateRectBlocks(pattern, 1);
     this.boundaries = PatternHelper.clone(pattern);
-    this.elevations = PatternHelper.generateElevations(DEFAULT_PATTERN_OPTIONS.n, DEFAULT_PATTERN_OPTIONS.m, DEFAULT_PATTERN_OPTIONS.nextReal);
     this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
+    this._generateElevations();
+  }
+
+  private _generateElevations() {
+    let n = DEFAULT_PATTERN_OPTIONS.n;
+    let m = DEFAULT_PATTERN_OPTIONS.m;
+    this.heightMap = PatternHelper.generateElevations(n, m, DEFAULT_PATTERN_OPTIONS.nextReal);
+    this.elevationMap = [];
+
+    for (let i = 0; i < n; i++) {
+      let row = [];
+      for (let j = 0; j < m; j++) {
+        row.push(new Elevation(this.heightMap[i][j]  * this.maxHeight, i, j));
+      }
+      this.elevationMap.push(row);
+    }
+
+    // update heighbors
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < m; j++) {
+        this.elevationMap[i][j].updateNeighbors(this.elevationMap);
+      }
+    }
   }
 }
 

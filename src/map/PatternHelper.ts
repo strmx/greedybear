@@ -407,8 +407,7 @@ class PatternHelper {
   // ELEVATIONS
   //
 
-  public static generateElevations(n: number, m: number, randomFunction: Function): Uint8Array {
-    const MAX_ELEVATION = 255;
+  public static generateElevations(n: number, m: number, randomFunction: Function): number[][] {
     let map = PatternHelper.createFilled(n, m, 0);
     let count = 0;
     let halfN = n / 2;
@@ -419,20 +418,28 @@ class PatternHelper {
     // add random heighest point
     for (let i = 0; i < n; i++) {
       // heighest in the center
-      maxElevationX = (i < halfN ? (i / halfN) : (n - i) / halfN) * MAX_ELEVATION;
+      maxElevationX = (i < halfN ? (i / halfN) : (n - i) / halfN);
 
       for (let j = 0; j < m; j++) {
         if (i === 0 || j === 0 || i === n - 1 || j === m - 1) {
           map[i][j] = 0;
         } else if (randomFunction() < .4) {
-          maxElevationY = (j < halfM ? (j / halfM) : (m - j) / halfM) * MAX_ELEVATION;
+          maxElevationY = (j < halfM ? (j / halfM) : (m - j) / halfM);
+          map[i][j] = ((maxElevationX + maxElevationY) / 2) * randomFunction();
           map[i][j] = ((maxElevationX + maxElevationY) / 2) * randomFunction();
         }
       }
     }
 
-    // interpolate
-    // 8 cells around cell - TL>TR>BR>BL>TL
+    // map[99][99] = .15;
+    // map[22][96] = .25;
+    // map[0][12] = .15;
+    // map[1][10] = .15;
+    // map[1][11] = .15;
+    // map[1][12] = .15;
+
+    // // interpolate
+    // // 8 cells around cell - TL>TR>BR>BL>TL
     let cx, cy, lx, rx, ty, by, v;
     for (let iter = 0; iter < 4; iter ++) {
       for (let i = 0; i < n; i++) {
@@ -461,26 +468,47 @@ class PatternHelper {
       }
     }
 
-    // number[][] -> Uint8Array
-    let bufferSource: number[] = [];
-    let color: number;
-    for (let i = 0; i < n; i++) {
-      for (let j = 0; j < m; j++) {
-        color = map[i][j];
-        // bufferSource[i * n + j] = color | (color << 8) | (color << 16);
-        bufferSource[i * (m * 4) + j * 4] = color;
-        bufferSource[i * (m * 4) + j * 4 + 1] = color;
-        bufferSource[i * (m * 4) + j * 4 + 2] = color;
-        bufferSource[i * (m * 4) + j * 4 + 3] = 255;
-      }
-    }
-
-    return new Uint8Array(bufferSource);
+    return map;
   }
 
   //
   // TOOLS
   //
+
+  public static numberMapToUint8Array(map: number[][], multiplier: number = 255): Uint8Array {
+    let tMap = PatternHelper.transpose(map);
+    let n = tMap.length;
+    let m = tMap[0].length;
+    let total = n * m * 4;
+    let im, j4;
+    let bufferSource: number[] = [];
+    let color: number;
+
+    // for (let i = 0; i < n; i++) {
+    for (let i = 0; i < n; i++) {
+      im = i * m * 4;
+      for (let j = 0; j < m; j++) {
+        j4 = j * 4;
+        color = tMap[n - i - 1][j];
+
+        // bufferSource[im + j4] = color | (color << 8) | (color << 16);
+
+        bufferSource[im + j4] = color * multiplier;
+        bufferSource[im + j4 + 1] = color * multiplier;
+        bufferSource[im + j4 + 2] = color * multiplier;
+        bufferSource[im + j4 + 3] = 255;
+
+        // +invert
+        // let offset = total - (j * n * 4 + i * 4);
+        // bufferSource[offset] = color * multiplier;
+        // bufferSource[offset + 1] = color * multiplier;
+        // bufferSource[offset + 2] = color * multiplier;
+        // bufferSource[offset + 3] = 255;
+      }
+    }
+
+    return new Uint8Array(bufferSource);
+  }
 
   public static clone(pattern: number[][]): number[][] {
     return pattern.map(col => (col.map(cell => (cell))));

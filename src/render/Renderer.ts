@@ -3,6 +3,7 @@
 import types = require('../types');
 import CanvasElement = require('./CanvasElement');
 import Playground = require('../map/Playground');
+import PatternHelper = require('../map/PatternHelper');
 import Thing = require('../game/Thing');
 import CustomMesh = require('./CustomMesh');
 
@@ -10,22 +11,19 @@ const ThingType = types.ThingType;
 const V2 = BABYLON.Vector2;
 const V3 = BABYLON.Vector3;
 
-const ANGLE_RIGHT = 0;
-const ANGLE_BOTTOM = 1.5707963267948966;
-const ANGLE_LEFT = 3.141592653589793;
-const ANGLE_TOP = -1.5707963267948966;
-
 class Renderer {
-  canvas: CanvasElement;
-  engine: BABYLON.Engine;
-  scene: BABYLON.Scene;
-  camera: BABYLON.FollowCamera;
-  zoomOutCamera: BABYLON.ArcRotateCamera;
-  scoresPlane: BABYLON.AbstractMesh;
-  stats: {begin: Function, end: Function, setMode: Function, domElement: HTMLElement};
-  shadowGenerator: BABYLON.ShadowGenerator;
+  playground: Playground
+  canvas: CanvasElement
+  engine: BABYLON.Engine
+  scene: BABYLON.Scene
+  camera: BABYLON.FollowCamera
+  zoomOutCamera: BABYLON.ArcRotateCamera
+  scoresPlane: BABYLON.AbstractMesh
+  stats: {begin: Function, end: Function, setMode: Function, domElement: HTMLElement}
+  shadowGenerator: BABYLON.ShadowGenerator
 
-  constructor() {
+  constructor(playground: Playground) {
+    this.playground = playground;
 
     // this.engine.runRenderLoop(() => {
     //   stats.begin();
@@ -169,8 +167,8 @@ class Renderer {
   addGround(playground: Playground) {
     let n = playground.map.length;
     let m = playground.map[0].length;
-    let buffer = playground.elevations;
-    let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.min(n, m), 0, 10, this.scene, false)
+    let buffer = PatternHelper.numberMapToUint8Array(playground.heightMap);
+    let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.min(n, m), 0, playground.maxHeight, this.scene, false)
     // let ground = BABYLON.Mesh.CreateGroundFromHeightMap(matName, 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
 
     let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
@@ -283,7 +281,7 @@ class Renderer {
 
       if (!mesh) {
         mesh = BABYLON.Mesh.CreateSphere(meshName, 4, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
-        mesh.position.y = .5;
+        // mesh.position.y = .5;
         mesh.material = mat;
         mesh.isVisible = false;
       }
@@ -303,7 +301,7 @@ class Renderer {
 
       if (!mesh) {
         mesh = BABYLON.Mesh.CreateSphere(meshName, 8, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
-        mesh.position.y = .5;
+        // mesh.position.y = .5;
         mesh.material = mat;
         mesh.isVisible = false;
       }

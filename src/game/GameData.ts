@@ -55,15 +55,35 @@ class GameData {
     // this.things.push(ground);
 
 
-    // walls
+    // pyramids
+    let x: number, y: number, w: number, h: number;
     this.playground.wallRects.forEach((rect: RectArea) => {
-      let centerX = rect.x + rect.w / 2 - .5;
-      let centerY = rect.y + rect.h / 2 - .5;
-      let scale = (rect.w + rect.h) / 2;
-      let wall = new Thing(ThingType.WALL, new V3(centerX, 0, centerY));
-      wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
-      this.things.push(wall);
-      // this.thingMap[centerX][centerY] = wall;
+      try {
+        x = rect.x;
+        y = rect.y;
+        w = rect.w;
+        h = rect.h;
+        let centerX = x + w / 2 - .5;
+        let centerY = y + h / 2 - .5;
+        let scale = (w + h) / 2;
+        let posY = this.playground.elevationMap[x][y].height;
+
+        // for big objects
+        if (w > 1 || h > 1) {
+          let tl = this.playground.elevationMap[x][y].height;
+          let tr = this.playground.elevationMap[x + w - 1][y].height;
+          let br = this.playground.elevationMap[x + w - 1][y + h - 1].height;
+          let bl = this.playground.elevationMap[x][y + h - 1].height;
+          posY = Math.min(tl, tr, br, bl);
+        }
+
+        let wall = new Thing(ThingType.WALL, new V3(centerX, posY, centerY));
+        wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
+        this.things.push(wall);
+        // this.thingMap[centerX][centerY] = wall;
+      } catch (err) {
+        console.log();
+      }
     });
 
     // agent
