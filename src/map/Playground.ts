@@ -20,7 +20,7 @@ const DEFAULT_PATTERN_OPTIONS = {
   nextReal: Randomizer.generateNextRealFunction(13),
   birthLimit: 4,
   deathLimit: 3,
-  maxHeight: 100
+  maxHeight: 25
 };
 
 class Playground {
@@ -66,7 +66,8 @@ class Playground {
     this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
     this.heightMap = PatternHelper.generateElevations(spec.n, spec.m, spec.nextReal);
     this.elevationMap = this._generateElevations(this.heightMap, this.maxHeight, spec);
-    this.map3d = this._generate3DMap(this.heightMap);
+    this.map3d = this._generate3DMap(this.elevationMap);
+    console.log(this.map3d);
   }
 
   /*
@@ -78,21 +79,21 @@ interface Map3DCell {
   directionLeft: BABYLON.Vector3;
 }
   */
-  private _generate3DMap(heightMap: number[][]): Map3DCell[][] {
-    let n = heightMap.length;
-    let m = heightMap[0].length;
+  private _generate3DMap(elevationMap: Elevation[][]): Map3DCell[][] {
+    let n = elevationMap.length;
+    let m = elevationMap[0].length;
     let map3d: Map3DCell[][] = [];
 
     for (let i = 0; i < n; i++) {
       let row = [];
       for (let j = 0; j < m; j++) {
-        let pos = new BABYLON.Vector3(i, heightMap[i][j], j);
+        let pos = new BABYLON.Vector3(i, elevationMap[i][j].height, j);
         row.push({
           pos,
-          directionTop: pos,
-          directionRight: pos,
-          directionBottom: pos,
-          directionLeft: pos,
+          directionTop: null,
+          directionRight: null,
+          directionBottom: null,
+          directionLeft: null,
         });
       }
       map3d.push(row);
@@ -104,7 +105,8 @@ interface Map3DCell {
         let cell3d = map3d[i][j];
         // top
         if (j > 0) {
-          cell3d.directionTop = map3d[i][j - 1].pos.subtract(cell3d.pos);
+          // TODO: findout why it's inverted (directionBottom/directionTop)
+          cell3d.directionBottom = map3d[i][j - 1].pos.subtract(cell3d.pos);
         }
         // right
         if (i < n - 1) {
@@ -112,7 +114,8 @@ interface Map3DCell {
         }
         // bottom
         if (j < m - 1) {
-          cell3d.directionBottom = map3d[i][j + 1].pos.subtract(cell3d.pos);
+          // TODO: findout why it's inverted (directionBottom/directionTop)
+          cell3d.directionTop = map3d[i][j + 1].pos.subtract(cell3d.pos);
         }
         // left
         if (i > 0) {

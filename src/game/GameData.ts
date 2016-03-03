@@ -60,11 +60,11 @@ class GameData {
     this.playground.wallRects.forEach((rect2d: RectArea) => {
       w = rect2d.w;
       h = rect2d.h;
+      x = rect2d.x;
+      z = rect2d.y;
       let centerX = x + w / 2 - .5;
       let centerZ = z + h / 2 - .5;
       let scale = (w + h) / 2;
-      x = rect2d.x;
-      z = rect2d.y;
       y = this.playground.elevationMap[x][z].height;
 
       // for big objects (>1)
