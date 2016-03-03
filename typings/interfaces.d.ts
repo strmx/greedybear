@@ -32,6 +32,14 @@ interface Bypass {
   points: FreeAroundPoint[];
 }
 
+interface Map3DCell {
+  pos: BABYLON.Vector3;
+  directionTop: BABYLON.Vector3;
+  directionRight: BABYLON.Vector3;
+  directionBottom: BABYLON.Vector3;
+  directionLeft: BABYLON.Vector3;
+}
+
 // interface ThingParams {
 //   id: number
 //   type: number

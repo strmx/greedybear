@@ -24,7 +24,7 @@ class GameData {
     this.thingMap = PatternHelper.createFilled(this.playground.map.length, this.playground.map[0].length, null);
 
     // sky
-    this.things.push(new Thing(ThingType.SKY));
+    this.things.push(new Thing(ThingType.SKY, V3.Zero()));
 
     // ground & walls
     const map = this.playground.map;
@@ -56,46 +56,42 @@ class GameData {
 
 
     // pyramids
-    let x: number, y: number, w: number, h: number;
-    this.playground.wallRects.forEach((rect: RectArea) => {
-      try {
-        x = rect.x;
-        y = rect.y;
-        w = rect.w;
-        h = rect.h;
-        let centerX = x + w / 2 - .5;
-        let centerY = y + h / 2 - .5;
-        let scale = (w + h) / 2;
-        let posY = this.playground.elevationMap[x][y].height;
+    let x: number, y: number, z:number, w: number, h: number;
+    this.playground.wallRects.forEach((rect2d: RectArea) => {
+      w = rect2d.w;
+      h = rect2d.h;
+      let centerX = x + w / 2 - .5;
+      let centerZ = z + h / 2 - .5;
+      let scale = (w + h) / 2;
+      x = rect2d.x;
+      z = rect2d.y;
+      y = this.playground.elevationMap[x][z].height;
 
-        // for big objects
-        if (w > 1 || h > 1) {
-          let tl = this.playground.elevationMap[x][y].height;
-          let tr = this.playground.elevationMap[x + w - 1][y].height;
-          let br = this.playground.elevationMap[x + w - 1][y + h - 1].height;
-          let bl = this.playground.elevationMap[x][y + h - 1].height;
-          posY = Math.min(tl, tr, br, bl);
-        }
-
-        let wall = new Thing(ThingType.WALL, new V3(centerX, posY, centerY));
-        wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
-        this.things.push(wall);
-        // this.thingMap[centerX][centerY] = wall;
-      } catch (err) {
-        console.log();
+      // for big objects (>1)
+      if (w > 1 || h > 1) {
+        let tl = this.playground.elevationMap[x][z].height;
+        let tr = this.playground.elevationMap[x + w - 1][z].height;
+        let br = this.playground.elevationMap[x + w - 1][z + h - 1].height;
+        let bl = this.playground.elevationMap[x][z + h - 1].height;
+        y = Math.min(tl, tr, br, bl);
       }
+
+      let wall = new Thing(ThingType.WALL, new V3(centerX, y, centerZ));
+      wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
+      this.things.push(wall);
     });
 
     // agent
-    let agentPos = this.playground.startPoints[0];
-    let agent = new Thing(ThingType.AGENT, new V3(agentPos.x, .5, agentPos.y));
+    let pos2d = this.playground.startPoints[0];
+    let agentPos = new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y);
+    let agent = new Thing(ThingType.AGENT, agentPos);
     this.things.push(agent);
     agent.rotation.y = 0;
     this.thingMap[agent.pos0.x][agent.pos0.z] = agent;
 
     // companions
-    this.playground.startPoints.slice(1).forEach(pos => {
-      let companion = new Thing(ThingType.COMPANION, new V3(pos.x, .5, pos.y));
+    this.playground.startPoints.slice(1).forEach(pos2d => {
+      let companion = new Thing(ThingType.COMPANION, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y));
       this.thingMap[companion.pos0.x][companion.pos0.z] = companion;
       this.things.push(companion);
     });

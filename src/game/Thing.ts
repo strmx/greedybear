@@ -24,7 +24,7 @@ class Thing {
   // render props
   parent: BABYLON.AbstractMesh = null;
 
-  constructor(type: number, pos0: BABYLON.Vector3 = BABYLON.Vector3.Zero(), w: number = 1, h: number = 1) {
+  constructor(type: number, pos0: BABYLON.Vector3, w: number = 1, h: number = 1) {
     this.id = createdObjectsCount++;
     this.type = type;
     this.pos0 = pos0;

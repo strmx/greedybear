@@ -413,34 +413,32 @@ class PatternHelper {
     let halfN = n / 2;
     let halfM = m / 2;
     let chance = 0;
-    let maxElevationX, maxElevationY;
+    let maxElevation;
+    let maxRadius = Math.sqrt(halfN * halfN + halfM * halfM);
+    let cx, cy;
 
     // add random heighest point
     for (let i = 0; i < n; i++) {
-      // heighest in the center
-      maxElevationX = (i < halfN ? (i / halfN) : (n - i) / halfN);
+      cx = halfN - i;
 
+      // heighest in the center
       for (let j = 0; j < m; j++) {
+
         if (i === 0 || j === 0 || i === n - 1 || j === m - 1) {
           map[i][j] = 0;
-        } else if (randomFunction() < .4) {
-          maxElevationY = (j < halfM ? (j / halfM) : (m - j) / halfM);
-          map[i][j] = ((maxElevationX + maxElevationY) / 2) * randomFunction();
-          map[i][j] = ((maxElevationX + maxElevationY) / 2) * randomFunction();
+        } else if (randomFunction() < .45) {
+          cy = halfM - j;
+          maxElevation = 1 - (Math.sqrt(cx * cx + cy * cy) / maxRadius);
+          map[i][j] = maxElevation * randomFunction();
         }
       }
     }
 
-    // map[99][99] = .15;
     // map[22][96] = .25;
-    // map[0][12] = .15;
-    // map[1][10] = .15;
-    // map[1][11] = .15;
-    // map[1][12] = .15;
 
     // // interpolate
     // // 8 cells around cell - TL>TR>BR>BL>TL
-    let cx, cy, lx, rx, ty, by, v;
+    let lx, rx, ty, by, v;
     for (let iter = 0; iter < 4; iter ++) {
       for (let i = 0; i < n; i++) {
         lx = i - 1 < 0 ? i : i - 1;

@@ -6,6 +6,8 @@ enum KEYS {
   DOWN,
   A,
   C,
+  D,
+  M,
   Z,
 }
 

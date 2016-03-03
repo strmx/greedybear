@@ -10,8 +10,6 @@ import Playground = require('../map/Playground');
 
 const ThingType = types.ThingType;
 const KEYS = types.KEYS;
-
-const V2 = BABYLON.Vector2;
 const V3 = BABYLON.Vector3;
 
 const ANGLE_RIGHT = 0;
@@ -22,6 +20,7 @@ const ANGLE_TOP = -1.5707963267948966;
 interface Path {
   x: number;
   y: number;
+  z: number;
   rotation: number;
 }
 
@@ -32,7 +31,7 @@ class GamePlay {
   scores = 0;
   speed = 1;
   distanceFromCell: number = 0;
-  aCellPos: BABYLON.Vector2 = null;
+  aCellPos: BABYLON.Vector3 = null;
   lastPressedNavigationKey = null;
   agentPath: Path[] = [];
   partyMembers: Thing[] = [];
@@ -50,8 +49,7 @@ class GamePlay {
     });
 
     // set initial agent location
-    this.aCellPos = new V2(this.agent.position.x, this.agent.position.z);
-
+    this.aCellPos = this.agent.position.clone();
 
     KeyboardInput.getObservable.forEach(key => {
       switch (key) {
@@ -69,8 +67,14 @@ class GamePlay {
         case KEYS.DOWN:
           this.speed -= 1;
           break;
-        case KEYS.C:
+        case KEYS.M:
           this.renderer.switchCameras();
+          break;
+        case KEYS.D:
+          if (this.renderer.scene.debugLayer.isVisible())
+            this.renderer.scene.debugLayer.hide();
+          else
+            this.renderer.scene.debugLayer.show();
           break;
         default:
       }
@@ -105,13 +109,14 @@ class GamePlay {
       let nextPos = this.aCellPos.clone();
 
       if (agentRotationY === ANGLE_RIGHT)       nextPos.x = this.aCellPos.x + this.distanceFromCell;
-      else if (agentRotationY === ANGLE_BOTTOM) nextPos.y = this.aCellPos.y - this.distanceFromCell;
+      else if (agentRotationY === ANGLE_BOTTOM) nextPos.z = this.aCellPos.z - this.distanceFromCell;
       else if (agentRotationY === ANGLE_LEFT)   nextPos.x = this.aCellPos.x - this.distanceFromCell;
-      else if (agentRotationY === ANGLE_TOP)    nextPos.y = this.aCellPos.y + this.distanceFromCell;
+      else if (agentRotationY === ANGLE_TOP)    nextPos.z = this.aCellPos.z + this.distanceFromCell;
       else debugger;
 
       agent.position.x = nextPos.x;
-      agent.position.z = nextPos.y;
+      agent.position.y = this.gameData.playground.elevationMap[this.aCellPos.x][this.aCellPos.z].height;
+      agent.position.z = nextPos.z;
       agent.rotation.y = agentRotationY;
 
       //
@@ -127,19 +132,19 @@ class GamePlay {
         // update direction and position on pg
         if (pathRotation === ANGLE_RIGHT) {
           member.position.x = pathCell.x + this.distanceFromCell;
-          member.position.z = pathCell.y;
+          member.position.z = pathCell.z;
           member.rotation.y = pathRotation;
         } else if (pathRotation === ANGLE_BOTTOM) {
           member.position.x = pathCell.x;
-          member.position.z = pathCell.y - this.distanceFromCell;
+          member.position.z = pathCell.z - this.distanceFromCell;
           member.rotation.y = pathRotation;
         } else if (pathRotation === ANGLE_LEFT) {
           member.position.x = pathCell.x - this.distanceFromCell;
-          member.position.z = pathCell.y;
+          member.position.z = pathCell.z;
           member.rotation.y = pathRotation;
         } else if (pathRotation === ANGLE_TOP) {
           member.position.x = pathCell.x;
-          member.position.z = pathCell.y + this.distanceFromCell;
+          member.position.z = pathCell.z + this.distanceFromCell;
           member.rotation.y = pathRotation;
         } else debugger;
       }
@@ -150,13 +155,13 @@ class GamePlay {
       // 1. move 1 cell to the direction
       //
 
-      thingMap[this.aCellPos.x][this.aCellPos.y] = null;
+      thingMap[this.aCellPos.x][this.aCellPos.z] = null;
 
       // used switch to use integers
       if (agentRotationY === ANGLE_RIGHT)       this.aCellPos.x++;
-      else if (agentRotationY === ANGLE_BOTTOM) this.aCellPos.y--;
+      else if (agentRotationY === ANGLE_BOTTOM) this.aCellPos.z--;
       else if (agentRotationY === ANGLE_LEFT)   this.aCellPos.x--;
-      else if (agentRotationY === ANGLE_TOP)    this.aCellPos.y++;
+      else if (agentRotationY === ANGLE_TOP)    this.aCellPos.z++;
       else debugger;
 
       this.distanceFromCell -= 1;
@@ -187,13 +192,14 @@ class GamePlay {
 
       } else {
         // update only if free TODO: found workaround
-        thingMap[this.aCellPos.x][this.aCellPos.y] = agent;
+        thingMap[this.aCellPos.x][this.aCellPos.z] = agent;
       }
 
       // update agent path
       this.agentPath.push({
         x: this.aCellPos.x,
         y: this.aCellPos.y,
+        z: this.aCellPos.z,
         rotation: agentRotationY,
       });
 
@@ -203,12 +209,12 @@ class GamePlay {
 
       let nextCell = this.aCellPos.clone();
       if (agentRotationY === ANGLE_RIGHT)       nextCell.x++;
-      else if (agentRotationY === ANGLE_BOTTOM) nextCell.y--;
+      else if (agentRotationY === ANGLE_BOTTOM) nextCell.z--;
       else if (agentRotationY === ANGLE_LEFT)   nextCell.x--;
-      else if (agentRotationY === ANGLE_TOP)    nextCell.y++;
+      else if (agentRotationY === ANGLE_TOP)    nextCell.z++;
       else debugger;
 
-      let collidedThing = thingMap[nextCell.x][nextCell.y];
+      let collidedThing = thingMap[nextCell.x][nextCell.z];
       if (collidedThing) {
         switch(collidedThing.type) {
 
@@ -218,7 +224,7 @@ class GamePlay {
           this.scores++;
           this.renderer.updateScoresText(this.scores);
 
-          thingMap[nextCell.x][nextCell.y] = null;
+          thingMap[nextCell.x][nextCell.z] = null;
           this.partyMembers.push(collidedThing);
           break;
 

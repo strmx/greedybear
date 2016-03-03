@@ -13,6 +13,8 @@ class KeyboardInput {
     40: KEYS.DOWN,
     65: KEYS.A,
     67: KEYS.C,
+    77: KEYS.M,
+    68: KEYS.D,
     90: KEYS.Z,
   }
 

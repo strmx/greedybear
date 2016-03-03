@@ -47,16 +47,6 @@ class Renderer {
     this.engine = new BABYLON.Engine(this.canvas.element, true, {}, true);
     this.scene = new BABYLON.Scene(this.engine);
 
-    //
-    // show debug information
-    //
-    (<any>window).dm = () => {
-      if (this.scene.debugLayer.isVisible())
-        this.scene.debugLayer.hide();
-      else
-        this.scene.debugLayer.show();
-    };
-
     // this.engine.resize();
 
     //
