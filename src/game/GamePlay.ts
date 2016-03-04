@@ -99,6 +99,8 @@ class GamePlay {
 
   shiftAgent(agent: Thing, map: number[][], thingMap: Thing[][], map3d: Map3DCell[][]) {
     let agentRotationY = agent.rotation.y;
+    let distanceFromCell = this.distanceFromCell;
+    let x: number, y: number, z: number;
 
     if (this.distanceFromCell < 1) {
 
@@ -108,18 +110,18 @@ class GamePlay {
 
       let nextPos = this.aCellPos.clone();
 
-      if (agentRotationY === ANGLE_RIGHT)       nextPos.x += this.distanceFromCell;
-      else if (agentRotationY === ANGLE_BOTTOM) nextPos.z -= this.distanceFromCell;
-      else if (agentRotationY === ANGLE_LEFT)   nextPos.x -= this.distanceFromCell;
-      else if (agentRotationY === ANGLE_TOP)    nextPos.z += this.distanceFromCell;
+      if (agentRotationY === ANGLE_RIGHT)       nextPos.x += distanceFromCell;
+      else if (agentRotationY === ANGLE_BOTTOM) nextPos.z -= distanceFromCell;
+      else if (agentRotationY === ANGLE_LEFT)   nextPos.x -= distanceFromCell;
+      else if (agentRotationY === ANGLE_TOP)    nextPos.z += distanceFromCell;
       else debugger;
 
       // <TEST_SMOOTH_Y_MOVEMEND>
       let pos3d: Map3DCell = map3d[this.aCellPos.x][this.aCellPos.z]
-      if (agentRotationY === ANGLE_RIGHT)       nextPos.y += pos3d.directionRight.y * this.distanceFromCell;
-      else if (agentRotationY === ANGLE_BOTTOM) nextPos.y += pos3d.directionBottom.y * this.distanceFromCell;
-      else if (agentRotationY === ANGLE_LEFT)   nextPos.y += pos3d.directionLeft.y * this.distanceFromCell;
-      else if (agentRotationY === ANGLE_TOP)    nextPos.y += pos3d.directionTop.y * this.distanceFromCell;
+      if (agentRotationY === ANGLE_RIGHT)       nextPos.y += pos3d.directionRight.y * distanceFromCell;
+      else if (agentRotationY === ANGLE_BOTTOM) nextPos.y += pos3d.directionBottom.y * distanceFromCell;
+      else if (agentRotationY === ANGLE_LEFT)   nextPos.y += pos3d.directionLeft.y * distanceFromCell;
+      else if (agentRotationY === ANGLE_TOP)    nextPos.y += pos3d.directionTop.y * distanceFromCell;
       else debugger;
       agent.position.y = nextPos.y;
       // <TEST_SMOOTH_Y_MOVEMEND>
@@ -141,24 +143,24 @@ class GamePlay {
 
         // update direction and position on pg
         if (pathRotation === ANGLE_RIGHT) {
-          member.position.x = pathCell.x + this.distanceFromCell;
-          member.position.y = pathCell.y + map3d[pathCell.x][pathCell.z].directionRight.y * this.distanceFromCell;
+          member.position.x = pathCell.x + distanceFromCell;
+          member.position.y = pathCell.y + map3d[pathCell.x][pathCell.z].directionRight.y * distanceFromCell;
           member.position.z = pathCell.z;
           member.rotation.y = pathRotation;
         } else if (pathRotation === ANGLE_BOTTOM) {
           member.position.x = pathCell.x;
-          member.position.y = pathCell.y + map3d[pathCell.x][pathCell.z].directionBottom.y * this.distanceFromCell;
-          member.position.z = pathCell.z - this.distanceFromCell;
+          member.position.y = pathCell.y + map3d[pathCell.x][pathCell.z].directionBottom.y * distanceFromCell;
+          member.position.z = pathCell.z - distanceFromCell;
           member.rotation.y = pathRotation;
         } else if (pathRotation === ANGLE_LEFT) {
-          member.position.x = pathCell.x - this.distanceFromCell;
-          member.position.y = pathCell.y + map3d[pathCell.x][pathCell.z].directionLeft.y * this.distanceFromCell;
+          member.position.x = pathCell.x - distanceFromCell;
+          member.position.y = pathCell.y + map3d[pathCell.x][pathCell.z].directionLeft.y * distanceFromCell;
           member.position.z = pathCell.z;
           member.rotation.y = pathRotation;
         } else if (pathRotation === ANGLE_TOP) {
           member.position.x = pathCell.x;
-          member.position.y = pathCell.y + map3d[pathCell.x][pathCell.z].directionTop.y * this.distanceFromCell;
-          member.position.z = pathCell.z + this.distanceFromCell;
+          member.position.y = pathCell.y + map3d[pathCell.x][pathCell.z].directionTop.y * distanceFromCell;
+          member.position.z = pathCell.z + distanceFromCell;
           member.rotation.y = pathRotation;
         } else debugger;
       }
@@ -180,6 +182,7 @@ class GamePlay {
 
       this.aCellPos.y = map3d[this.aCellPos.x][this.aCellPos.z].pos.y;
 
+      distanceFromCell -= 1;
       this.distanceFromCell -= 1;
 
       //
