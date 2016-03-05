@@ -13,8 +13,8 @@ class GameData {
   things: Thing[]
   thingMap: Thing[][]
 
-  constructor() {
-    this.playground = new Playground();
+  constructor(spec: GameDataOptions) {
+    this.playground = new Playground(spec);
 
     //
     // initial things
@@ -88,9 +88,12 @@ class GameData {
 
     // companions
     this.playground.startPoints.slice(1).forEach(pos2d => {
-      let companion = new Thing(ThingType.COMPANION, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y));
-      this.thingMap[companion.pos0.x][companion.pos0.z] = companion;
-      this.things.push(companion);
+      // agentPath should be > 1
+      if (Math.abs(agent.pos0.x - pos2d.x) >= 1 && Math.abs(agent.pos0.z - pos2d.y) >= 1) {
+        let companion = new Thing(ThingType.COMPANION, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y));
+        this.thingMap[companion.pos0.x][companion.pos0.z] = companion;
+        this.things.push(companion);
+      }
     });
   }
 }

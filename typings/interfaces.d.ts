@@ -2,9 +2,16 @@
 /// <reference path="./rx.all.d.ts" />
 /// <reference path="./babylon.2.2.d.ts" />
 
-//
-// pattern
-//
+interface GameDataOptions {
+  n: number;
+  m: number;
+  wallChance: number;
+  stepCount: number;
+  nextReal: Function;
+  birthLimit: number;
+  deathLimit: number;
+  maxHeight: number;
+}
 
 interface Point {
   x: number;

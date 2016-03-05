@@ -62,16 +62,16 @@ class Renderer {
     //
 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    let light = new BABYLON.HemisphericLight('light1', new V3(0, 10, 0), this.scene);
+    let light = new BABYLON.HemisphericLight('light1', new V3(0, 1, 0), this.scene);
     // var light = new BABYLON.DirectionalLight('Dir0', new V3(0, -1, 0), this.scene);
     // light.diffuse = new BABYLON.Color3(1, 1, 1);
     // light.specular = new BABYLON.Color3(1, 1, 1);
     light.intensity = 0.7;
 
-    // let h = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0, 1, -1), this.scene);
+    // let h = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0, 1, 0), this.scene);
     // h.intensity = 0.5;
-    let directLight = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(1, -1, -2), this.scene);
-    directLight.position = new BABYLON.Vector3(-300,300,600);
+    let directLight = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(2, 5, 3), this.scene);
+    // directLight.position = new BABYLON.Vector3(0, 100, 0);
 
 
     //
@@ -80,8 +80,8 @@ class Renderer {
 
     // let pos = agentOrigin.position;
     // var agentCamera = new BABYLON.FollowCamera('agentCamera', new V3(pos.x, 10, pos.z), this.scene);
-    let n = 100;
-    let m = 100;
+    let n = this.playground.map.length;
+    let m = this.playground.map[0].length;
     this.camera = new BABYLON.FollowCamera('followCamera', new V3(n / 2, 10, m / 2), this.scene);
     this.camera.radius = 8; // how far from the object to follow
     this.camera.heightOffset = 10; // how high above the object to place the camera
@@ -120,11 +120,11 @@ class Renderer {
     // ground.receiveShadows = true;
 
 
-    this.shadowGenerator = new BABYLON.ShadowGenerator(1024, directLight);
-    // render only once
-    this.shadowGenerator.getShadowMap().refreshRate = 0;
-  	// this.shadowGenerator.usePoissonSampling = true;
-    this.shadowGenerator.useVarianceShadowMap = true;
+    // this.shadowGenerator = new BABYLON.ShadowGenerator(1024, directLight);
+    // // render only once
+    // this.shadowGenerator.getShadowMap().refreshRate = 0;
+  	// // this.shadowGenerator.usePoissonSampling = true;
+    // this.shadowGenerator.useVarianceShadowMap = true;
 
     //
     // SCORES
@@ -158,16 +158,34 @@ class Renderer {
     let n = playground.map.length;
     let m = playground.map[0].length;
 
-    let skyboxMat = new BABYLON.StandardMaterial('skyboxMat', this.scene);
-    skyboxMat.backFaceCulling = false;
-    skyboxMat.reflectionTexture = new BABYLON.CubeTexture('textures/TropicalSunnyDay', this.scene);
-    skyboxMat.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-    // skyboxMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
-    // skyboxMat.specularColor = new BABYLON.Color3(0, 0, 0);
-    skyboxMat.disableLighting = true;
+    // let skyboxMat = new BABYLON.StandardMaterial('skyboxMat', this.scene);
+    // skyboxMat.backFaceCulling = false;
+    // skyboxMat.reflectionTexture = new BABYLON.CubeTexture('textures/TropicalSunnyDay', this.scene);
+    // skyboxMat.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    // skyboxMat.disableLighting = true;
+    // let skybox = BABYLON.Mesh.CreateBox('skybox', 1024, this.scene);
+    // skybox.material = skyboxMat;
 
-    let skybox = BABYLON.Mesh.CreateBox('skybox', 500.0, this.scene);
-    skybox.material = skyboxMat;
+
+    var skyboxMaterial = new (<any>BABYLON).SkyMaterial("skyMaterial", this.scene);
+    skyboxMaterial.backFaceCulling = false;
+  	skyboxMaterial._cachedDefines.FOG = true;
+    // skyMaterial.turbidity = 1 // 0..20 (maybe 100)
+    // skyMaterial.luminance = 1 // 0..1..190
+    // skyMaterial.inclination = 0.5; // The solar inclination, related to the solar azimuth in interval [0, 1]
+    // skyMaterial.azimuth = 0.25; // The solar azimuth in interval [0, 1]
+    // skyMaterial.rayleigh = 2; // Represents the sky appearance (globally) 0..2
+
+    // // Mie scattering (from [Gustav Mie](https://en.wikipedia.org/wiki/Gustav_Mie))
+    // Related to the haze particles in atmosphere
+    // The amount of haze particles following the Mie scattering theory
+    // skyMaterial.mieDirectionalG = 0.8;
+    // skyMaterial.mieCoefficient = 0.005; // The mieCoefficient in interval [0, 0.1], affects the property skyMaterial.mieDirectionalG
+
+    var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, this.scene);
+    skybox.material = skyboxMaterial;
+
+
 
     //
     // ground
@@ -212,10 +230,12 @@ class Renderer {
     // add water
     //
 
+    /*
     // Water
   	var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 1024, 1024, 1, this.scene, false);
   	var water = new (<any>BABYLON).WaterMaterial("water", this.scene);
-    waterMesh.position.y = -1.7;
+    // waterMesh.position.y = -1.7;
+    waterMesh.position.y = -250;
   	water.bumpTexture = new BABYLON.Texture("textures/waterbump.png", this.scene);
 
   	// Water properties
@@ -233,6 +253,7 @@ class Renderer {
 
   	// Assign the water material
   	waterMesh.material = water;
+    */
   }
 
   showThing(thing: Thing) {
@@ -291,7 +312,7 @@ class Renderer {
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      this.shadowGenerator.getShadowMap().renderList.push(mesh);
+      // this.shadowGenerator.getShadowMap().renderList.push(mesh);
       // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
       break;
 

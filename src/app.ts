@@ -1,12 +1,24 @@
 /// <reference path="../typings/interfaces.d.ts"/>
 
+import Randomizer = require('./utils/Randomizer');
 import GameData = require('./game/GameData');
 import GamePlay = require('./game/GamePlay');
 import Renderer = require('./render/Renderer');
 import CanvasElement = require('./render/CanvasElement');
 
+const gameOptions = {
+  n: 75,
+  m: 50,
+  wallChance: .4,
+  stepCount: 2,
+  nextReal: Math.random,
+  // nextReal: Randomizer.generateNextRealFunction(13),
+  birthLimit: 4,
+  deathLimit: 3,
+  maxHeight: 8
+};
 
-let gameData = new GameData();
+let gameData = new GameData(gameOptions);
 
 
 // <TEST-ELEVATION>

@@ -1,6 +1,5 @@
 /// <reference path="../../typings/Interfaces.d.ts" />
 
-import Randomizer = require('../utils/Randomizer');
 import CavePatternGenerator = require('./CavePatternGenerator');
 import PatternHelper = require('./PatternHelper');
 import Elevation = require('./Elevation');
@@ -10,18 +9,6 @@ import Thing = require('../game/Thing');
 const WORLD_OBJECT = types.ThingType;
 const V2 = BABYLON.Vector2;
 const V3 = BABYLON.Vector3;
-
-const DEFAULT_PATTERN_OPTIONS = {
-  n: 100,
-  m: 100,
-  wallChance: .4,
-  stepCount: 2,
-  // nextReal: Math.random,
-  nextReal: Randomizer.generateNextRealFunction(13),
-  birthLimit: 4,
-  deathLimit: 3,
-  maxHeight: 25
-};
 
 class Playground {
   map: number[][]
@@ -33,8 +20,7 @@ class Playground {
   startPoints: DistancePoint[]
   wallRects: RectArea[]
 
-  constructor() {
-    let spec = DEFAULT_PATTERN_OPTIONS;
+  constructor(spec: GameDataOptions) {
 
     // initialise cave pattern
     let pattern = CavePatternGenerator.generateCavePattern(spec);
