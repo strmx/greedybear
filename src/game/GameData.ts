@@ -23,9 +23,6 @@ class GameData {
     this.things = [];
     this.thingMap = PatternHelper.createFilled(this.playground.map.length, this.playground.map[0].length, null);
 
-    // sky
-    this.things.push(new Thing(ThingType.SKY, V3.Zero()));
-
     // ground & walls
     const map = this.playground.map;
     const n = map.length;

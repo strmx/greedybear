@@ -42,7 +42,7 @@ class GamePlay {
 
     this.agent = this.gameData.things.filter(t => (t.type === ThingType.AGENT))[0];
 
-    this.renderer.addGround(this.gameData.playground);
+    this.renderer.createEnvironment(this.gameData.playground);
 
     this.gameData.things.forEach(thing => {
       this.renderer.showThing(thing);
@@ -271,7 +271,7 @@ class GamePlay {
 
           // wall
           case ThingType.WALL:
-          console.warn('BAAADAABOOM!!!', nextCell);
+          console.warn('BAAADAABOOOOOOOOM!!!', nextCell);
           break;
 
           // unknown thing

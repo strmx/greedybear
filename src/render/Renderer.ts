@@ -154,9 +154,25 @@ class Renderer {
     scoresTexture.drawText(scores, null, 350, '256px bold Verdana', '#fff', 'transparent');
   }
 
-  addGround(playground: Playground) {
+  createEnvironment(playground: Playground) {
     let n = playground.map.length;
     let m = playground.map[0].length;
+
+    let skyboxMat = new BABYLON.StandardMaterial('skyboxMat', this.scene);
+    skyboxMat.backFaceCulling = false;
+    skyboxMat.reflectionTexture = new BABYLON.CubeTexture('textures/TropicalSunnyDay', this.scene);
+    skyboxMat.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    // skyboxMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    // skyboxMat.specularColor = new BABYLON.Color3(0, 0, 0);
+    skyboxMat.disableLighting = true;
+
+    let skybox = BABYLON.Mesh.CreateBox('skybox', 500.0, this.scene);
+    skybox.material = skyboxMat;
+
+    //
+    // ground
+    //
+
     let buffer = PatternHelper.numberMapToUint8Array(playground.heightMap);
     let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.min(n, m), 0, playground.maxHeight, this.scene, false)
     // let ground = BABYLON.Mesh.CreateGroundFromHeightMap(matName, 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
@@ -191,6 +207,32 @@ class Renderer {
     base.position.y = -(.5 + .1);
     base.position.z = m / 2 - .5;
     base.material = baseMaterial;
+
+    //
+    // add water
+    //
+
+    // Water
+  	var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 1024, 1024, 1, this.scene, false);
+  	var water = new (<any>BABYLON).WaterMaterial("water", this.scene);
+    waterMesh.position.y = -1.7;
+  	water.bumpTexture = new BABYLON.Texture("textures/waterbump.png", this.scene);
+
+  	// Water properties
+  	water.windForce = 1;
+  	water.waveHeight = .3;
+  	water.windDirection = new BABYLON.Vector2(1, 1);
+  	water.waterColor = new BABYLON.Color3(0.1, 0.1, 0.4);
+  	water.colorBlendFactor = 0;
+  	water.bumpHeight = 0.1;
+  	water.waveLength = 1;
+
+  	// Add skybox and ground to the reflection and refraction
+  	water.addToRenderList(skybox);
+  //	water.addToRenderList(ground);
+
+  	// Assign the water material
+  	waterMesh.material = water;
   }
 
   showThing(thing: Thing) {
@@ -302,28 +344,6 @@ class Renderer {
       this.camera.target = mesh;
 
       break;
-
-      //
-      // SKY
-      //
-      case ThingType.SKY:
-        if (mesh || mat) {
-          debugger;
-        }
-
-        // mat
-        mat = new BABYLON.StandardMaterial(matName, this.scene);
-        mat.backFaceCulling = false;
-        (<BABYLON.StandardMaterial>mat).reflectionTexture = new BABYLON.CubeTexture('textures/TropicalSunnyDay', this.scene);
-        (<BABYLON.StandardMaterial>mat).reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-        (<BABYLON.StandardMaterial>mat).diffuseColor = new BABYLON.Color3(0, 0, 0);
-        (<BABYLON.StandardMaterial>mat).specularColor = new BABYLON.Color3(0, 0, 0);
-        (<BABYLON.StandardMaterial>mat).disableLighting = true;
-
-        // mesh
-        mesh = BABYLON.Mesh.CreateBox(meshName, 500.0, this.scene);
-        mesh.material = mat;
-        break;
 
       default:
         debugger;
