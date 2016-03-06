@@ -137,8 +137,8 @@ class GamePlay {
 
       // apply update
       pos = agent.position;
-      pos.y = nextPos.y;
       pos.x = nextPos.x;
+      pos.y = nextPos.y + .5;
       pos.z = nextPos.z;
 
       agent.rotation.y = agentRotationY;
@@ -160,25 +160,25 @@ class GamePlay {
         // update direction and position on pg
         if (pathRotation === ANGLE_RIGHT) {
           pos.x = x + distanceFromCell;
-          pos.y = y + map3d[x][z].directionRight.y * distanceFromCell;
+          pos.y = y + map3d[x][z].directionRight.y * distanceFromCell + .5;
           pos.z = z;
           member.rotation.y = pathRotation;
 
         } else if (pathRotation === ANGLE_BOTTOM) {
           pos.x = x;
-          pos.y = y + map3d[x][z].directionBottom.y * distanceFromCell;
+          pos.y = y + map3d[x][z].directionBottom.y * distanceFromCell + .5;
           pos.z = z - distanceFromCell;
           member.rotation.y = pathRotation;
 
         } else if (pathRotation === ANGLE_LEFT) {
           pos.x = x - distanceFromCell;
-          pos.y = y + map3d[x][z].directionLeft.y * distanceFromCell;
+          pos.y = y + map3d[x][z].directionLeft.y * distanceFromCell + .5;
           pos.z = z;
           member.rotation.y = pathRotation;
 
         } else if (pathRotation === ANGLE_TOP) {
           pos.x = x;
-          pos.y = y + map3d[x][z].directionTop.y * distanceFromCell;
+          pos.y = y + map3d[x][z].directionTop.y * distanceFromCell + .5;
           pos.z = z + distanceFromCell;
           member.rotation.y = pathRotation;
 

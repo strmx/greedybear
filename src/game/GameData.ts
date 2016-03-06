@@ -55,6 +55,7 @@ class GameData {
     // pyramids
     let x: number, y: number, z:number, w: number, h: number;
     this.playground.wallRects.forEach((rect2d: RectArea) => {
+      let wall: Thing;
       w = rect2d.w;
       h = rect2d.h;
       x = rect2d.x;
@@ -62,26 +63,34 @@ class GameData {
       let centerX = x + w / 2 - .5;
       let centerZ = z + h / 2 - .5;
       let scale = (w + h) / 2;
+      let isOneCellSized = w === 1 && h === 1;
       y = this.playground.elevationMap[x][z].height;
 
       // for big objects (>1)
-      if (w > 1 || h > 1) {
+      if (!isOneCellSized) {
         let tl = this.playground.elevationMap[x][z].height;
         let tr = this.playground.elevationMap[x + w - 1][z].height;
         let br = this.playground.elevationMap[x + w - 1][z + h - 1].height;
         let bl = this.playground.elevationMap[x][z + h - 1].height;
         y = Math.min(tl, tr, br, bl);
+        wall = new Thing(ThingType.WALL, new V3(centerX, y, centerZ));
+      } else {
+        // tree
+        scale = .5 + (spec.nextReal() * .5);
+        wall = new Thing(ThingType.TREE, new V3(centerX, y + scale / 2, centerZ));
       }
 
-      let wall = new Thing(ThingType.WALL, new V3(centerX, y, centerZ));
       wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
       this.things.push(wall);
+
+
     });
 
     // agent
     let pos2d = this.playground.startPoints[0];
-    let agentPos = new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y);
+    let agentPos = new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height + .5, pos2d.y);
     let agent = new Thing(ThingType.AGENT, agentPos);
+    agent.scaling.x = agent.scaling.y = agent.scaling.z = .75;
     this.things.push(agent);
     agent.rotation.y = 0;
     this.thingMap[agent.pos0.x][agent.pos0.z] = agent;
@@ -90,7 +99,8 @@ class GameData {
     this.playground.startPoints.slice(1).forEach(pos2d => {
       // agentPath should be > 1
       if (Math.abs(agent.pos0.x - pos2d.x) >= 1 && Math.abs(agent.pos0.z - pos2d.y) >= 1) {
-        let companion = new Thing(ThingType.COMPANION, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y));
+        let companion = new Thing(ThingType.COMPANION, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height + .5, pos2d.y));
+        companion.scaling.x = companion.scaling.y = companion.scaling.z = .75;
         this.thingMap[companion.pos0.x][companion.pos0.z] = companion;
         this.things.push(companion);
       }

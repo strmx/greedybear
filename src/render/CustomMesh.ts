@@ -102,6 +102,30 @@ class CustomMesh {
     return polygon;
   }
 
+  static createTree(name: string, width: number, height: number, scene: BABYLON.Scene, updatable: boolean = false, nextReal: Function = Math.random): BABYLON.Mesh {
+    let meshes = [];
+    let partCount = 2 + Math.round(nextReal() * 3);
+    let sizeD = .5 + .5 * nextReal();
+
+    for (let i = 1; i <= partCount; i++) {
+      let d = i / partCount; // (0..1]
+      let size = d * sizeD; // small -> big
+      let y = (partCount - (i + 1)) * size + size;
+      let vertexData = createPyramidVertexData(size, size);
+      let polygon = new BABYLON.Mesh(name, scene);
+      polygon.scaling.y = 1.5;
+      vertexData.applyToMesh(polygon, updatable);
+      polygon.position.y = y;
+      meshes.push(polygon);
+    }
+
+    let treeMesh = BABYLON.Mesh.MergeMeshes(meshes, true, true);
+    // recalculate normals to flat
+    treeMesh.convertToFlatShadedMesh();
+
+    return treeMesh;
+  }
+
   static createGroundFromHeightMap(name: string, buffer: Uint8Array, bufferWidth: number, bufferHeight: number, width: number, height: number, subdivisions: number, minHeight: number, maxHeight: number, scene: BABYLON.Scene, updatable?: boolean): BABYLON.GroundMesh {
     let ground = new BABYLON.GroundMesh(name, scene);
     ground._subdivisions = subdivisions;
@@ -111,6 +135,7 @@ class CustomMesh {
     ground._maxZ = ground._height / 2;
     ground._minX = -ground._maxX;
     ground._minZ = -ground._maxZ;
+    // ground.convertToFlatShadedMesh();
 
     // Create VertexData from map data
     let vertexData = BABYLON.VertexData.CreateGroundFromHeightMap({

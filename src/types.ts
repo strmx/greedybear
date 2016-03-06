@@ -17,6 +17,7 @@ enum ThingType {
   WALL,
   AGENT,
   COMPANION,
+  TREE
 }
 
 export = {

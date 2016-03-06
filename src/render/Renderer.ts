@@ -194,14 +194,15 @@ class Renderer {
     let buffer = PatternHelper.numberMapToUint8Array(playground.heightMap);
     let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.min(n, m), 0, playground.maxHeight, this.scene, false)
     // let ground = BABYLON.Mesh.CreateGroundFromHeightMap(matName, 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
+    // polygon.convertToFlatShadedMesh();
 
     let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
-    let groundTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
-
-    groundTexture.uScale = 16;
-    groundTexture.vScale = 16;
-
+    let groundTexture = new BABYLON.Texture('textures/tile-grass-0.png', this.scene);
+    groundTexture.uScale = n;
+    groundTexture.vScale = m;
     groundMaterial.diffuseTexture = groundTexture;
+
+    // groundMaterial.diffuseColor = new BABYLON.Color3(.4, .6, .1);
     groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
     ground.material = groundMaterial;
 
@@ -211,24 +212,62 @@ class Renderer {
     ground.position.z = m / 2 - .5;
 
     // base
+    // 355117
+    // groundMaterial.diffuseColor = new BABYLON.Color3(.4, .6, .1);
     let baseMaterial = new BABYLON.StandardMaterial('ground', this.scene);
     // let baseTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
     // baseTexture.uScale = 16;
     // baseTexture.vScale = 16;
     // baseMaterial.diffuseTexture = baseTexture;
     // baseMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    baseMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+    baseMaterial.diffuseColor = new BABYLON.Color3(.2, .35, .1);
+    baseMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
 
     let base = BABYLON.Mesh.CreateBox('base', 1, this.scene);
-    base.scaling = new BABYLON.Vector3(n, 1, m);
+    base.scaling = new BABYLON.Vector3(n, 2, m);
     base.position.x = n / 2 - .5;
-    base.position.y = -(.5 + .1);
+    base.position.y = -(1 + .1);
     base.position.z = m / 2 - .5;
     base.material = baseMaterial;
+
+
+    let base2Mat = new BABYLON.StandardMaterial('base2Mat', this.scene);
+    base2Mat.diffuseColor = new BABYLON.Color3(1, .75, .5);
+    base2Mat.specularColor = new BABYLON.Color3(0, 0, 0);
+    let base2 = BABYLON.Mesh.CreateBox('base2', 1, this.scene);
+    base2.scaling = new BABYLON.Vector3(n, 2, m);
+    base2.position.x = n / 2 - .5;
+    base2.position.y = -(1 + .1) - 2;
+    base2.position.z = m / 2 - .5;
+    base2.material = base2Mat;
+
+    let base3Mat = new BABYLON.StandardMaterial('base3Mat', this.scene);
+    base3Mat.diffuseColor = new BABYLON.Color3(.2, .35, .1);
+    base3Mat.specularColor = new BABYLON.Color3(0, 0, 0);
+    let base3 = BABYLON.Mesh.CreateBox('base3', 1, this.scene);
+    base3.scaling = new BABYLON.Vector3(n, 2, m);
+    base3.position.x = n / 2 - .5;
+    base3.position.y = -(1 + .1) - 4;
+    base3.position.z = m / 2 - .5;
+    base3.material = base3Mat;
+
 
     //
     // add water
     //
+
+    // let waterMat = new BABYLON.StandardMaterial('waterMat', this.scene);
+    // let waterTex = new BABYLON.Texture('textures/tile-water-0.png', this.scene);
+    // waterTex.uScale = 1024;
+    // waterTex.vScale = 1024;
+    // waterMat.diffuseTexture = waterTex;
+    // let water = BABYLON.Mesh.CreatePlane('water', 1024, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+    // water.material = waterMat;
+    // water.position.x = n/2;
+    // water.position.z = m/2;
+    // water.rotation.x = Math.PI / 2;
+
+
 
     /*
     // Water
@@ -264,31 +303,49 @@ class Renderer {
 
     switch(thing.type) {
       //
-      // GROUND
+      // TREE
       //
-      case ThingType.GROUND:
+      case ThingType.TREE:
 
-      if (thing) {
-        console.warn('TBD: remove me');
-        return;
-      }
+      let mesh2Name = 'M' + thing.type + '-2';
+      let mat2Name = 'm' + thing.type + '-2';
+      let mesh2 = this.scene.getMeshByName(mesh2Name);
+      let mat2 = this.scene.getMaterialByName(mat2Name);
 
       if (!mat) {
         mat = new BABYLON.StandardMaterial(matName, this.scene);
-        // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Black();
-        (<BABYLON.StandardMaterial>mat).diffuseTexture = new BABYLON.Texture('textures/ground.jpg', this.scene);
-        // (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.Black();
-        // (<BABYLON.StandardMaterial>mat).emissiveColor = BABYLON.Color3.White();
+        // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.White();
+        (<BABYLON.StandardMaterial>mat).diffuseColor = new BABYLON.Color3(.5, .75, .25);
+        (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.White();
+
+
+        let mat2 = new BABYLON.StandardMaterial(mat2Name, this.scene);
+        // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.White();
+        (<BABYLON.StandardMaterial>mat2).diffuseColor = new BABYLON.Color3(.5, .3, .2);
+        (<BABYLON.StandardMaterial>mat2).specularColor = BABYLON.Color3.Black();
       }
 
       if (!mesh) {
-        mesh = BABYLON.Mesh.CreatePlane(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        mesh = CustomMesh.createTree(meshName, 1, 1, this.scene, false);
+        // mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
         mesh.material = mat;
         mesh.isVisible = false;
+
+        mesh2 = BABYLON.Mesh.CreateBox(mesh2Name, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        // mesh =
+        mesh2.material = mat2;
+        mesh2.isVisible = false;
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      mesh.receiveShadows = true;
+      mesh2 = (<BABYLON.Mesh>mesh2).createInstance('' + thing.id + '-2');
+
+      mesh2.position = thing.position;
+      mesh2.position.y -= .25;
+      mesh2.rotation = thing.rotation;
+      mesh2.scaling.x = mesh2.scaling.z = .1;
+      mesh2.scaling.y = .5;
+      // this.shadowGenerator.getShadowMap().renderList.push(mesh);
       // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
       break;
 
@@ -300,7 +357,8 @@ class Renderer {
       if (!mat) {
         mat = new BABYLON.StandardMaterial(matName, this.scene);
         // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.White();
-        (<BABYLON.StandardMaterial>mat).diffuseColor = new BABYLON.Color3(.5, .75, .25);
+        // ffe683
+        (<BABYLON.StandardMaterial>mat).diffuseColor = new BABYLON.Color3(1, .85, .25);
         (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.White();
       }
 

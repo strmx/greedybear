@@ -15,7 +15,7 @@ const gameOptions = {
   // nextReal: Randomizer.generateNextRealFunction(13),
   birthLimit: 4,
   deathLimit: 3,
-  maxHeight: 25
+  maxHeight: 30
 };
 
 let gameData = new GameData(gameOptions);
