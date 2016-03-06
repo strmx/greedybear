@@ -439,7 +439,7 @@ class PatternHelper {
     // // interpolate
     // // 8 cells around cell - TL>TR>BR>BL>TL
     let lx, rx, ty, by, v;
-    for (let iter = 0; iter < 4; iter ++) {
+    for (let iter = 0; iter < 8; iter ++) {
       for (let i = 0; i < n; i++) {
         lx = i - 1 < 0 ? i : i - 1;
         rx = i + 1 >= n ? i : i + 1;

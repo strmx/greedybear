@@ -8,14 +8,14 @@ import CanvasElement = require('./render/CanvasElement');
 
 const gameOptions = {
   n: 75,
-  m: 50,
-  wallChance: .4,
+  m: 75,
+  wallChance: .39,
   stepCount: 2,
   nextReal: Math.random,
   // nextReal: Randomizer.generateNextRealFunction(13),
   birthLimit: 4,
   deathLimit: 3,
-  maxHeight: 8
+  maxHeight: 25
 };
 
 let gameData = new GameData(gameOptions);
