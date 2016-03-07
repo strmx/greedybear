@@ -226,7 +226,7 @@ class Renderer {
     let base = BABYLON.Mesh.CreateBox('base', 1, this.scene);
     base.scaling = new BABYLON.Vector3(n, 2, m);
     base.position.x = n / 2 - .5;
-    base.position.y = -(1 + .1);
+    base.position.y = -(1 + .01);
     base.position.z = m / 2 - .5;
     base.material = baseMaterial;
 
@@ -237,7 +237,7 @@ class Renderer {
     let base2 = BABYLON.Mesh.CreateBox('base2', 1, this.scene);
     base2.scaling = new BABYLON.Vector3(n, 2, m);
     base2.position.x = n / 2 - .5;
-    base2.position.y = -(1 + .1) - 2;
+    base2.position.y = -(1 + .01) - 2;
     base2.position.z = m / 2 - .5;
     base2.material = base2Mat;
 
@@ -247,7 +247,7 @@ class Renderer {
     let base3 = BABYLON.Mesh.CreateBox('base3', 1, this.scene);
     base3.scaling = new BABYLON.Vector3(n, 2, m);
     base3.position.x = n / 2 - .5;
-    base3.position.y = -(1 + .1) - 4;
+    base3.position.y = -(1 + .01) - 4;
     base3.position.z = m / 2 - .5;
     base3.material = base3Mat;
 
@@ -341,10 +341,10 @@ class Renderer {
       mesh2 = (<BABYLON.Mesh>mesh2).createInstance('' + thing.id + '-2');
 
       mesh2.position = thing.position;
-      mesh2.position.y -= .25;
+      // mesh2.position.y -= .25;
       mesh2.rotation = thing.rotation;
       mesh2.scaling.x = mesh2.scaling.z = .1;
-      mesh2.scaling.y = .5;
+      // mesh2.scaling.y = .5;
       // this.shadowGenerator.getShadowMap().renderList.push(mesh);
       // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
       break;

@@ -17,7 +17,9 @@ const DEFAULT_OPTIONS = {
 
 class CavePatternGenerator {
 
-  public static generateCavePattern(options: {n: number, m: number, wallChance: number, stepCount: number, nextReal: Function, birthLimit: number, deathLimit: number} = DEFAULT_OPTIONS): number[][] {
+  static CELL_TYPE: CELL_TYPE
+
+  static generateCavePattern(options: {n: number, m: number, wallChance: number, stepCount: number, nextReal: Function, birthLimit: number, deathLimit: number} = DEFAULT_OPTIONS): number[][] {
     let pattern = PatternHelper.createFilled(options.n, options.m, CELL_TYPE.ROAD);
     PatternHelper.fillUniform(pattern, options.wallChance, options.nextReal, CELL_TYPE.WALL);
 
@@ -29,7 +31,7 @@ class CavePatternGenerator {
   }
 
   // Cellular Automaton Step
-  public static applyCAStep(pattern: number[][], birthLimit: number, deathLimit: number): number[][] {
+  static applyCAStep(pattern: number[][], birthLimit: number, deathLimit: number): number[][] {
     if (!pattern || !pattern.length || !pattern[0] || !pattern[0].length) {
       return null;
     }

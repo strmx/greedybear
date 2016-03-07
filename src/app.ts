@@ -9,7 +9,7 @@ import CanvasElement = require('./render/CanvasElement');
 const gameOptions = {
   n: 75,
   m: 75,
-  wallChance: .39,
+  wallChance: .4,
   stepCount: 2,
   nextReal: Math.random,
   // nextReal: Randomizer.generateNextRealFunction(13),

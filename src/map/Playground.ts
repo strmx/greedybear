@@ -21,9 +21,21 @@ class Playground {
   wallRects: RectArea[]
 
   constructor(spec: GameDataOptions) {
+    let {n, m} = spec;
 
     // initialise cave pattern
     let pattern = CavePatternGenerator.generateCavePattern(spec);
+
+    // free around cells
+    for (let i=0; i<spec.n; i++) {
+      if (spec.nextReal() > .05) pattern[i][0] = 0;
+      if (spec.nextReal() > .05) pattern[i][m - 1] = 0;
+    }
+    for (let i=0; i<spec.n; i++) {
+      if (spec.nextReal() > .05) pattern[0][i] = 0;
+      if (spec.nextReal() > .05) pattern[n - 1][i] = 0;
+    }
+
     let bypass = PatternHelper.generateBypass(pattern);
     PatternHelper.removeSmallOpenAreas(pattern);
 
@@ -56,15 +68,6 @@ class Playground {
     console.log(this.map3d);
   }
 
-  /*
-interface Map3DCell {
-  pos: BABYLON.Vector3;
-  directionTop: BABYLON.Vector3;
-  directionRight: BABYLON.Vector3;
-  directionBottom: BABYLON.Vector3;
-  directionLeft: BABYLON.Vector3;
-}
-  */
   private _generate3DMap(elevationMap: Elevation[][]): Map3DCell[][] {
     let n = elevationMap.length;
     let m = elevationMap[0].length;
