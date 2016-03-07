@@ -105,15 +105,16 @@ class CustomMesh {
   static createTree(name: string, width: number, height: number, scene: BABYLON.Scene, updatable: boolean = false, nextReal: Function = Math.random): BABYLON.Mesh {
     let meshes = [];
     let partCount = 2 + Math.round(nextReal() * 3);
-    let sizeD = .5 + .5 * nextReal();
+    let sizeD = .75 + .5 * nextReal();
+    let sizeH = sizeD + nextReal() * sizeD;
 
     for (let i = 1; i <= partCount; i++) {
       let d = i / partCount; // (0..1]
       let size = d * sizeD; // small -> big
-      let y = (partCount - (i + 1)) * size + size;
+      let y = (partCount - (i + 1)) * size + (size * 1.15);
       let vertexData = createPyramidVertexData(size, size);
       let polygon = new BABYLON.Mesh(name, scene);
-      polygon.scaling.y = 1.5;
+      polygon.scaling.y = sizeH;
       vertexData.applyToMesh(polygon, updatable);
       polygon.position.y = y;
       meshes.push(polygon);
