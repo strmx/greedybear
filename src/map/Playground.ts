@@ -61,11 +61,34 @@ class Playground {
     this.map = PatternHelper.clone(pattern);
     this.wallRects = PatternHelper.calculateRectBlocks(pattern, 1);
     this.boundaries = PatternHelper.clone(pattern);
+    // this.lakes = this._generateLakes(pattern);
     this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
     this.heightMap = PatternHelper.generateElevations(spec.n, spec.m, spec.nextReal);
     this.elevationMap = this._generateElevations(this.heightMap, this.maxHeight, spec);
     this.map3d = this._generate3DMap(this.elevationMap);
     console.log(this.map3d);
+  }
+
+  private _generateLakes(pattern: number[][]) {
+    let closedAreas = PatternHelper.findOpenAreas(pattern, 1);
+
+    if (closedAreas.length === 0) {
+      return;
+    }
+
+    if (closedAreas.length > 1) {
+      // remove open areas
+      closedAreas
+        // except biggest area
+        .slice(1)
+        .forEach((cells) => {
+          cells.forEach((pos) => {
+            pattern[pos.x][pos.y] = 1;
+          });
+        });
+    }
+
+    return closedAreas[0];
   }
 
   private _generate3DMap(elevationMap: Elevation[][]): Map3DCell[][] {

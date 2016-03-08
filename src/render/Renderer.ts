@@ -24,6 +24,8 @@ class Renderer {
 
   constructor(playground: Playground) {
     this.playground = playground;
+    const n = this.playground.map.length;
+    const m = this.playground.map[0].length;
 
     // this.engine.runRenderLoop(() => {
     //   stats.begin();
@@ -62,17 +64,21 @@ class Renderer {
     //
 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    let light = new BABYLON.HemisphericLight('light1', new V3(0, 1, 0), this.scene);
+    let light = new BABYLON.HemisphericLight('light1', new V3(n, 100, m), this.scene);
     // var light = new BABYLON.DirectionalLight('Dir0', new V3(0, -1, 0), this.scene);
     // light.diffuse = new BABYLON.Color3(1, 1, 1);
     // light.specular = new BABYLON.Color3(1, 1, 1);
-    light.intensity = 0.7;
+    light.intensity = 0.5; // .7
 
     // let h = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0, 1, 0), this.scene);
     // h.intensity = 0.5;
-    let directLight = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(2, 5, 3), this.scene);
+    // let directLight = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(2, 5, 3), this.scene);
     // directLight.position = new BABYLON.Vector3(0, 100, 0);
 
+    var pl = new BABYLON.PointLight("pl", new BABYLON.Vector3(n, 100, m), this.scene);
+    pl.diffuse = new BABYLON.Color3(1, 1, 1);
+    // pl.specular = new BABYLON.Color3(1, 1, 1);
+    pl.intensity = .5; // .8
 
     //
     // CAMERAS
@@ -80,8 +86,6 @@ class Renderer {
 
     // let pos = agentOrigin.position;
     // var agentCamera = new BABYLON.FollowCamera('agentCamera', new V3(pos.x, 10, pos.z), this.scene);
-    let n = this.playground.map.length;
-    let m = this.playground.map[0].length;
     this.camera = new BABYLON.FollowCamera('followCamera', new V3(n / 2, 10, m / 2), this.scene);
     this.camera.radius = 8; // how far from the object to follow
     this.camera.heightOffset = 10; // how high above the object to place the camera
@@ -192,12 +196,12 @@ class Renderer {
     //
 
     let buffer = PatternHelper.numberMapToUint8Array(playground.heightMap);
-    let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.min(n, m), 0, playground.maxHeight, this.scene, false)
+    let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.round((n + m) / 2), 0, playground.maxHeight, this.scene, false)
     // let ground = BABYLON.Mesh.CreateGroundFromHeightMap(matName, 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
     // polygon.convertToFlatShadedMesh();
 
     let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
-    let groundTexture = new BABYLON.Texture('textures/tile-grass-0.png', this.scene);
+    let groundTexture = new BABYLON.Texture('textures/tile-grass-2.png', this.scene);
     groundTexture.uScale = n;
     groundTexture.vScale = m;
     groundMaterial.diffuseTexture = groundTexture;
@@ -220,7 +224,7 @@ class Renderer {
     // baseTexture.vScale = 16;
     // baseMaterial.diffuseTexture = baseTexture;
     // baseMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
-    baseMaterial.diffuseColor = new BABYLON.Color3(.2, .35, .1);
+    baseMaterial.diffuseColor = new BABYLON.Color3(.4666, .5333, .2);
     baseMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
 
     let base = BABYLON.Mesh.CreateBox('base', 1, this.scene);
@@ -242,7 +246,7 @@ class Renderer {
     base2.material = base2Mat;
 
     let base3Mat = new BABYLON.StandardMaterial('base3Mat', this.scene);
-    base3Mat.diffuseColor = new BABYLON.Color3(.2, .35, .1);
+    base3Mat.diffuseColor = new BABYLON.Color3(.4666, .5333, .2);
     base3Mat.specularColor = new BABYLON.Color3(0, 0, 0);
     let base3 = BABYLON.Mesh.CreateBox('base3', 1, this.scene);
     base3.scaling = new BABYLON.Vector3(n, 2, m);

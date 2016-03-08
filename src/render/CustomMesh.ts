@@ -148,6 +148,8 @@ class CustomMesh {
 
     vertexData.applyToMesh(ground, updatable);
 
+    ground.convertToFlatShadedMesh();
+
     return ground;
   }
 };

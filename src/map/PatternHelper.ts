@@ -274,7 +274,7 @@ class PatternHelper {
   }
 
   // return sorted by size list of open areas
-  public static findOpenAreas(pattern: number[][]): Point[][] {
+  public static findOpenAreas(pattern: number[][], value: number): Point[][] {
     let n = pattern.length;
     let m = pattern[0].length;
     let openAreas = [];
@@ -282,7 +282,7 @@ class PatternHelper {
 
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < m; j++) {
-        if (checkedPattern[i][j] === 0 && pattern[i][j] === 0) {
+        if (checkedPattern[i][j] === value && pattern[i][j] === value) {
           let area = PatternHelper.floodFill(pattern, i, j, checkedPattern);
           openAreas.push(area);
         }
@@ -298,7 +298,7 @@ class PatternHelper {
   // leave only biggest one on arg: pattern
   // returns list of open area cells
   public static removeSmallOpenAreas(pattern: number[][]): {x: number, y:number}[] {
-    let openAreas = PatternHelper.findOpenAreas(pattern);
+    let openAreas = PatternHelper.findOpenAreas(pattern, 0);
 
     if (openAreas.length === 0) {
       return null;
