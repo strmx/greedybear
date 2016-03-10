@@ -11,12 +11,13 @@ const gameOptions = {
   m: 64,
   wallChance: .4,
   stepCount: 2,
-  nextReal: Math.random,
   // nextReal: Randomizer.generateNextRealFunction(13),
   birthLimit: 4,
   deathLimit: 3,
-  maxHeight: 50
+  maxHeight: 0
 };
+
+(<any>window).nextReal = Math.random;
 
 let gameData = new GameData(gameOptions);
 

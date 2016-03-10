@@ -21,6 +21,7 @@ class Playground {
   wallRects: RectArea[]
 
   constructor(spec: GameDataOptions) {
+    const nextReal = (<any>window).nextReal;
     let {n, m} = spec;
 
     // initialise cave pattern
@@ -28,12 +29,12 @@ class Playground {
 
     // free around cells
     for (let i=0; i<spec.n; i++) {
-      if (spec.nextReal() > .05) pattern[i][0] = 0;
-      if (spec.nextReal() > .05) pattern[i][m - 1] = 0;
+      if (nextReal() > .05) pattern[i][0] = 0;
+      if (nextReal() > .05) pattern[i][m - 1] = 0;
     }
     for (let i=0; i<spec.n; i++) {
-      if (spec.nextReal() > .05) pattern[0][i] = 0;
-      if (spec.nextReal() > .05) pattern[n - 1][i] = 0;
+      if (nextReal() > .05) pattern[0][i] = 0;
+      if (nextReal() > .05) pattern[n - 1][i] = 0;
     }
 
     let bypass = PatternHelper.generateBypass(pattern);
@@ -63,7 +64,7 @@ class Playground {
     this.boundaries = PatternHelper.clone(pattern);
     // this.lakes = this._generateLakes(pattern);
     this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
-    this.heightMap = PatternHelper.generateElevations(spec.n, spec.m, spec.nextReal);
+    this.heightMap = PatternHelper.generateElevations(spec.n, spec.m, nextReal);
     this.elevationMap = this._generateElevations(this.heightMap, this.maxHeight, spec);
     this.map3d = this._generate3DMap(this.elevationMap);
     console.log(this.map3d);

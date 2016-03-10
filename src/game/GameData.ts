@@ -14,6 +14,7 @@ class GameData {
   thingMap: Thing[][]
 
   constructor(spec: GameDataOptions) {
+    const nextReal = (<any>window).nextReal;
     this.playground = new Playground(spec);
 
     //
@@ -76,7 +77,7 @@ class GameData {
         wall = new Thing(ThingType.WALL, new V3(centerX, y, centerZ));
       } else {
         // tree
-        scale = .5 + (spec.nextReal() * .5);
+        scale = .5 + (nextReal() * .5);
         wall = new Thing(ThingType.TREE, new V3(centerX, y + scale / 2, centerZ));
       }
 

@@ -241,7 +241,7 @@ class Renderer {
     let base2 = BABYLON.Mesh.CreateBox('base2', 1, this.scene);
     base2.scaling = new BABYLON.Vector3(n, 2, m);
     base2.position.x = n / 2 - .5;
-    base2.position.y = -(1 + .01) - 2;
+    base2.position.y = -(1 + .001) - 2;
     base2.position.z = m / 2 - .5;
     base2.material = base2Mat;
 

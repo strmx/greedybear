@@ -5,23 +5,23 @@ enum CELL_TYPE {
   ROAD = 0,
 };
 
-const DEFAULT_OPTIONS = {
-  n: 100,
-  m: 100,
-  wallChance: .4,
-  stepCount: 2,
-  nextReal: Math.random,
-  birthLimit: 4,
-  deathLimit: 3,
-};
+// const DEFAULT_OPTIONS = {
+//   n: 100,
+//   m: 100,
+//   wallChance: .4,
+//   stepCount: 2,
+//   birthLimit: 4,
+//   deathLimit: 3,
+// };
 
 class CavePatternGenerator {
 
   static CELL_TYPE: CELL_TYPE
 
-  static generateCavePattern(options: {n: number, m: number, wallChance: number, stepCount: number, nextReal: Function, birthLimit: number, deathLimit: number} = DEFAULT_OPTIONS): number[][] {
+  static generateCavePattern(options: GameDataOptions): number[][] {
+    const nextReal = (<any>window).nextReal;
     let pattern = PatternHelper.createFilled(options.n, options.m, CELL_TYPE.ROAD);
-    PatternHelper.fillUniform(pattern, options.wallChance, options.nextReal, CELL_TYPE.WALL);
+    PatternHelper.fillUniform(pattern, options.wallChance, nextReal, CELL_TYPE.WALL);
 
     for (let i=0; i<options.stepCount; i++) {
       pattern = CavePatternGenerator.applyCAStep(pattern, options.birthLimit, options.deathLimit);

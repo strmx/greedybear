@@ -7,7 +7,6 @@ interface GameDataOptions {
   m: number;
   wallChance: number;
   stepCount: number;
-  nextReal: Function;
   birthLimit: number;
   deathLimit: number;
   maxHeight: number;
