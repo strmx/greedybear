@@ -312,6 +312,7 @@ class Renderer {
       case ThingType.TREE:
 
       if (!mat) {
+        console.info('+', matName);
         let treeMat = new BABYLON.StandardMaterial(matName, this.scene);
         treeMat.specularColor = new BABYLON.Color3(.5, .5, .25);
         let treeTex = new BABYLON.Texture('textures/tile-tree-0.png', this.scene);
@@ -322,6 +323,7 @@ class Renderer {
       }
 
       if (!mesh) {
+        console.info('+', meshName);
         mesh = CustomMesh.createPyramid(meshName, this.scene);
         mesh.material = mat;
         mesh.isVisible = false;
@@ -339,6 +341,7 @@ class Renderer {
       case ThingType.MOUNTAIN:
 
       if (!mat) {
+        console.info('+', matName);
         let mountainMat = new BABYLON.StandardMaterial(matName, this.scene);
         mountainMat.specularColor = new BABYLON.Color3(.5, .5, .25);
         let mountainTex = new BABYLON.Texture('textures/tile-mountains-0.png', this.scene);
@@ -348,6 +351,7 @@ class Renderer {
       }
 
       if (!mesh) {
+        console.info('+', meshName);
         mesh = CustomMesh.createPyramid(meshName, this.scene);
         mesh.material = mat;
         mesh.isVisible = false;
@@ -363,6 +367,7 @@ class Renderer {
       case ThingType.COMPANION:
 
       if (!mat) {
+        console.info('+', matName);
         mat = new BABYLON.StandardMaterial(matName, this.scene);
         (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Red();
         // Fresnel
@@ -374,6 +379,7 @@ class Renderer {
       }
 
       if (!mesh) {
+        console.info('+', meshName);
         mesh = BABYLON.Mesh.CreateSphere(meshName, 4, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
         // mesh.position.y = .5;
         mesh.material = mat;

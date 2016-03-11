@@ -49,21 +49,34 @@ class CustomMesh {
   ////////////
 
   static createPyramid(name: string, scene: BABYLON.Scene, updatable: boolean = false): BABYLON.Mesh {
-    let pyramid = BABYLON.MeshBuilder.CreatePolyhedron(name, {type: 8, size: 1, updatable: updatable, sideOrientation: BABYLON.Mesh.FRONTSIDE}, scene);
+    let mesh = BABYLON.MeshBuilder.CreatePolyhedron(name + Math.random(), {type: 8, size: 1, updatable: updatable, sideOrientation: BABYLON.Mesh.FRONTSIDE}, scene);
     // fix default pyramid settings
     // http://www.babylonjs-playground.com/#1EVRUK#1
-    pyramid.rotation.x = -139 * (Math.PI / 180);
-    pyramid.rotation.y = -9 * (Math.PI / 180);
-    pyramid.rotation.z = 9 * (Math.PI / 180);
-    pyramid.scaling.x = pyramid.scaling.y = pyramid.scaling.z = .7;
-    pyramid.position.y = .14055;
+    mesh.rotation.x = -139 * (Math.PI / 180);
+    mesh.rotation.y = -9 * (Math.PI / 180);
+    mesh.rotation.z = 9 * (Math.PI / 180);
+    mesh.scaling.x = mesh.scaling.y = mesh.scaling.z = .7;
+    mesh.position.y = .14055;
 
-    return BABYLON.Mesh.MergeMeshes([pyramid]);
+    let finalMesh = BABYLON.Mesh.MergeMeshes([mesh], true, true);
+    finalMesh.name = name;
+
+    return finalMesh;
   }
 
   static normalizePyramidTexture(texture: BABYLON.Texture): void {
     texture.uScale = 1;
     texture.vScale = -.665;
+  }
+
+  static createOctahedron(name: string, scene: BABYLON.Scene, updatable: boolean = false) {
+    let mesh = BABYLON.MeshBuilder.CreatePolyhedron(name + Math.random(), {type: 1, size: 1, updatable: updatable, sideOrientation: BABYLON.Mesh.FRONTSIDE}, scene);
+    mesh.scaling.x = mesh.scaling.y = mesh.scaling.z = .5;
+
+    let finalMesh = BABYLON.Mesh.MergeMeshes([mesh], true, true);
+    finalMesh.name = name;
+
+    return finalMesh;
   }
 
   static createTree(name: string, width: number, height: number, scene: BABYLON.Scene, updatable: boolean = false, nextReal: Function = Math.random): BABYLON.Mesh {
@@ -79,6 +92,7 @@ class CustomMesh {
 
     return polygon;
   }
+
 
   static createGroundFromHeightMap(name: string, buffer: Uint8Array, bufferWidth: number, bufferHeight: number, width: number, height: number, subdivisions: number, minHeight: number, maxHeight: number, scene: BABYLON.Scene, updatable?: boolean): BABYLON.GroundMesh {
     let ground = new BABYLON.GroundMesh(name, scene);
