@@ -270,7 +270,7 @@ class GamePlay {
           break;
 
           // wall
-          case ThingType.WALL:
+          case ThingType.MOUNTAIN:
           console.warn('BAAADAABOOOOOOOOM!!!', nextCell);
           break;
 

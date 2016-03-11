@@ -14,7 +14,7 @@ enum KEYS {
 enum ThingType {
   SKY,
   GROUND,
-  WALL,
+  MOUNTAIN,
   AGENT,
   COMPANION,
   TREE

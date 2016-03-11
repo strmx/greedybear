@@ -75,7 +75,7 @@ class GameData {
         let br = this.playground.elevationMap[x + w - 1][z + h - 1].height;
         let bl = this.playground.elevationMap[x][z + h - 1].height;
         y = Math.min(tl, tr, br, bl);
-        wall = new Thing(ThingType.WALL, new V3(centerX, y, centerZ));
+        wall = new Thing(ThingType.MOUNTAIN, new V3(centerX, y, centerZ));
         wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
         wall.scaling.y = scale * 2;
       } else {
