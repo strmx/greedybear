@@ -69,22 +69,23 @@ class GameData {
 
       // for big objects (>1)
       if (!isOneCellSized) {
+        // pyramids
         let tl = this.playground.elevationMap[x][z].height;
         let tr = this.playground.elevationMap[x + w - 1][z].height;
         let br = this.playground.elevationMap[x + w - 1][z + h - 1].height;
         let bl = this.playground.elevationMap[x][z + h - 1].height;
         y = Math.min(tl, tr, br, bl);
         wall = new Thing(ThingType.WALL, new V3(centerX, y, centerZ));
+        wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
+        wall.scaling.y = scale * 2;
       } else {
         // tree
         scale = .5 + (nextReal() * .5);
         wall = new Thing(ThingType.TREE, new V3(centerX, y + scale / 2, centerZ));
+        wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
       }
 
-      wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
       this.things.push(wall);
-
-
     });
 
     // agent

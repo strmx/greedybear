@@ -359,11 +359,19 @@ class Renderer {
       case ThingType.WALL:
 
       if (!mat) {
-        mat = new BABYLON.StandardMaterial(matName, this.scene);
-        // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.White();
+        let wallMat = new BABYLON.StandardMaterial(matName, this.scene);
+        // (<BABYLON.StandardMaterial>wallMat).diffuseColor = BABYLON.Color3.White();
         // ffe683
-        (<BABYLON.StandardMaterial>mat).diffuseColor = new BABYLON.Color3(1, .85, .25);
-        (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.White();
+        // (<BABYLON.StandardMaterial>wallMat).diffuseColor = new BABYLON.Color3(1, .85, .25);
+        wallMat.specularColor = new BABYLON.Color3(.5, .5, .25);
+
+        let wallTex = new BABYLON.Texture('textures/tile-mountains-0.png', this.scene);
+        // let wallTex = new BABYLON.Texture('textures/UVTextureChecker512.png', this.scene);
+        wallTex.uScale = 1;
+        wallTex.vScale = -.665;
+        // wallTex.vOffset = .5;
+        wallMat.diffuseTexture = wallTex;
+        mat = wallMat;
       }
 
       if (!mesh) {
