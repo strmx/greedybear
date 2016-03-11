@@ -359,39 +359,16 @@ class Renderer {
       case ThingType.MOUNTAIN:
 
       if (!mat) {
-        let wallMat = new BABYLON.StandardMaterial(matName, this.scene);
-        wallMat.specularColor = new BABYLON.Color3(.5, .5, .25);
-        let wallTex = new BABYLON.Texture('textures/tile-mountains-0.png', this.scene);
-        // let wallTex = new BABYLON.Texture('textures/UVTextureChecker512.png', this.scene);
-        wallTex.uScale = 1;
-        wallTex.vScale = -.665;
-        wallMat.diffuseTexture = wallTex;
-        mat = wallMat;
+        let mountainMat = new BABYLON.StandardMaterial(matName, this.scene);
+        mountainMat.specularColor = new BABYLON.Color3(.5, .5, .25);
+        let mountainTex = new BABYLON.Texture('textures/tile-mountains-0.png', this.scene);
+        CustomMesh.normalizePyramidTexture(mountainTex);
+        mountainMat.diffuseTexture = mountainTex;
+        mat = mountainMat;
       }
 
       if (!mesh) {
-        // mesh = new BABYLON.Mesh(meshName, this.scene);
-        let pyramid = BABYLON.MeshBuilder.CreatePolyhedron(meshName, {type: 8, size: 1, sideOrientation: BABYLON.Mesh.FRONTSIDE}, this.scene);
-        // fix default pyramid settings
-        // http://www.babylonjs-playground.com/#1EVRUK#1
-        pyramid.rotation.x = -139 * (Math.PI / 180);
-      	pyramid.rotation.y = -9 * (Math.PI / 180);
-      	pyramid.rotation.z = 9 * (Math.PI / 180);
-      	pyramid.scaling.x = pyramid.scaling.y = pyramid.scaling.z = .7;
-        pyramid.position.y = .14055;
-        mesh = BABYLON.Mesh.MergeMeshes([pyramid]);
-        //
-        //
-        //
-        // - add mesh to mesh
-        // - set color on faces before
-        //
-        //
-        //
-        // pyramid.parent = mesh;
-
-        // mesh = CustomMesh.createPyramid(meshName, 1, 1, this.scene);
-        // mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        mesh = CustomMesh.createPyramid(meshName, this.scene);
         mesh.material = mat;
         mesh.isVisible = false;
       }

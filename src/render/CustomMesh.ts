@@ -37,69 +37,33 @@ function parseVDList(data: number[][]): { positions: number[], normals: number[]
 // PYRAMID
 /////////////////////////////////////////
 
-/*
-
-complex samples:
-  http://www.html5gamedevs.com/topic/17342-polyhedrons-first-attemp/#comment-100654
-  http://www.html5gamedevs.com/topic/17691-texture-on-individual-faces-of-a-polyhedron/
-  http://www.babylonjs-playground.com/#21QRSK#5
-  http://www.babylonjs-playground.com/#21QRSK#6
-*/
-function createPyramidVertexData(width: number, height: number): BABYLON.VertexData {
-  let hw = width / 2;
-  let vertexKinds = parseVDList([
-    [
-      -hw, 0, hw
-    ], [
-      hw, 0, hw
-    ], [
-      hw, 0, -hw
-    ], [
-      -hw, 0, -hw
-    ], [
-      0, height, 0
-    ]
-  ]);
-
-  let indices = [
-    1, 0, 4,
-    2, 1, 4,
-    3, 2, 4,
-    0, 3, 4
-  ];
-
-  // some sample: http://www.babylonjs-playground.com/#1H7L5C
-
-  // not important for FRONTSIDE
-  // BABYLON.VertexData._ComputeSides(BABYLON.Mesh.FRONTSIDE, vertexKinds.positions, indices, vertexKinds.normals, vertexKinds.uvs);
-
-  // set default normals
-  BABYLON.VertexData.ComputeNormals(vertexKinds.positions, indices, vertexKinds.normals);
-
-  // Result
-  let vertexData = new BABYLON.VertexData();
-  vertexData.indices = indices;
-  vertexData.positions = vertexKinds.positions;
-  vertexData.normals = vertexKinds.normals;
-  vertexData.uvs = vertexKinds.uvs;
-
-  return vertexData;
-}
 
 ///////////////////////////////////////////
 // Public
 /////////////////////////////////////////
 
 class CustomMesh {
-  static createPyramid(name: string, width: number, height: number, scene: BABYLON.Scene, updatable: boolean = false): BABYLON.Mesh {
-    let vertexData = createPyramidVertexData(width, height);
-    let polygon = new BABYLON.Mesh(name, scene);
-    vertexData.applyToMesh(polygon, updatable);
 
-    // recalculate normals to flat
-    polygon.convertToFlatShadedMesh();
+  //////////////
+  // pyramid
+  ////////////
 
-    return polygon;
+  static createPyramid(name: string, scene: BABYLON.Scene, updatable: boolean = false): BABYLON.Mesh {
+    let pyramid = BABYLON.MeshBuilder.CreatePolyhedron(name, {type: 8, size: 1, updatable: updatable, sideOrientation: BABYLON.Mesh.FRONTSIDE}, scene);
+    // fix default pyramid settings
+    // http://www.babylonjs-playground.com/#1EVRUK#1
+    pyramid.rotation.x = -139 * (Math.PI / 180);
+    pyramid.rotation.y = -9 * (Math.PI / 180);
+    pyramid.rotation.z = 9 * (Math.PI / 180);
+    pyramid.scaling.x = pyramid.scaling.y = pyramid.scaling.z = .7;
+    pyramid.position.y = .14055;
+
+    return BABYLON.Mesh.MergeMeshes([pyramid]);
+  }
+
+  static normalizePyramidTexture(texture: BABYLON.Texture): void {
+    texture.uScale = 1;
+    texture.vScale = -.665;
   }
 
   static createTree(name: string, width: number, height: number, scene: BABYLON.Scene, updatable: boolean = false, nextReal: Function = Math.random): BABYLON.Mesh {
@@ -112,10 +76,9 @@ class CustomMesh {
       let d = i / partCount; // (0..1]
       let size = d * sizeD; // small -> big
       let y = (partCount - (i + 1)) * size + (size * 1.15);
-      let vertexData = createPyramidVertexData(size, size);
-      let polygon = new BABYLON.Mesh(name, scene);
+      let polygon = CustomMesh.createPyramid(name, scene);
+      polygon.scaling.x = polygon.scaling.z = size;
       polygon.scaling.y = sizeH;
-      vertexData.applyToMesh(polygon, updatable);
       polygon.position.y = y;
       meshes.push(polygon);
     }
