@@ -8,6 +8,17 @@ import types = require('../types');
 const V3 = BABYLON.Vector3;
 const ThingType = types.ThingType;
 
+function correctOutOfBounds(thing: Thing, realScale: number, viewScale: number, n: number, m: number): void {
+  if (thing.position.y < 0) {
+    if (viewScale > realScale) {
+      let x = thing.position.x;
+      let z = thing.position.z;
+      thing.position.y = thing.pos0.y = 0;
+      thing.scaling.x = thing.scaling.z = realScale;
+    }
+  }
+}
+
 class GameData {
   playground: Playground
   things: Thing[]
@@ -79,26 +90,53 @@ class GameData {
 
         // put underground
         y -= .5;
-        scale += .25;
+        let viewScale = scale + .25;
 
         wall = new Thing(ThingType.MOUNTAIN, new V3(centerX, y, centerZ));
-        wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
+        wall.scaling.x = wall.scaling.y = wall.scaling.z = viewScale;
         wall.scaling.y = scale * (2 + nextReal());
 
+        correctOutOfBounds(wall, scale, viewScale, n, m);
+
       } else {
-        // tree
-        scale = .5 + (nextReal() * .75);
-        wall = new Thing(ThingType.TREE, new V3(centerX, y, centerZ));
 
-        // put underground
-        wall.position.y -= 1;
 
-        wall.scaling.x = wall.scaling.z = scale;
-        wall.scaling.y = scale * (4 + nextReal() * 3);
+        if (nextReal() < .5) {
+          // fir
+          scale = .6 + (nextReal() * .6);
+          wall = new Thing(ThingType.FIR, new V3(centerX, y, centerZ));
 
-        // rotate if doesn't fill full rect
-        if (scale < 1.1) {
+          // put underground
+          wall.position.y -= 1;
+
+          wall.scaling.x = wall.scaling.z = scale;
+          wall.scaling.y = scale * (4 + nextReal() * 3);
+
+          correctOutOfBounds(wall, 1, scale, n, m);
+
+          // rotate if doesn't fill full rect
+          if (wall.scaling.z < 1.1 && wall.position.y > 1) {
+            wall.rotation.y = (360 * nextReal()) * (Math.PI / 180);
+          }
+
+          wall.rotation.x = (nextReal() * 10 - 5) * (Math.PI / 180);
+          wall.rotation.y = (nextReal() * 10 - 5) * (Math.PI / 180);
+
+        } else {
+
+          // tree
+          scale = .9 + (1.5 * nextReal());
+          wall = new Thing(ThingType.TREE, new V3(centerX, y, centerZ));
+
+          // put underground
+          wall.position.y -= .1;
+
+          wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
+
           wall.rotation.y = (360 * nextReal()) * (Math.PI / 180);
+
+          wall.rotation.x = (nextReal() * 10 - 5) * (Math.PI / 180);
+          wall.rotation.y = (nextReal() * 10 - 5) * (Math.PI / 180);
         }
       }
 

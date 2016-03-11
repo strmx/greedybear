@@ -17,6 +17,7 @@ enum ThingType {
   MOUNTAIN,
   AGENT,
   COMPANION,
+  FIR,
   TREE
 }
 
