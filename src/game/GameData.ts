@@ -74,15 +74,32 @@ class GameData {
         let tr = this.playground.elevationMap[x + w - 1][z].height;
         let br = this.playground.elevationMap[x + w - 1][z + h - 1].height;
         let bl = this.playground.elevationMap[x][z + h - 1].height;
+
         y = Math.min(tl, tr, br, bl);
+
+        // put underground
+        y -= .5;
+        scale += .25;
+
         wall = new Thing(ThingType.MOUNTAIN, new V3(centerX, y, centerZ));
         wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
-        wall.scaling.y = scale * 2;
+        wall.scaling.y = scale * (2 + nextReal());
+
       } else {
         // tree
-        scale = .5 + (nextReal() * .5);
-        wall = new Thing(ThingType.TREE, new V3(centerX, y + scale / 2, centerZ));
-        wall.scaling.x = wall.scaling.y = wall.scaling.z = scale;
+        scale = .5 + (nextReal() * .75);
+        wall = new Thing(ThingType.TREE, new V3(centerX, y, centerZ));
+
+        // put underground
+        wall.position.y -= 1;
+
+        wall.scaling.x = wall.scaling.z = scale;
+        wall.scaling.y = scale * (4 + nextReal() * 3);
+
+        // rotate if doesn't fill full rect
+        if (scale < 1.1) {
+          wall.rotation.y = (360 * nextReal()) * (Math.PI / 180);
+        }
       }
 
       this.things.push(wall);

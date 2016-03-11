@@ -69,25 +69,15 @@ class CustomMesh {
   static createTree(name: string, width: number, height: number, scene: BABYLON.Scene, updatable: boolean = false, nextReal: Function = Math.random): BABYLON.Mesh {
     let meshes = [];
     let partCount = 2 + Math.round(nextReal() * 3);
-    let sizeD = .75 + .5 * nextReal();
-    let sizeH = sizeD + nextReal() * sizeD;
+    let sizeD = .5 + .5 * nextReal();
+    let sizeH = sizeD + nextReal() * (sizeD * 3);
 
-    for (let i = 1; i <= partCount; i++) {
-      let d = i / partCount; // (0..1]
-      let size = d * sizeD; // small -> big
-      let y = (partCount - (i + 1)) * size + (size * 1.15);
-      let polygon = CustomMesh.createPyramid(name, scene);
-      polygon.scaling.x = polygon.scaling.z = size;
-      polygon.scaling.y = sizeH;
-      polygon.position.y = y;
-      meshes.push(polygon);
-    }
+    let polygon = CustomMesh.createPyramid(name, scene);
+    polygon.scaling.x = polygon.scaling.z = sizeD;
+    polygon.scaling.y = sizeH;
+    polygon.position.y = .05;
 
-    let treeMesh = BABYLON.Mesh.MergeMeshes(meshes, true, true);
-    // recalculate normals to flat
-    treeMesh.convertToFlatShadedMesh();
-
-    return treeMesh;
+    return polygon;
   }
 
   static createGroundFromHeightMap(name: string, buffer: Uint8Array, bufferWidth: number, bufferHeight: number, width: number, height: number, subdivisions: number, minHeight: number, maxHeight: number, scene: BABYLON.Scene, updatable?: boolean): BABYLON.GroundMesh {

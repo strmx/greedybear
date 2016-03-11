@@ -201,7 +201,7 @@ class Renderer {
     // polygon.convertToFlatShadedMesh();
 
     let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
-    let groundTexture = new BABYLON.Texture('textures/tile-grass-2.png', this.scene);
+    let groundTexture = new BABYLON.Texture('textures/tile-grass-3.png', this.scene);
     groundTexture.uScale = n;
     groundTexture.vScale = m;
     groundMaterial.diffuseTexture = groundTexture;
@@ -311,44 +311,24 @@ class Renderer {
       //
       case ThingType.TREE:
 
-      let mesh2Name = 'M' + thing.type + '-2';
-      let mat2Name = 'm' + thing.type + '-2';
-      let mesh2 = this.scene.getMeshByName(mesh2Name);
-      let mat2 = this.scene.getMaterialByName(mat2Name);
-
       if (!mat) {
-        mat = new BABYLON.StandardMaterial(matName, this.scene);
-        // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.White();
-        (<BABYLON.StandardMaterial>mat).diffuseColor = new BABYLON.Color3(.5, .75, .25);
-        (<BABYLON.StandardMaterial>mat).specularColor = BABYLON.Color3.White();
-
-
-        let mat2 = new BABYLON.StandardMaterial(mat2Name, this.scene);
-        // (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.White();
-        (<BABYLON.StandardMaterial>mat2).diffuseColor = new BABYLON.Color3(.5, .3, .2);
-        (<BABYLON.StandardMaterial>mat2).specularColor = BABYLON.Color3.Black();
+        let treeMat = new BABYLON.StandardMaterial(matName, this.scene);
+        treeMat.specularColor = new BABYLON.Color3(.5, .5, .25);
+        let treeTex = new BABYLON.Texture('textures/tile-tree-0.png', this.scene);
+        treeTex.uScale = .2;
+        CustomMesh.normalizePyramidTexture(treeTex);
+        treeMat.diffuseTexture = treeTex;
+        mat = treeMat;
       }
 
       if (!mesh) {
-        mesh = CustomMesh.createTree(meshName, 1, 1, this.scene, false);
-        // mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        mesh = CustomMesh.createPyramid(meshName, this.scene);
         mesh.material = mat;
         mesh.isVisible = false;
-
-        mesh2 = BABYLON.Mesh.CreateBox(mesh2Name, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
-        // mesh =
-        mesh2.material = mat2;
-        mesh2.isVisible = false;
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
-      mesh2 = (<BABYLON.Mesh>mesh2).createInstance('' + thing.id + '-2');
 
-      mesh2.position = thing.position;
-      // mesh2.position.y -= .25;
-      mesh2.rotation = thing.rotation;
-      mesh2.scaling.x = mesh2.scaling.z = .1;
-      // mesh2.scaling.y = .5;
       // this.shadowGenerator.getShadowMap().renderList.push(mesh);
       // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
       break;
