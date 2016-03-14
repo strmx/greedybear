@@ -69,7 +69,13 @@ class Bypass {
 }
 
 class PatternHelper {
-  public static createFilled(n: number, m: number, defautValue: any): any[][] {
+
+  static DistancePoint: DistancePoint;
+  static RectArea: RectArea;
+  static FreeAroundPoint: FreeAroundPoint;
+  static Bypass: Bypass;
+
+  static createFilled(n: number, m: number, defautValue: any): any[][] {
     let pattern = [];
     let count = 0;
 
@@ -84,7 +90,7 @@ class PatternHelper {
     return pattern;
   }
 
-  public static fillUniform(pattern: number[][], chance: number, randomFunction: Function, fillValue: number): void {
+  static fillUniform(pattern: number[][], chance: number, randomFunction: Function, fillValue: number): void {
     let n = pattern.length;
     let m = pattern[0].length;
     let count = 0;
@@ -100,7 +106,7 @@ class PatternHelper {
     }
   }
 
-  public static countNotEmptyNeighbours(pattern: number[][], x: number, y: number): number {
+  static countNotEmptyNeighbours(pattern: number[][], x: number, y: number): number {
     let n = pattern.length;
     let m = pattern[0].length;
     let neighbourX: number, neighbourY: number;
@@ -126,7 +132,7 @@ class PatternHelper {
   }
 
   // flood into fillPattern (w/o diagonal)
-  public static floodFill(pattern: number[][], x: number, y: number, checkedPattern: number[][]): Point[] {
+  static floodFill(pattern: number[][], x: number, y: number, checkedPattern: boolean[][], typeValue: number): Point[] {
     let filledCells: Point[] = [];
     let n = pattern.length;
     let m = pattern[0].length;
@@ -147,9 +153,9 @@ class PatternHelper {
 
         if (cx >= 0 && cy >= 0 && cx < n && cy < m) {
           // if empty and was not checked before
-          if (checkedPattern[cx][cy] === 0 && pattern[cx][cy] === 0) {
+          if (checkedPattern[cx][cy] === false && pattern[cx][cy] === typeValue) {
             // mark as flooded
-            checkedPattern[cx][cy] = 1;
+            checkedPattern[cx][cy] = true;
             filledCells.push({x: cx, y: cy});
             // check top
             newCellsToCheckX.push(cx);
@@ -174,7 +180,7 @@ class PatternHelper {
     return filledCells;
   }
 
-  public static calculateFreeAroundRadius(x: number, y: number, pattern: number[][], bypass: Bypass): number {
+  static calculateFreeAroundRadius(x: number, y: number, pattern: number[][], bypass: Bypass): number {
     let n = pattern.length;
     let m = pattern[0].length;
     let bPoint: FreeAroundPoint;
@@ -210,11 +216,11 @@ class PatternHelper {
     return 0;
   }
 
-  public static generateBypass(pattern: number[][]): Bypass {
+  static generateBypass(pattern: number[][]): Bypass {
     return new Bypass(Math.max(pattern.length, pattern[0].length));
   }
 
-  public static collectFreeAroundPositions(pattern: number[][], bypass: Bypass): DistancePoint[] {
+  static collectFreeAroundPositions(pattern: number[][], bypass: Bypass): DistancePoint[] {
     let n = pattern.length;
     let m = pattern[0].length;
     let freeAroundPositions: DistancePoint[] = [];
@@ -274,16 +280,16 @@ class PatternHelper {
   }
 
   // return sorted by size list of open areas
-  public static findOpenAreas(pattern: number[][], value: number): Point[][] {
+  static findIsolatedAreas(pattern: number[][], typeValue: number): Point[][] {
     let n = pattern.length;
     let m = pattern[0].length;
     let openAreas = [];
-    let checkedPattern = PatternHelper.createFilled(n, m, 0);
+    let checkedPattern: boolean[][] = PatternHelper.createFilled(n, m, false);
 
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < m; j++) {
-        if (checkedPattern[i][j] === value && pattern[i][j] === value) {
-          let area = PatternHelper.floodFill(pattern, i, j, checkedPattern);
+        if (checkedPattern[i][j] === false && pattern[i][j] === typeValue) {
+          let area = PatternHelper.floodFill(pattern, i, j, checkedPattern, typeValue);
           openAreas.push(area);
         }
       }
@@ -297,8 +303,8 @@ class PatternHelper {
 
   // leave only biggest one on arg: pattern
   // returns list of open area cells
-  public static removeSmallOpenAreas(pattern: number[][]): {x: number, y:number}[] {
-    let openAreas = PatternHelper.findOpenAreas(pattern, 0);
+  static removeSmallOpenAreas(pattern: number[][]): {x: number, y:number}[] {
+    let openAreas = PatternHelper.findIsolatedAreas(pattern, 0);
 
     if (openAreas.length === 0) {
       return null;
@@ -319,7 +325,7 @@ class PatternHelper {
     return openAreas[0];
   }
 
-  public static calculateRectBlocks(pattern: number[][], combineValue: number): RectArea[] {
+  static calculateRectBlocks(pattern: number[][], combineValue: number): RectArea[] {
     let n = pattern.length;
     let m = pattern[0].length;
     let map = this.clone(pattern);
@@ -407,7 +413,8 @@ class PatternHelper {
   // ELEVATIONS
   //
 
-  public static generateElevations(n: number, m: number, randomFunction: Function): number[][] {
+  static generateElevations(n: number, m: number, interpolationCount: number, shouldBeFlatCells: Point[]): number[][] {
+    const nextReal = (<any>window).nextReal;
     let map = PatternHelper.createFilled(n, m, 0);
     let count = 0;
     let halfN = n / 2;
@@ -426,20 +433,46 @@ class PatternHelper {
 
         if (i === 0 || j === 0 || i === n - 1 || j === m - 1) {
           map[i][j] = 0;
-        } else if (randomFunction() < .45) {
+        } else if (nextReal() < .45) {
           cy = halfM - j;
           maxElevation = 1 - (Math.sqrt(cx * cx + cy * cy) / maxRadius);
-          map[i][j] = maxElevation * randomFunction();
+          map[i][j] = maxElevation * nextReal();
         }
       }
     }
 
     // map[22][96] = .25;
+    let flatMap: boolean[][] = PatternHelper.createFilled(n, m, false);
+    shouldBeFlatCells.forEach((p: Point) => {
+      let x = p.x;
+      let y = p.y;
+      flatMap[x][y] = true;
+      if (x > 0 && y > 0) flatMap[x - 1][y - 1] = true;
+      if (y > 0) flatMap[x][y - 1] = true;
+      if (x < n - 1 && y > 0) flatMap[x + 1][y - 1] = true;
+      if (x < n - 1) flatMap[x + 1][y] = true;
+      if (x < n - 1 && y < m - 1) flatMap[x + 1][y + 1] = true;
+      if (y < m - 1) flatMap[x][y + 1] = true;
+      if (x > 0 && y < m - 1) flatMap[x - 1][y + 1] = true;
+    });
+
+    // function isFlatNeighbour(x: number, y: number) {
+    //   if (i === 0 || j === 0 || i === n - 1 || j === m - 1) {
+    //     map[i][j] = 0;
+    //   } else {
+    // }
+
 
     // // interpolate
     // // 8 cells around cell - TL>TR>BR>BL>TL
     let lx, rx, ty, by, v;
-    for (let iter = 0; iter < 8; iter ++) {
+    for (let iter = 0; iter < interpolationCount; iter ++) {
+
+      // apply flattness
+      shouldBeFlatCells.forEach((p: Point) => {
+        map[p.x][p.y] = 0;
+      });
+
       for (let i = 0; i < n; i++) {
         lx = i - 1 < 0 ? i : i - 1;
         rx = i + 1 >= n ? i : i + 1;
@@ -448,7 +481,7 @@ class PatternHelper {
           ty = j - 1 < 0 ? j : j - 1;
           by = j + 1 >= m ? j : j + 1;
 
-          if (i === 0 || j === 0 || i === n - 1 || j === m - 1) {
+          if (i === 0 || j === 0 || i === n - 1 || j === m - 1 || flatMap[i][j]) {
             map[i][j] = 0;
           } else {
             map[i][j] = (
@@ -466,6 +499,11 @@ class PatternHelper {
       }
     }
 
+    // apply flattness
+    shouldBeFlatCells.forEach((p: Point) => {
+      map[p.x][p.y] = 0;
+    });
+
     return map;
   }
 
@@ -473,7 +511,7 @@ class PatternHelper {
   // TOOLS
   //
 
-  public static numberMapToUint8Array(map: number[][], multiplier: number = 255): Uint8Array {
+  static numberMapToUint8Array(map: number[][], multiplier: number = 255): Uint8Array {
     let tMap = PatternHelper.transpose(map);
     let n = tMap.length;
     let m = tMap[0].length;
@@ -508,11 +546,11 @@ class PatternHelper {
     return new Uint8Array(bufferSource);
   }
 
-  public static clone(pattern: number[][]): number[][] {
+  static clone(pattern: number[][]): number[][] {
     return pattern.map(col => (col.map(cell => (cell))));
   }
 
-  public static transpose(pattern: number[][]): number[][] {
+  static transpose(pattern: number[][]): number[][] {
     return pattern[0].map(function(col, i) {
       return pattern.map(function(row) {
         return row[i];
@@ -520,7 +558,7 @@ class PatternHelper {
     });
   }
 
-  public static stringify(pattern: number[][], notParsable?:boolean): string {
+  static stringify(pattern: number[][], notParsable?:boolean): string {
     let transposedPattern = PatternHelper.transpose(pattern);
     if (notParsable) {
       return transposedPattern
@@ -544,7 +582,7 @@ class PatternHelper {
             .replace(/1/g, '█');
   }
 
-  public static parse(text: string): number[][] {
+  static parse(text: string): number[][] {
     let rows = text.split('\n');
     if (!rows.length || !rows[0] || !rows[0].length) {
       return null;

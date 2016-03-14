@@ -100,7 +100,6 @@ class GameData {
 
       } else {
 
-
         if (nextReal() < .5) {
           // fir
           scale = .6 + (nextReal() * .6);
@@ -142,6 +141,34 @@ class GameData {
 
       this.things.push(wall);
     });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // agent
     let pos2d = this.playground.startPoints[0];

@@ -255,6 +255,23 @@ class Renderer {
     base3.position.z = m / 2 - .5;
     base3.material = base3Mat;
 
+    //
+    // add lakes
+    //
+
+    let lakeMat = new BABYLON.StandardMaterial('lake', this.scene);
+    let lakeTex = new BABYLON.Texture('textures/tile-water-3.png', this.scene);
+    lakeMat.diffuseTexture = lakeTex;
+    lakeMat.specularColor = new BABYLON.Color3(.25, .25, .25);
+    // lakeMat.diffuseColor = new BABYLON.Color3(.1, .25, .5);
+
+    playground.lakes.forEach((lake: LakeArea, i) => {
+      let lakeMesh = CustomMesh.createLake(lake, 'lake' + i, this.scene);
+      lakeMesh.position.y = lake.y;
+      lakeMesh.material = lakeMat;
+      lakeMesh.alphaIndex = .1;
+    });
+
 
     //
     // add water

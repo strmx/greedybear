@@ -10,6 +10,9 @@ interface GameDataOptions {
   birthLimit: number;
   deathLimit: number;
   maxHeight: number;
+  heightInterpolationCount: number;
+  lakeMinSize: number;
+  lakeChance: number;
 }
 
 interface Point {
@@ -22,6 +25,13 @@ interface RectArea extends Point {
   w: number;
   h: number;
 }
+
+interface LakeArea {
+  y: number;
+  rects: RectArea[];
+  cells: Point[];
+}
+
 
 interface DistancePoint extends Point {
   distance: number;

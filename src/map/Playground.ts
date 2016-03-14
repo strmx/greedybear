@@ -1,6 +1,7 @@
 /// <reference path="../../typings/Interfaces.d.ts" />
 
 import CavePatternGenerator = require('./CavePatternGenerator');
+import LakeGenerator = require('./LakeGenerator');
 import PatternHelper = require('./PatternHelper');
 import Elevation = require('./Elevation');
 import types = require('../types');
@@ -19,6 +20,7 @@ class Playground {
   map3d: Map3DCell[][]
   startPoints: DistancePoint[]
   wallRects: RectArea[]
+  lakes: LakeArea[]
 
   constructor(spec: GameDataOptions) {
     const nextReal = (<any>window).nextReal;
@@ -60,36 +62,23 @@ class Playground {
 
     this.maxHeight = spec.maxHeight;
     this.map = PatternHelper.clone(pattern);
-    this.wallRects = PatternHelper.calculateRectBlocks(pattern, 1);
-    this.boundaries = PatternHelper.clone(pattern);
-    // this.lakes = this._generateLakes(pattern);
-    this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
-    this.heightMap = PatternHelper.generateElevations(spec.n, spec.m, nextReal);
+    this.lakes = LakeGenerator.generateLakes(this.map, spec.lakeChance, spec.lakeMinSize);
+
+    // combine all lake maps
+    let lakesCells: Point[] = [];
+    this.lakes.forEach((lake: LakeArea) => {
+      lakesCells = lakesCells.concat(lake.cells);
+    });
+
+    this.heightMap = PatternHelper.generateElevations(n, m, spec.heightInterpolationCount, lakesCells);
     this.elevationMap = this._generateElevations(this.heightMap, this.maxHeight, spec);
     this.map3d = this._generate3DMap(this.elevationMap);
+
+    this.wallRects = PatternHelper.calculateRectBlocks(this.map, 1);
+    this.boundaries = PatternHelper.clone(pattern);
+
+    this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
     console.log(this.map3d);
-  }
-
-  private _generateLakes(pattern: number[][]) {
-    let closedAreas = PatternHelper.findOpenAreas(pattern, 1);
-
-    if (closedAreas.length === 0) {
-      return;
-    }
-
-    if (closedAreas.length > 1) {
-      // remove open areas
-      closedAreas
-        // except biggest area
-        .slice(1)
-        .forEach((cells) => {
-          cells.forEach((pos) => {
-            pattern[pos.x][pos.y] = 1;
-          });
-        });
-    }
-
-    return closedAreas[0];
   }
 
   private _generate3DMap(elevationMap: Elevation[][]): Map3DCell[][] {

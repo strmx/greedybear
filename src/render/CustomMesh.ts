@@ -56,6 +56,31 @@ class CustomMesh {
     return finalMesh;
   }
 
+  static createLake(lake: LakeArea, name: string, scene: BABYLON.Scene): BABYLON.Mesh {
+    let planes: BABYLON.Mesh[] = lake.rects.map((rect: RectArea) => {
+      let plane = BABYLON.Mesh.CreatePlane(name + Math.random(), rect.w, scene, false, BABYLON.Mesh.FRONTSIDE);
+      plane.position.x = rect.x + rect.w / 2 - .5;
+      plane.position.z = rect.y + rect.w / 2 - .5;
+      // plane.position.y = .1;
+      plane.rotation.x = 90 * (Math.PI / 180);
+
+      if (rect.w > 1 || rect.h > 1) {
+        let uvs = plane.getVerticesData(BABYLON.VertexBuffer.UVKind);
+    		for (let j = 0; j < uvs.length; j += 1) {
+    			uvs[j] = uvs[j] * rect.w;
+    		}
+    		plane.setVerticesData(BABYLON.VertexBuffer.UVKind, uvs);
+      }
+
+      return plane;
+    });
+
+    let lakeMesh = BABYLON.Mesh.MergeMeshes(planes, true, true);
+    lakeMesh.name = name;
+
+    return lakeMesh;
+  }
+
   static createTriangularPrism(name: string, scene: BABYLON.Scene, updatable: boolean = false): BABYLON.Mesh {
     let mesh = BABYLON.MeshBuilder.CreatePolyhedron(name + Math.random(), {type: 5, size: 1, updatable: updatable, sideOrientation: BABYLON.Mesh.FRONTSIDE}, scene);
 

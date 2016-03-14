@@ -9,16 +9,19 @@ import CanvasElement = require('./render/CanvasElement');
 const gameOptions = {
   n: 64,
   m: 64,
+  lakeMinSize: 10,
+  lakeChance: 0.2,
   wallChance: .4,
   stepCount: 2,
   // nextReal: Randomizer.generateNextRealFunction(13),
   birthLimit: 4,
   deathLimit: 3,
-  maxHeight: 30
+  maxHeight: 16,
+  heightInterpolationCount: 16,
 };
 
-(<any>window).nextReal = Randomizer.generateNextRealFunction(1);
-// (<any>window).nextReal = Math.random;
+// (<any>window).nextReal = Randomizer.generateNextRealFunction(1);
+(<any>window).nextReal = Math.random;
 
 let gameData = new GameData(gameOptions);
 
