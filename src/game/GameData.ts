@@ -143,36 +143,9 @@ class GameData {
     });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // agent
     let pos2d = this.playground.startPoints[0];
-    let agentPos = new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height + .5, pos2d.y);
+    let agentPos = new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y);
     let agent = new Thing(ThingType.AGENT, agentPos);
     agent.scaling.x = agent.scaling.y = agent.scaling.z = .75;
     this.things.push(agent);
@@ -183,7 +156,7 @@ class GameData {
     this.playground.startPoints.slice(1).forEach(pos2d => {
       // agentPath should be > 1
       if (Math.abs(agent.pos0.x - pos2d.x) >= 1 && Math.abs(agent.pos0.z - pos2d.y) >= 1) {
-        let companion = new Thing(ThingType.COMPANION, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height + .5, pos2d.y));
+        let companion = new Thing(ThingType.COMPANION, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y));
         companion.scaling.x = companion.scaling.y = companion.scaling.z = .75;
         this.thingMap[companion.pos0.x][companion.pos0.z] = companion;
         this.things.push(companion);

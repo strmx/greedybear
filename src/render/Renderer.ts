@@ -330,23 +330,23 @@ class Renderer {
 
       case ThingType.TREE:
 
-      if (!mat) {
-        let firMat = new BABYLON.StandardMaterial(matName, this.scene);
-        console.info('+', matName, firMat);
-
-        // TODO: make specular as autoadjustment option
-        // firMat.specularColor = new BABYLON.Color3(.5, .5, .25);
-        firMat.specularColor = BABYLON.Color3.Black();
-
-        let firTex = new BABYLON.Texture('textures/tile-tree-3.png', this.scene);
-        firTex.uScale = -1;
-        firTex.vScale = -1;
-
-        firMat.diffuseTexture = firTex;
-        mat = firMat;
-      }
-
       if (!mesh) {
+        if (!mat) {
+          let firMat = new BABYLON.StandardMaterial(matName, this.scene);
+          console.info('+', matName, firMat);
+
+          // TODO: make specular as autoadjustment option
+          // firMat.specularColor = new BABYLON.Color3(.5, .5, .25);
+          firMat.specularColor = BABYLON.Color3.Black();
+
+          let firTex = new BABYLON.Texture('textures/tile-tree-3.png', this.scene);
+          firTex.uScale = -1;
+          firTex.vScale = -1;
+
+          firMat.diffuseTexture = firTex;
+          mat = firMat;
+        }
+
         console.info('+', meshName);
         mesh = CustomMesh.createTree(meshName, this.scene);
         mesh.material = mat;
@@ -365,22 +365,22 @@ class Renderer {
 
       case ThingType.FIR:
 
-      if (!mat) {
-        console.info('+', matName);
-        let firMat = new BABYLON.StandardMaterial(matName, this.scene);
-
-        // TODO: make specular as autoadjustment option
-        // firMat.specularColor = new BABYLON.Color3(.5, .5, .25);
-        firMat.specularColor = BABYLON.Color3.Black();
-
-        let firTex = new BABYLON.Texture('textures/tile-fir-0.png', this.scene);
-        firTex.uScale = .2;
-        CustomMesh.normalizePyramidTexture(firTex);
-        firMat.diffuseTexture = firTex;
-        mat = firMat;
-      }
-
       if (!mesh) {
+        if (!mat) {
+          console.info('+', matName);
+          let firMat = new BABYLON.StandardMaterial(matName, this.scene);
+
+          // TODO: make specular as autoadjustment option
+          // firMat.specularColor = new BABYLON.Color3(.5, .5, .25);
+          firMat.specularColor = BABYLON.Color3.Black();
+
+          let firTex = new BABYLON.Texture('textures/tile-fir-0.png', this.scene);
+          firTex.uScale = .2;
+          CustomMesh.normalizePyramidTexture(firTex);
+          firMat.diffuseTexture = firTex;
+          mat = firMat;
+        }
+
         console.info('+', meshName);
         mesh = CustomMesh.createPyramid(meshName, this.scene);
         mesh.material = mat;
@@ -399,20 +399,20 @@ class Renderer {
 
       case ThingType.MOUNTAIN:
 
-      if (!mat) {
-        console.info('+', matName);
-        let mountainMat = new BABYLON.StandardMaterial(matName, this.scene);
-
-        // mountainMat.specularColor = new BABYLON.Color3(.5, .5, .25);
-        mountainMat.specularColor = BABYLON.Color3.Black();
-
-        let mountainTex = new BABYLON.Texture('textures/tile-mountains-0.png', this.scene);
-        CustomMesh.normalizePyramidTexture(mountainTex);
-        mountainMat.diffuseTexture = mountainTex;
-        mat = mountainMat;
-      }
-
       if (!mesh) {
+        if (!mat) {
+          console.info('+', matName);
+          let mountainMat = new BABYLON.StandardMaterial(matName, this.scene);
+
+          // mountainMat.specularColor = new BABYLON.Color3(.5, .5, .25);
+          mountainMat.specularColor = BABYLON.Color3.Black();
+
+          let mountainTex = new BABYLON.Texture('textures/tile-mountains-0.png', this.scene);
+          CustomMesh.normalizePyramidTexture(mountainTex);
+          mountainMat.diffuseTexture = mountainTex;
+          mat = mountainMat;
+        }
+
         console.info('+', meshName);
         mesh = CustomMesh.createPyramid(meshName, this.scene);
         mesh.material = mat;
@@ -428,27 +428,44 @@ class Renderer {
       //
       case ThingType.COMPANION:
 
-      if (!mat) {
-        console.info('+', matName);
-        mat = new BABYLON.StandardMaterial(matName, this.scene);
-        (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Red();
-        // Fresnel
-        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters = new BABYLON.FresnelParameters();
-        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.bias = 0.4;
-        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.power = 2;
-        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.leftColor = BABYLON.Color3.Black();
-        // (<BABYLON.StandardMaterial>mat).emissiveFresnelParameters.rightColor = BABYLON.Color3.White();
-      }
-
       if (!mesh) {
-        console.info('+', meshName);
-        mesh = BABYLON.Mesh.CreateSphere(meshName, 4, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
-        // mesh.position.y = .5;
-        mesh.material = mat;
+        //
+        // body
+        //
+        let bodyMat = new BABYLON.StandardMaterial(matName + 'Body', this.scene);
+        bodyMat.diffuseColor = BABYLON.Color3.Green();
+        let mountainTex = new BABYLON.Texture('textures/orient.jpg', this.scene);
+        bodyMat.diffuseTexture = mountainTex;
+
+        let body = BABYLON.Mesh.CreateBox(meshName + 'Body', 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        body.scaling.y = body.scaling.z = .25;
+        body.scaling.x = .4;
+        body.position.y = .5;
+        body.material = bodyMat;
+
+        //
+        // head
+        //
+        let headMat = new BABYLON.StandardMaterial(matName + 'Head', this.scene);
+        let headTex = new BABYLON.Texture('textures/tile-stone-0.png', this.scene);
+        headMat.diffuseTexture = headTex;
+        // headMat.diffuseColor = BABYLON.Color3.Black();
+
+        let head = BABYLON.Mesh.CreateBox(meshName + 'Head', 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        head.scaling.x = head.scaling.y = head.scaling.z = .3;
+        head.position.y = .5;
+        head.position.x = .15;
+        head.material = headMat;
+
+        mesh = BABYLON.Mesh.MergeMeshes([head, body]);
+
+        // mesh.material = mat;
         mesh.isVisible = false;
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
+
+
       break;
 
       //
@@ -456,14 +473,22 @@ class Renderer {
       //
       case ThingType.AGENT:
 
-      if (!mat) {
-        mat = new BABYLON.StandardMaterial(matName, this.scene);
-        (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Green();
-      }
-
       if (!mesh) {
-        mesh = BABYLON.Mesh.CreateSphere(meshName, 8, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
-        // mesh.position.y = .5;
+        if (!mat) {
+          mat = new BABYLON.StandardMaterial(matName, this.scene);
+          (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Green();
+
+          let mountainTex = new BABYLON.Texture('textures/orient.jpg', this.scene);
+          (<BABYLON.StandardMaterial>mat).diffuseTexture = mountainTex;
+        }
+
+        // mesh = BABYLON.Mesh.CreateSphere(meshName, 8, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+
+        let body = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        body.position.y = .5;
+
+        mesh = BABYLON.Mesh.MergeMeshes([body]);
+
         mesh.material = mat;
         mesh.isVisible = false;
       }
@@ -479,7 +504,7 @@ class Renderer {
         debugger;
     }
 
-    if (!mesh || !mat) {
+    if (!mesh) {
       debugger;
     }
 
