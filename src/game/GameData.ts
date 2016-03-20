@@ -147,7 +147,7 @@ class GameData {
     let pos2d = this.playground.startPoints[0];
     let agentPos = new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y);
     let agent = new Thing(ThingType.AGENT, agentPos);
-    agent.scaling.x = agent.scaling.y = agent.scaling.z = .75;
+    agent.scaling.x = agent.scaling.y = agent.scaling.z = 1; //1;
     this.things.push(agent);
     agent.rotation.y = 0;
     this.thingMap[agent.pos0.x][agent.pos0.z] = agent;
@@ -157,7 +157,7 @@ class GameData {
       // agentPath should be > 1
       if (Math.abs(agent.pos0.x - pos2d.x) >= 1 && Math.abs(agent.pos0.z - pos2d.y) >= 1) {
         let companion = new Thing(ThingType.COMPANION, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y));
-        companion.scaling.x = companion.scaling.y = companion.scaling.z = .75;
+        companion.scaling.x = companion.scaling.y = companion.scaling.z = .5;
         this.thingMap[companion.pos0.x][companion.pos0.z] = companion;
         this.things.push(companion);
       }

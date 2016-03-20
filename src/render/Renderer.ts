@@ -75,7 +75,7 @@ class Renderer {
     // let directLight = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(2, 5, 3), this.scene);
     // directLight.position = new BABYLON.Vector3(0, 100, 0);
 
-    var pl = new BABYLON.PointLight("pl", new BABYLON.Vector3(n, 100, m), this.scene);
+    var pl = new BABYLON.PointLight('pl', new BABYLON.Vector3(n, 100, m), this.scene);
     pl.diffuse = new BABYLON.Color3(1, 1, 1);
     // pl.specular = new BABYLON.Color3(1, 1, 1);
     pl.intensity = .5; // .8
@@ -95,7 +95,7 @@ class Renderer {
 
     this.scene.activeCamera = this.camera;
 
-    this.zoomOutCamera = new BABYLON.ArcRotateCamera("zoomOutCamera", 3 * Math.PI / 2, Math.PI / 8, ((n + m) / 2) * 1.1, new BABYLON.Vector3(n / 2, 0, m / 2), this.scene);
+    this.zoomOutCamera = new BABYLON.ArcRotateCamera('zoomOutCamera', 3 * Math.PI / 2, Math.PI / 8, ((n + m) / 2) * 1.1, new BABYLON.Vector3(n / 2, 0, m / 2), this.scene);
   	this.zoomOutCamera.attachControl(this.canvas.element, true);
 
     // this.zoomOutCamera = new BABYLON.FreeCamera('zoomOutCamera', new V3(n / 3, Math.min(n, m), m / 3), this.scene);
@@ -171,7 +171,7 @@ class Renderer {
     // skybox.material = skyboxMat;
 
 
-    var skyboxMaterial = new (<any>BABYLON).SkyMaterial("skyMaterial", this.scene);
+    var skyboxMaterial = new (<any>BABYLON).SkyMaterial('skyMaterial', this.scene);
     skyboxMaterial.backFaceCulling = false;
   	skyboxMaterial._cachedDefines.FOG = true;
     // skyMaterial.turbidity = 1 // 0..20 (maybe 100)
@@ -186,7 +186,7 @@ class Renderer {
     // skyMaterial.mieDirectionalG = 0.8;
     // skyMaterial.mieCoefficient = 0.005; // The mieCoefficient in interval [0, 0.1], affects the property skyMaterial.mieDirectionalG
 
-    var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, this.scene);
+    var skybox = BABYLON.Mesh.CreateBox('skyBox', 1000.0, this.scene);
     skybox.material = skyboxMaterial;
 
 
@@ -292,11 +292,11 @@ class Renderer {
 
     /*
     // Water
-  	var waterMesh = BABYLON.Mesh.CreateGround("waterMesh", 1024, 1024, 1, this.scene, false);
-  	var water = new (<any>BABYLON).WaterMaterial("water", this.scene);
+  	var waterMesh = BABYLON.Mesh.CreateGround('waterMesh', 1024, 1024, 1, this.scene, false);
+  	var water = new (<any>BABYLON).WaterMaterial('water', this.scene);
     // waterMesh.position.y = -1.7;
-    waterMesh.position.y = -250;
-  	water.bumpTexture = new BABYLON.Texture("textures/waterbump.png", this.scene);
+    // waterMesh.position.y = -250;
+  	water.bumpTexture = new BABYLON.Texture('textures/waterbump.png', this.scene);
 
   	// Water properties
   	water.windForce = 1;
@@ -321,6 +321,14 @@ class Renderer {
     let matName = 'm' + thing.type;
     let mesh = this.scene.getMeshByName(meshName);
     let mat = this.scene.getMaterialByName(matName);
+
+
+    let testMat: BABYLON.Material = this.scene.getMaterialByName('testMat');
+    if (!testMat) {
+      testMat = new BABYLON.StandardMaterial('testMat', this.scene);
+      let testTex = new BABYLON.Texture('textures/UVTextureChecker512.png', this.scene);
+      (<BABYLON.StandardMaterial>testMat).diffuseTexture = testTex;
+    }
 
     switch(thing.type) {
 
@@ -429,6 +437,159 @@ class Renderer {
       case ThingType.COMPANION:
 
       if (!mesh) {
+
+      	//
+      	// body
+      	//
+
+      	let beeBody = BABYLON.Mesh.CreateBox('beeBody', 1, this.scene);
+      	beeBody.scaling.x = .2;
+      	beeBody.scaling.y = .2;
+      	beeBody.scaling.z = .3;
+        beeBody.position.x = -.1;
+        beeBody.position.y = .75;
+        beeBody.rotation.y = Math.PI / 2;
+
+        let beeBodyMat = new BABYLON.StandardMaterial('beeBodyMat', this.scene);
+        let beeBodyTex = new BABYLON.Texture('textures/bee-body-0.png', this.scene);
+        let rotatedBeeBodyTex = beeBodyTex.clone();
+        rotatedBeeBodyTex.wAng = Math.PI / 2;
+        rotatedBeeBodyTex.vScale = -1;
+        let beeBodyBackTex = new BABYLON.Texture('textures/bee-body-back-0.png', this.scene);
+      	beeBodyMat.specularColor = new BABYLON.Color3(0, 0, 0);
+        beeBodyMat.diffuseTexture = beeBodyTex;
+
+        //Define a material
+        let f = new BABYLON.StandardMaterial('beeBodyMat0', this.scene);
+        // f.diffuseTexture = beeBodyTex;
+        let ba = new BABYLON.StandardMaterial('beeBodyMat1', this.scene);
+        ba.diffuseTexture = beeBodyBackTex;
+        // ba.diffuseTexture = beeBodyTex;
+        let l = new BABYLON.StandardMaterial('beeBodyMat2', this.scene);
+        l.diffuseTexture = beeBodyTex;
+        // l.diffuseTexture = beeBodyTex;
+        let r = new BABYLON.StandardMaterial('beeBodyMat3', this.scene);
+        r.diffuseTexture = beeBodyTex;
+        let t = new BABYLON.StandardMaterial('beeBodyMat4', this.scene);
+        t.diffuseTexture = rotatedBeeBodyTex;
+        // t.diffuseColor = BABYLON.Color3.Red();
+        let bo = new BABYLON.StandardMaterial('beeBodyMat5', this.scene);
+        bo.diffuseTexture = rotatedBeeBodyTex;
+        //put into one
+        let multi = new BABYLON.MultiMaterial('beeBodyMatAll', this.scene);
+        multi.subMaterials.push(f);
+        multi.subMaterials.push(ba);
+        multi.subMaterials.push(l);
+        multi.subMaterials.push(r);
+        multi.subMaterials.push(t);
+        multi.subMaterials.push(bo);
+        //apply material
+        beeBody.subMeshes=[];
+        let verticesCount = beeBody.getTotalVertices();
+
+        // SubMesh(materialIndex: number, verticesStart: number, verticesCount: number, indexStart: any, indexCount: number, mesh: AbstractMesh, renderingMesh?: Mesh, createBoundingBox?: boolean);
+        beeBody.subMeshes.push(new BABYLON.SubMesh(0, 0, verticesCount, 0, 6, beeBody));
+        beeBody.subMeshes.push(new BABYLON.SubMesh(1, 1, verticesCount, 6, 6, beeBody));
+        beeBody.subMeshes.push(new BABYLON.SubMesh(2, 2, verticesCount, 12, 6, beeBody));
+        beeBody.subMeshes.push(new BABYLON.SubMesh(3, 3, verticesCount, 18, 6, beeBody));
+        beeBody.subMeshes.push(new BABYLON.SubMesh(4, 4, verticesCount, 24, 6, beeBody));
+        beeBody.subMeshes.push(new BABYLON.SubMesh(5, 5, verticesCount, 30, 6, beeBody));
+        beeBody.material = multi;
+
+      	//
+      	// head
+      	//
+
+      	let beeHead = BABYLON.Mesh.CreateBox('beeHead', 1, this.scene);
+      	beeHead.scaling.x = .3;
+      	beeHead.scaling.y = .3;
+      	beeHead.scaling.z = .3;
+      	beeHead.position.x = .2;
+        beeHead.position.y = .75;
+        beeHead.rotation.y = Math.PI / 2;
+
+        let beeHeadMat = new BABYLON.StandardMaterial('beeHeadMat', this.scene);
+      	beeHeadMat.diffuseColor = new BABYLON.Color3(.9, .8, 0);
+      	beeHead.material = beeHeadMat;
+
+        let beeHeadFrontTex = new BABYLON.Texture('textures/bee-head-front-0.png', this.scene);
+        beeHeadFrontTex.vScale = -1;
+        let beeHeadTopTex = new BABYLON.Texture('textures/bee-head-top-0.png', this.scene);
+        let beeHeadLeftSideTex = new BABYLON.Texture('textures/bee-head-side-0.png', this.scene);
+        let beeHeadRightSideTex = beeHeadLeftSideTex.clone();
+        beeHeadLeftSideTex.wAng = Math.PI;
+        beeHeadRightSideTex.wAng = Math.PI / 2;
+
+        //Define a material
+        f = new BABYLON.StandardMaterial('beeHeadMat0', this.scene);
+        f.diffuseTexture = beeHeadFrontTex;
+        ba = new BABYLON.StandardMaterial('beeHeadMat1', this.scene);
+        ba.diffuseTexture = beeHeadTopTex;
+        l = new BABYLON.StandardMaterial('beeHeadMat2', this.scene);
+        l.diffuseTexture = beeHeadLeftSideTex;
+        r = new BABYLON.StandardMaterial('beeHeadMat3', this.scene);
+        r.diffuseTexture = beeHeadRightSideTex;
+        t = new BABYLON.StandardMaterial('beeHeadMat4', this.scene);
+        t.diffuseTexture = beeHeadTopTex;
+        bo = new BABYLON.StandardMaterial('beeHeadMat5', this.scene);
+        bo.diffuseTexture = beeHeadTopTex;
+        //put into one
+        multi = new BABYLON.MultiMaterial('beeHeadMatAll', this.scene);
+        multi.subMaterials.push(f);
+        multi.subMaterials.push(ba);
+        multi.subMaterials.push(l);
+        multi.subMaterials.push(r);
+        multi.subMaterials.push(t);
+        multi.subMaterials.push(bo);
+        //apply material
+        beeHead.subMeshes=[];
+        verticesCount = beeHead.getTotalVertices();
+
+        // SubMesh(materialIndex: number, verticesStart: number, verticesCount: number, indexStart: any, indexCount: number, mesh: AbstractMesh, renderingMesh?: Mesh, createBoundingBox?: boolean);
+        beeHead.subMeshes.push(new BABYLON.SubMesh(0, 0, verticesCount, 0, 6, beeHead));
+        beeHead.subMeshes.push(new BABYLON.SubMesh(1, 1, verticesCount, 6, 6, beeHead));
+        beeHead.subMeshes.push(new BABYLON.SubMesh(2, 2, verticesCount, 12, 6, beeHead));
+        beeHead.subMeshes.push(new BABYLON.SubMesh(3, 3, verticesCount, 18, 6, beeHead));
+        beeHead.subMeshes.push(new BABYLON.SubMesh(4, 4, verticesCount, 24, 6, beeHead));
+        beeHead.subMeshes.push(new BABYLON.SubMesh(5, 5, verticesCount, 30, 6, beeHead));
+        beeHead.material = multi;
+
+      	//
+      	// sting
+      	//
+
+      	let beeSting = CustomMesh.createPyramid('beeSting', this.scene, false);
+      	beeSting.scaling.x = .1;
+      	beeSting.scaling.y = .3;
+      	beeSting.scaling.z = .1;
+      	beeSting.position.x = -.25;
+        beeSting.position.y = .75;
+      	beeSting.rotation.z = Math.PI / 2;
+
+        let beeStingMat = new BABYLON.StandardMaterial('beeStingMat', this.scene);
+        beeStingMat.specularColor = BABYLON.Color3.White();
+        beeStingMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+      	beeSting.material = beeStingMat;
+
+      	//
+      	// wings
+      	//
+
+      	let beeWings = BABYLON.Mesh.CreatePlane('beeWings', 1, this.scene, false, 2);
+      	beeWings.scaling.x = .2;
+        beeWings.scaling.y = .8;
+        // beeWings.scaling.z = .4;
+      	beeWings.position.x = -.1;
+        beeWings.position.y = .75;
+      	beeWings.rotation.x = Math.PI / 2;
+
+        let beeWingsMat = new BABYLON.StandardMaterial('beeWingsMat', this.scene);
+      	beeWingsMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
+        beeWings.material = beeWingsMat;
+
+
+        /*
+
         //
         // body
         //
@@ -459,12 +620,23 @@ class Renderer {
 
         mesh = BABYLON.Mesh.MergeMeshes([head, body]);
 
+        */
+
         // mesh.material = mat;
-        mesh.isVisible = false;
+        // mesh.isVisible = false;
       }
 
-      mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
+      let beeBody = (<BABYLON.Mesh>this.scene.getMeshByName('beeBody')).createInstance('beeBody' + thing.id);
+      let beeHead = (<BABYLON.Mesh>this.scene.getMeshByName('beeHead')).createInstance('beeHead' + thing.id);
+      let beeSting = (<BABYLON.Mesh>this.scene.getMeshByName('beeSting')).createInstance('beeSting' + thing.id);
+      let beeWings = (<BABYLON.Mesh>this.scene.getMeshByName('beeWings')).createInstance('beeWings' + thing.id);
 
+      mesh = BABYLON.Mesh.CreatePlane(meshName, 0, this.scene, false);
+      mesh.isVisible = false;
+      beeBody.parent = mesh;
+      beeHead.parent = mesh;
+      beeSting.parent = mesh;
+      beeWings.parent = mesh;
 
       break;
 
@@ -482,18 +654,111 @@ class Renderer {
           (<BABYLON.StandardMaterial>mat).diffuseTexture = mountainTex;
         }
 
-        // mesh = BABYLON.Mesh.CreateSphere(meshName, 8, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        let bearMat = new BABYLON.StandardMaterial('bearMat', this.scene);
+        let bearBodyTex = new BABYLON.Texture('textures/bear-body-0.png', this.scene);
+        // bearBodyTex.uScale = -1;
+        // bearBodyTex.vScale = -1;
+      	bearMat.specularColor = new BABYLON.Color3(0, 0, 0);
+        bearMat.diffuseTexture = bearBodyTex;
 
-        let body = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
-        body.position.y = .5;
+      	let bearBody = BABYLON.Mesh.CreateBox('bearBody', 1, this.scene);
+      	bearBody.scaling.x = .1;
+      	bearBody.scaling.y = .8;
+      	bearBody.scaling.z = .4;
+        bearBody.position.y = 0 + .5;
+        bearBody.material = bearMat;
 
-        mesh = BABYLON.Mesh.MergeMeshes([body]);
+        let bearTail = BABYLON.Mesh.CreateBox("bearTail", 1, this.scene);
+      	bearTail.scaling.x = .05;
+      	bearTail.scaling.y = .075;
+      	bearTail.scaling.z = .075;
+      	bearTail.position.y = -.3 + .5;
+      	bearTail.position.x = -.05;
+        bearTail.material = bearMat;
 
-        mesh.material = mat;
-        mesh.isVisible = false;
+      	let bearLeftEar = BABYLON.Mesh.CreateCylinder('bearLeftEar', .1, .15, .15, 8, 1, this.scene, false);
+      	bearLeftEar.position.z = -.13;
+      	bearLeftEar.position.y = .4 + .5;
+      	bearLeftEar.rotation.z = Math.PI / 2;
+      	bearLeftEar.rotation.x = .4;
+        bearLeftEar.material = bearMat;
+
+      	let bearRightEar = BABYLON.Mesh.CreateCylinder('bearRightEar', .1, .15, .15, 6, 1, this.scene, false);
+      	bearRightEar.position.z = .13;
+      	bearRightEar.position.y = .4 + .5;
+      	bearRightEar.rotation.z = Math.PI / 2;
+      	bearRightEar.rotation.x = .4;
+        bearRightEar.material = bearMat;
+
+      	let bearLeftHand = BABYLON.Mesh.CreateCylinder('bearLeftHand', .1, .15, .15, 8, 1, this.scene, false);
+      	bearLeftHand.position.z = -.23;
+      	bearLeftHand.position.y = .05 + .5;
+      	bearLeftHand.rotation.z = Math.PI / 2;
+      	bearLeftHand.rotation.x = .4;
+        bearLeftHand.material = bearMat;
+
+      	let bearRightHand = BABYLON.Mesh.CreateCylinder('bearRightHand', .1, .15, .15, 8, 1, this.scene, false);
+      	bearRightHand.position.z = .23;
+      	bearRightHand.position.y = .05 + .5;
+      	bearRightHand.rotation.z = Math.PI / 2;
+      	bearRightHand.rotation.x = .4;
+        bearRightHand.material = bearMat;
+
+      	let bearLeftFoot = BABYLON.Mesh.CreateCylinder('bearLeftFoot', .1, .15, .15, 8, 1, this.scene, false);
+      	bearLeftFoot.position.z = -.13;
+      	bearLeftFoot.position.y = -.4 + .5;
+      	bearLeftFoot.rotation.z = Math.PI / 2;
+      	bearLeftFoot.rotation.x = .4;
+        bearLeftFoot.material = bearMat;
+
+      	let bearRightFoot = BABYLON.Mesh.CreateCylinder('bearRightFoot', .1, .15, .15, 8, 1, this.scene, false);
+      	bearRightFoot.position.z = .13;
+      	bearRightFoot.position.y = -.4 + .5;
+      	bearRightFoot.rotation.z = Math.PI / 2;
+      	bearRightFoot.rotation.x = .4;
+        bearRightFoot.material = bearMat;
+
+        // hide src
+        bearBody.isVisible = false;
+        bearTail.isVisible = false;
+        bearLeftEar.isVisible = false;
+        bearRightEar.isVisible = false;
+        bearLeftHand.isVisible = false;
+        bearRightHand.isVisible = false;
+        bearLeftFoot.isVisible = false;
+        bearRightFoot.isVisible = false;
+
+        // let body = BABYLON.Mesh.CreateBox(meshName, 1, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+        // body.position.y = .5;
+        //
+        // mesh = BABYLON.Mesh.MergeMeshes([body]);
+        //
+        // mesh.material = mat;
+        // mesh.isVisible = false;
       }
 
-      mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
+
+      let bearBody = (<BABYLON.Mesh>this.scene.getMeshByName('bearBody')).createInstance('bearBody' + thing.id);
+      let bearTail = (<BABYLON.Mesh>this.scene.getMeshByName('bearTail')).createInstance('bearTail' + thing.id);
+      let bearLeftEar = (<BABYLON.Mesh>this.scene.getMeshByName('bearLeftEar')).createInstance('bearLeftEar' + thing.id);
+      let bearRightEar = (<BABYLON.Mesh>this.scene.getMeshByName('bearRightEar')).createInstance('bearRightEar' + thing.id);
+      let bearLeftHand = (<BABYLON.Mesh>this.scene.getMeshByName('bearLeftHand')).createInstance('bearLeftHand' + thing.id);
+      let bearRightHand = (<BABYLON.Mesh>this.scene.getMeshByName('bearRightHand')).createInstance('bearRightHand' + thing.id);
+      let bearLeftFoot = (<BABYLON.Mesh>this.scene.getMeshByName('bearLeftFoot')).createInstance('bearLeftFoot' + thing.id);
+      let bearRightFoot = (<BABYLON.Mesh>this.scene.getMeshByName('bearRightFoot')).createInstance('bearRightFoot' + thing.id);
+
+      mesh = BABYLON.Mesh.CreatePlane(meshName, 0, this.scene, false);
+      mesh.isVisible = false;
+      bearBody.parent = mesh;
+      bearTail.parent = mesh;
+      bearLeftEar.parent = mesh;
+      bearRightEar.parent = mesh;
+      bearLeftHand.parent = mesh;
+      bearRightHand.parent = mesh;
+      bearLeftFoot.parent = mesh;
+      bearRightFoot.parent = mesh;
+
+      // mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
 
       // adjust follow camera
       this.camera.target = mesh;
