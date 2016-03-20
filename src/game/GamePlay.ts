@@ -80,10 +80,34 @@ class GamePlay {
       }
     });
 
+
+    let bearAniDirection = 1;
+    let bearAniT = 0;
+    let bearRFoot = this.renderer.scene.getMeshByID('bearRFoot');
+    let bearLFoot = this.renderer.scene.getMeshByID('bearLFoot');
+    // lFoot.rotation.z = .4;
+    let bearRHand = this.renderer.scene.getMeshByID('bearRHand');
+    // rHand.rotation.x = .4;
+    let bearLHand = this.renderer.scene.getMeshByID('bearLHand');
+
+
     this.renderer.engine.runRenderLoop(() => {
       this.renderer.stats.begin();
 
       let sec = this.renderer.engine.getDeltaTime() / 1000;
+
+      // <BEAR_ANIMATION>
+      // 2xsec
+      bearAniT += (sec * bearAniDirection) * 10;
+      if (bearAniT > 1 || bearAniT < -1) {
+        bearAniDirection = -bearAniDirection;
+      }
+      bearRHand.rotation.x = (bearAniT * .4);
+      bearLHand.rotation.x = (bearAniT * .4);
+      bearRFoot.rotation.z = (bearAniT * .4);
+      bearLFoot.rotation.z = -(bearAniT * .4);
+      // </BEAR_ANIMATION>
+
       this.simulate(sec, this.agent, this.gameData.playground);
       this.renderer.scene.render();
 
