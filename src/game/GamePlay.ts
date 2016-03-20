@@ -82,7 +82,7 @@ class GamePlay {
 
 
     let bearAniDirection = 1;
-    let bearAniT = 0;
+    let bearAniPos = 0;
     let bearRFoot = this.renderer.scene.getMeshByID('bearRFoot');
     let bearLFoot = this.renderer.scene.getMeshByID('bearLFoot');
     // lFoot.rotation.z = .4;
@@ -97,15 +97,20 @@ class GamePlay {
       let sec = this.renderer.engine.getDeltaTime() / 1000;
 
       // <BEAR_ANIMATION>
-      // 2xsec
-      bearAniT += (sec * bearAniDirection) * 10;
-      if (bearAniT > 1 || bearAniT < -1) {
+      if (bearAniPos > 1) {
+        bearAniPos = 1;
+        bearAniDirection = -bearAniDirection;
+      } else if (bearAniPos < -1) {
+        bearAniPos = -1;
         bearAniDirection = -bearAniDirection;
       }
-      bearRHand.rotation.x = (bearAniT * .4);
-      bearLHand.rotation.x = (bearAniT * .4);
-      bearRFoot.rotation.z = (bearAniT * .4);
-      bearLFoot.rotation.z = -(bearAniT * .4);
+
+      bearAniPos += (sec * bearAniDirection) * 32;
+
+      bearRHand.rotation.x = (bearAniPos * .5);
+      bearLHand.rotation.x = (bearAniPos * .5);
+      bearRFoot.rotation.z = (bearAniPos * .5);
+      bearLFoot.rotation.z = -(bearAniPos * .5);
       // </BEAR_ANIMATION>
 
       this.simulate(sec, this.agent, this.gameData.playground);
