@@ -316,7 +316,16 @@ class Renderer {
     */
   }
 
-  showThing(thing: Thing) {
+
+  removeThingView(thing: Thing) {
+    // remove old mesh
+    let mesh = this.scene.getMeshByName('' + thing.id);
+    if (mesh) {
+      this.scene.removeMesh(mesh);
+    }
+  }
+
+  addThingView(thing: Thing) {
     let meshName = 'M' + thing.type;
     let matName = 'm' + thing.type;
     let mesh = this.scene.getMeshByName(meshName);
@@ -432,9 +441,38 @@ class Renderer {
       break;
 
       //
-      // COMPANION
+      // HIVE
       //
-      case ThingType.COMPANION:
+
+      case ThingType.HIVE:
+
+      if (!mesh) {
+        if (!mat) {
+          console.info('+', matName);
+          let hiveMat = new BABYLON.StandardMaterial(matName, this.scene);
+
+          // mountainMat.specularColor = new BABYLON.Color3(.5, .5, .25);
+          hiveMat.specularColor = BABYLON.Color3.Black();
+
+          let hiveTex = new BABYLON.Texture('textures/tile-mountains-0.png', this.scene);
+          hiveMat.diffuseTexture = hiveTex;
+          mat = hiveMat;
+        }
+
+        console.info('+', meshName);
+        mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene);
+        mesh.material = mat;
+        mesh.isVisible = false;
+      }
+
+      mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
+      // this.shadowGenerator.getShadowMap().renderList.push(mesh);
+      break;
+
+      //
+      // BEE
+      //
+      case ThingType.BEE:
 
       if (!mesh) {
 
@@ -575,6 +613,11 @@ class Renderer {
       	beeWingsMat.diffuseColor = new BABYLON.Color3(1, 1, 1);
         beeWings.material = beeWingsMat;
 
+        // hide blueprint
+        beeBody.isVisible = false;
+        beeHead.isVisible = false;
+        beeSting.isVisible = false;
+        beeWings.isVisible = false;
 
         /*
 
@@ -631,7 +674,7 @@ class Renderer {
       //
       // AGENT
       //
-      case ThingType.AGENT:
+      case ThingType.BEAR:
 
       if (!mesh) {
         if (!mat) {

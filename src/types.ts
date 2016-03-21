@@ -15,8 +15,9 @@ enum ThingType {
   SKY,
   GROUND,
   MOUNTAIN,
-  AGENT,
-  COMPANION,
+  BEAR,
+  HIVE,
+  BEE,
   FIR,
   TREE
 }

@@ -40,12 +40,12 @@ class GamePlay {
     this.gameData = gameData;
     this.renderer = renderer;
 
-    this.agent = this.gameData.things.filter(t => (t.type === ThingType.AGENT))[0];
+    this.agent = this.gameData.things.filter(t => (t.type === ThingType.BEAR))[0];
 
     this.renderer.createEnvironment(this.gameData.playground);
 
     this.gameData.things.forEach(thing => {
-      this.renderer.showThing(thing);
+      this.renderer.addThingView(thing);
     });
 
     // set initial agent location
@@ -105,7 +105,7 @@ class GamePlay {
         bearAniDirection = -bearAniDirection;
       }
 
-      bearAniPos += (sec * bearAniDirection) * 32;
+      bearAniPos += (sec * bearAniDirection) * 24;
 
       bearRHand.rotation.x = (bearAniPos * .5);
       bearLHand.rotation.x = (bearAniPos * .5);
@@ -288,11 +288,17 @@ class GamePlay {
       if (collidedThing) {
         switch(collidedThing.type) {
 
-          // compoanion
-          case ThingType.COMPANION:
+          // hive
+          case ThingType.HIVE:
+
           // update scores
           this.scores++;
           this.renderer.updateScoresText(this.scores);
+
+          this.renderer.removeThingView(collidedThing);
+
+          collidedThing.type = ThingType.BEE;
+          this.renderer.addThingView(collidedThing);
 
           thingMap[nextCell.x][nextCell.z] = null;
           this.partyMembers.push(collidedThing);
