@@ -145,6 +145,14 @@ class Renderer {
     this.scoresPlane.position.z = 8;
     this.scoresPlane.position.y = 2.75;
     this.scoresPlane.parent = this.camera;
+
+    //
+    // the fog
+    //
+
+    // this.scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+    // this.scene.fogDensity = 30;
+    // this.scene.fogColor = new BABYLON.Color3(0.8, 0.83, 0.8);
   }
 
   switchCameras() {
@@ -459,8 +467,16 @@ class Renderer {
           mat = hiveMat;
         }
 
-        console.info('+', meshName);
-        mesh = BABYLON.Mesh.CreateBox(meshName, 1, this.scene);
+        let parts = [.1, .5, .8, 1, .8, .5, .1].map((size, i, all) => {
+          let count = all.length;
+          let part = BABYLON.Mesh.CreateBox(meshName + 'Part' + i, 1, this.scene);
+          part.position.y = (i + 1) / count;
+          part.scaling.x = part.scaling.z = size;
+          part.scaling.y = 1 / count;
+          return part;
+        });
+        mesh = BABYLON.Mesh.MergeMeshes(parts, true, true);
+        mesh.name = meshName;
         mesh.material = mat;
         mesh.isVisible = false;
       }
