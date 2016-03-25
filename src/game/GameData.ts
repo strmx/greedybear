@@ -157,12 +157,7 @@ class GameData {
       // agentPath should be > 1
       if (Math.abs(agent.pos0.x - pos2d.x) >= 1 && Math.abs(agent.pos0.z - pos2d.y) >= 1) {
         let companion = new Thing(ThingType.HIVE, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y));
-        companion.scaling.x = companion.scaling.y = companion.scaling.z = nextReal() * .75 + .4;
-
-        companion.rotation.y = (360 * nextReal()) * (Math.PI / 180);
-        companion.rotation.x = (nextReal() * 10 - 5) * (Math.PI / 180);
-        companion.rotation.y = (nextReal() * 10 - 5) * (Math.PI / 180);
-
+        companion.scaling.x = companion.scaling.y = companion.scaling.z = nextReal() * .25 + .75;
         this.thingMap[companion.pos0.x][companion.pos0.z] = companion;
         this.things.push(companion);
       }

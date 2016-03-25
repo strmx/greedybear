@@ -68,7 +68,7 @@ class Renderer {
     // var light = new BABYLON.DirectionalLight('Dir0', new V3(0, -1, 0), this.scene);
     // light.diffuse = new BABYLON.Color3(1, 1, 1);
     // light.specular = new BABYLON.Color3(1, 1, 1);
-    light.intensity = 0.5; // .7
+    light.intensity = 0.6; // .7
 
     // let h = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0, 1, 0), this.scene);
     // h.intensity = 0.5;
@@ -76,7 +76,7 @@ class Renderer {
     // directLight.position = new BABYLON.Vector3(0, 100, 0);
 
     var pl = new BABYLON.PointLight('pl', new BABYLON.Vector3(n, 100, m), this.scene);
-    pl.diffuse = new BABYLON.Color3(1, 1, 1);
+    // pl.diffuse = new BABYLON.Color3(1, 1, 1);
     // pl.specular = new BABYLON.Color3(1, 1, 1);
     pl.intensity = .5; // .8
 
@@ -334,6 +334,8 @@ class Renderer {
   }
 
   addThingView(thing: Thing) {
+    const nextReal = (<any>window).nextReal;
+
     let meshName = 'M' + thing.type;
     let matName = 'm' + thing.type;
     let mesh = this.scene.getMeshByName(meshName);
@@ -382,6 +384,11 @@ class Renderer {
 
       // this.shadowGenerator.getShadowMap().renderList.push(mesh);
       // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
+
+      mesh.position = thing.position;
+      mesh.rotation = thing.rotation;
+      mesh.scaling = thing.scaling;
+
       break;
 
       //
@@ -416,6 +423,11 @@ class Renderer {
 
       // this.shadowGenerator.getShadowMap().renderList.push(mesh);
       // mesh.scaling.multiplyInPlace(new BABYLON.Vector3(.5, .5, .5));
+
+      mesh.position = thing.position;
+      mesh.rotation = thing.rotation;
+      mesh.scaling = thing.scaling;
+
       break;
 
       //
@@ -446,6 +458,11 @@ class Renderer {
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
       // this.shadowGenerator.getShadowMap().renderList.push(mesh);
+
+      mesh.position = thing.position;
+      mesh.rotation = thing.rotation;
+      mesh.scaling = thing.scaling;
+
       break;
 
       //
@@ -462,26 +479,35 @@ class Renderer {
           // mountainMat.specularColor = new BABYLON.Color3(.5, .5, .25);
           hiveMat.specularColor = BABYLON.Color3.Black();
 
-          let hiveTex = new BABYLON.Texture('textures/tile-mountains-0.png', this.scene);
+          let hiveTex = new BABYLON.Texture('textures/hive.png', this.scene);
+          hiveTex.vScale = -1;
+          hiveTex.uScale = -1;
           hiveMat.diffuseTexture = hiveTex;
           mat = hiveMat;
         }
 
-        let parts = [.1, .5, .8, 1, .8, .5, .1].map((size, i, all) => {
-          let count = all.length;
-          let part = BABYLON.Mesh.CreateBox(meshName + 'Part' + i, 1, this.scene);
-          part.position.y = (i + 1) / count;
-          part.scaling.x = part.scaling.z = size;
-          part.scaling.y = 1 / count;
-          return part;
-        });
-        mesh = BABYLON.Mesh.MergeMeshes(parts, true, true);
+        let sphere = BABYLON.Mesh.CreateSphere(meshName, 4, .6, this.scene);
+        // sphere.convertToFlatShadedMesh();
+    	  sphere.scaling.x = sphere.scaling.z = .75;
+        sphere.position.y = .375 - .25;
+
+        mesh = BABYLON.Mesh.MergeMeshes([sphere]);
         mesh.name = meshName;
         mesh.material = mat;
         mesh.isVisible = false;
       }
 
       mesh = (<BABYLON.Mesh>mesh).createInstance('' + thing.id);
+
+      mesh.rotation.y = (360 * nextReal()) * (Math.PI / 180);
+      mesh.rotation.x = (nextReal() * 45 - 22.5) * (Math.PI / 180);
+      mesh.rotation.y = (nextReal() * 45 - 22.5) * (Math.PI / 180);
+
+      mesh.position = thing.position;
+      // ignore thing rotation
+      // mesh.rotation = thing.rotation;
+      mesh.scaling = thing.scaling;
+
       // this.shadowGenerator.getShadowMap().renderList.push(mesh);
       break;
 
@@ -678,12 +704,21 @@ class Renderer {
       let beeSting = (<BABYLON.Mesh>this.scene.getMeshByName('beeSting')).createInstance('beeSting' + thing.id);
       let beeWings = (<BABYLON.Mesh>this.scene.getMeshByName('beeWings')).createInstance('beeWings' + thing.id);
 
+      let meshResizer = BABYLON.Mesh.CreatePlane(meshName + 'Resizer', 0, this.scene, false);
+      meshResizer.isVisible = false;
+      beeBody.parent = meshResizer;
+      beeHead.parent = meshResizer;
+      beeSting.parent = meshResizer;
+      beeWings.parent = meshResizer;
+      meshResizer.scaling.x = meshResizer.scaling.y = meshResizer.scaling.z = .5;
+
       mesh = BABYLON.Mesh.CreatePlane(meshName, 0, this.scene, false);
       mesh.isVisible = false;
-      beeBody.parent = mesh;
-      beeHead.parent = mesh;
-      beeSting.parent = mesh;
-      beeWings.parent = mesh;
+      meshResizer.parent = mesh;
+
+      mesh.position = thing.position;
+      mesh.rotation = thing.rotation;
+      mesh.scaling = thing.scaling;
 
       break;
 
@@ -863,6 +898,10 @@ class Renderer {
       // adjust follow camera
       this.camera.target = mesh;
 
+      mesh.position = thing.position;
+      mesh.rotation = thing.rotation;
+      mesh.scaling = thing.scaling;
+
       break;
 
       default:
@@ -872,10 +911,6 @@ class Renderer {
     if (!mesh) {
       debugger;
     }
-
-    mesh.position = thing.position;
-    mesh.rotation = thing.rotation;
-    mesh.scaling = thing.scaling;
   }
 
   destroy() {
