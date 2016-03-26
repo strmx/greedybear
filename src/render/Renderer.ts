@@ -90,11 +90,11 @@ class Renderer {
     // let pos = agentOrigin.position;
     // var agentCamera = new BABYLON.FollowCamera('agentCamera', new V3(pos.x, 10, pos.z), this.scene);
     this.camera = new BABYLON.FollowCamera('followCamera', new V3(n / 2, 10, m / 2), this.scene);
-    this.camera.radius = 8; // how far from the object to follow
-    this.camera.heightOffset = 10; // how high above the object to place the camera
+    this.camera.radius = 6; // how far from the object to follow
+    this.camera.heightOffset = 4; // how high above the object to place the camera
     this.camera.rotationOffset = 270; // the viewing angle
-    this.camera.cameraAcceleration = 0.025 // how fast to move
-    this.camera.maxCameraSpeed = 2 // speed limit
+    this.camera.cameraAcceleration = 0.01 // how fast to move
+    this.camera.maxCameraSpeed = .5 // speed limit
 
     this.scene.activeCamera = this.camera;
 

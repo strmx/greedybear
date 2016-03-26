@@ -7,6 +7,7 @@ import types = require('../types');
 import d2r = require('../tools/d2r');
 import GameData = require('./GameData');
 import Playground = require('../map/Playground');
+import EasingFunctions = require('../utils/EasingFunctions');
 
 const ThingType = types.ThingType;
 const KEYS = types.KEYS;
@@ -27,27 +28,30 @@ interface Path {
 class GamePlay {
   renderer: Renderer;
   gameData: GameData;
-  agent: Thing;
+  bear: Thing;
   scores = 0;
-  speed = 1;
+  speed = 0;
   distanceFromCell: number = 0;
   aCellPos: BABYLON.Vector3 = null;
   lastPressedNavigationKey = null;
   agentPath: Path[] = [];
-  partyMembers: Thing[] = [];
+
+  initialHives: Thing[] = [];
+  bees: Thing[] = [];
 
   constructor(gameData: GameData, renderer: Renderer) {
     this.gameData = gameData;
     this.renderer = renderer;
 
-    this.agent = this.gameData.things.filter(t => (t.type === ThingType.BEAR))[0];
+    this.bear = this.gameData.things.filter(t => (t.type === ThingType.BEAR))[0];
+    this.initialHives = this.gameData.things.filter(t => (t.type === ThingType.HIVE));
 
     this.gameData.things.forEach(thing => {
       this.renderer.addThingView(thing);
     });
 
     // set initial agent location
-    this.aCellPos = this.agent.position.clone();
+    this.aCellPos = this.bear.position.clone();
 
     KeyboardInput.getObservable.forEach(key => {
       switch (key) {
@@ -58,17 +62,19 @@ class GamePlay {
         case KEYS.LEFT:
           this.lastPressedNavigationKey = key;
           break;
-        // this.speed (TODO: remove for production)
         case KEYS.UP:
+          // this.speed (TODO: remove for production)
           this.speed += 1;
           break;
         case KEYS.DOWN:
           this.speed -= 1;
           break;
         case KEYS.M:
+          // this.speed (TODO: remove for production)
           this.renderer.switchCameras();
           break;
         case KEYS.D:
+          // this.speed (TODO: remove for production)
           if (this.renderer.scene.debugLayer.isVisible())
             this.renderer.scene.debugLayer.hide();
           else
@@ -76,6 +82,8 @@ class GamePlay {
           break;
         default:
       }
+
+      console.log('speed:', this.speed);
     });
 
 
@@ -115,17 +123,29 @@ class GamePlay {
       //   console.log(this.agent.position);
       // }, 2000);
 
-      this.simulate(sec, this.agent, this.gameData.playground);
+      this.simulate(sec, this.bear, this.gameData.playground);
       this.renderer.scene.render();
 
       this.renderer.stats.end();
     });
+
+    this.updateSpeed();
   }
 
   simulate(sec: number, agent: Thing, playground: Playground) {
     let distance = sec * this.speed;
     this.distanceFromCell += distance;
     this.shiftAgent(agent, playground.map, this.gameData.thingMap, playground.map3d);
+  }
+
+  updateSpeed() {
+    let hiveCount = this.initialHives.length;
+    let beeCount = this.bees.length;
+    let t = beeCount / (hiveCount * .666);
+
+    // 66.6% bees = 100% speed = (2 + 3) cell/sec
+    this.speed = 2 + EasingFunctions.easeOutQuad(t > 1 ? 1 : t) * 3;
+    console.log(this.speed);
   }
 
   shiftAgent(agent: Thing, map: number[][], thingMap: Thing[][], map3d: Map3DCell[][]) {
@@ -178,10 +198,10 @@ class GamePlay {
       // update party mesh position
       //
 
-      for (let i = 0, l = this.partyMembers.length, pathLength = this.agentPath.length; i < l; i++) {
+      for (let i = 0, l = this.bees.length, pathLength = this.agentPath.length; i < l; i++) {
         // prev as agent.current cell
         let pathCell = this.agentPath[pathLength - 1 - (i + 1)];
-        let member = this.partyMembers[i];
+        let member = this.bees[i];
         let pathRotation = pathCell.rotation;
         x = pathCell.x;
         y = pathCell.y;
@@ -303,7 +323,9 @@ class GamePlay {
           this.renderer.addThingView(collidedThing);
 
           thingMap[nextCell.x][nextCell.z] = null;
-          this.partyMembers.push(collidedThing);
+          this.bees.push(collidedThing);
+
+          this.updateSpeed();
           break;
 
           // wall
