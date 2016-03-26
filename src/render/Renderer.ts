@@ -18,6 +18,9 @@ class Renderer {
   scene: BABYLON.Scene
   camera: BABYLON.FollowCamera
   zoomOutCamera: BABYLON.ArcRotateCamera
+
+  surface: BABYLON.AbstractMesh;
+
   scoresPlane: BABYLON.AbstractMesh
   stats: {begin: Function, end: Function, setMode: Function, domElement: HTMLElement}
   shadowGenerator: BABYLON.ShadowGenerator
@@ -153,6 +156,8 @@ class Renderer {
     // this.scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
     // this.scene.fogDensity = 30;
     // this.scene.fogColor = new BABYLON.Color3(0.8, 0.83, 0.8);
+
+    this._createEnvironment(playground);
   }
 
   switchCameras() {
@@ -166,7 +171,7 @@ class Renderer {
     scoresTexture.drawText(scores, null, 350, '256px bold Verdana', '#fff', 'transparent');
   }
 
-  createEnvironment(playground: Playground) {
+  private _createEnvironment(playground: Playground) {
     let n = playground.map.length;
     let m = playground.map[0].length;
 
@@ -204,9 +209,18 @@ class Renderer {
     //
 
     let buffer = PatternHelper.numberMapToUint8Array(playground.heightMap);
-    let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.round((n + m) / 2), 0, playground.maxHeight, this.scene, false)
+    let ground = CustomMesh.createGroundFromHeightMap('ground', buffer, n, m, n, m, Math.round((n + m) / 2), 0, playground.maxHeight, this.scene, false);
+    this.surface = ground;
     // let ground = BABYLON.Mesh.CreateGroundFromHeightMap(matName, 'textures/heightMap.png', 100, 100, 100, 0, 10, this.scene, false);
     // polygon.convertToFlatShadedMesh();
+
+    // let intersectionPos = new BABYLON.Vector3(10, 0, 10);
+    // let rayPick = new BABYLON.Ray(intersectionPos, new BABYLON.Vector3(0, 1, 0));
+    // let pickInfo = ground.intersects(rayPick);
+    // console.log(pickInfo);
+    // if (pickInfo) {
+    //   pickInfo.pickedPoint.y;
+    // }
 
     let groundMaterial = new BABYLON.StandardMaterial('ground', this.scene);
     let groundTexture = new BABYLON.Texture('textures/tile-grass-3.png', this.scene);

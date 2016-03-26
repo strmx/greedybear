@@ -20,13 +20,18 @@ function correctOutOfBounds(thing: Thing, realScale: number, viewScale: number, 
 }
 
 class GameData {
+  spec: GameDataOptions
   playground: Playground
   things: Thing[]
   thingMap: Thing[][]
 
-  constructor(spec: GameDataOptions) {
+  constructor(spec: GameDataOptions, playground: Playground) {
+    this.spec = spec;
+    this.playground = playground;
+  }
+
+  generateThings() {
     const nextReal = (<any>window).nextReal;
-    this.playground = new Playground(spec);
 
     //
     // initial things

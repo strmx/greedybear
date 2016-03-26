@@ -70,15 +70,59 @@ class Playground {
       lakesCells = lakesCells.concat(lake.cells);
     });
 
-    this.heightMap = PatternHelper.generateElevations(n, m, spec.heightInterpolationCount, lakesCells);
-    this.elevationMap = this._generateElevations(this.heightMap, this.maxHeight, spec);
-    this.map3d = this._generate3DMap(this.elevationMap);
+    this.heightMap = PatternHelper.generateHeightMap(n, m, spec.heightInterpolationCount, lakesCells);
+    // this.elevationMap = this._generateElevations(this.heightMap, this.maxHeight, spec);
+    // this.map3d = this._generate3DMap(this.elevationMap);
 
     this.wallRects = PatternHelper.calculateRectBlocks(this.map, 1);
     this.boundaries = PatternHelper.clone(pattern);
-
     this.startPoints = PatternHelper.collectFreeAroundPositions(pattern, bypass);
-    console.log(this.map3d);
+  }
+
+  updateElevationMap(surfaceMesh: BABYLON.AbstractMesh) {
+    const n = this.heightMap.length;
+    const m = this.heightMap[0].length;
+    const scene = surfaceMesh.getScene();
+
+    let yPosMap: number[][] = PatternHelper.createFilled(n, m, 0);
+
+    let intersectionDirection = new BABYLON.Vector3(0, -1, 0);
+    let intersectionPos = new BABYLON.Vector3(0, this.maxHeight + 1, 0);
+    let rayPick: BABYLON.Ray;
+    let pickInfo: BABYLON.PickingInfo;
+    let el: Elevation;
+
+    // let cubeBlueprint = BABYLON.Mesh.CreateBox('b', .1, scene);
+
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < m; j++) {
+        intersectionPos.x = i - surfaceMesh.position.x;
+        intersectionPos.z = j - surfaceMesh.position.z;
+        rayPick = new BABYLON.Ray(intersectionPos, intersectionDirection);
+        pickInfo = surfaceMesh.intersects(rayPick, true);
+
+        // console.log(intersectionPos)
+
+        if (pickInfo && pickInfo.pickedPoint) {
+          yPosMap[i][j] = pickInfo.pickedPoint.y;
+
+          // let cube = cubeBlueprint.createInstance('box');
+          // cube.position = new BABYLON.Vector3(i, pickInfo.pickedPoint.y, j);
+
+          // if (thingMap && thingMap[i] && thingMap[i][j]) {
+          //   let thing = thingMap[i][j];
+          //   thing.pos0.y = thing.position.y = pickInfo.pickedPoint.y;
+          // }
+
+        } else {
+          console.error('out of surf', i, j);
+        }
+      }
+    }
+
+    // update
+    this.elevationMap = this._generateElevations(yPosMap);
+    this.map3d = this._generate3DMap(this.elevationMap);
   }
 
   private _generate3DMap(elevationMap: Elevation[][]): Map3DCell[][] {
@@ -129,15 +173,15 @@ class Playground {
     return map3d;
   }
 
-  private _generateElevations(heightMap: number[][], maxHeight: number, spec: any): Elevation[][] {
-    let n = spec.n;
-    let m = spec.m;
+  private _generateElevations(yPosMap: number[][]): Elevation[][] {
+    let n = yPosMap.length;
+    let m = yPosMap[0].length;
     let elevationMap = [];
 
     for (let i = 0; i < n; i++) {
       let row = [];
       for (let j = 0; j < m; j++) {
-        row.push(new Elevation(heightMap[i][j]  * maxHeight, i, j));
+        row.push(new Elevation(yPosMap[i][j], i, j));
       }
       elevationMap.push(row);
     }

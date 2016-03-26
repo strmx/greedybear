@@ -413,7 +413,7 @@ class PatternHelper {
   // ELEVATIONS
   //
 
-  static generateElevations(n: number, m: number, interpolationCount: number, shouldBeFlatCells: Point[]): number[][] {
+  static generateHeightMap(n: number, m: number, interpolationCount: number, shouldBeFlatCells: Point[]): number[][] {
     const nextReal = (<any>window).nextReal;
     let map = PatternHelper.createFilled(n, m, 0);
     let count = 0;
@@ -467,44 +467,71 @@ class PatternHelper {
     // // 8 cells around cell - TL>TR>BR>BL>TL
     let lx, rx, ty, by, v;
     for (let iter = 0; iter < interpolationCount; iter ++) {
+      map = this.smoothHeightMap(map, flatMap);
+    }
 
-      // apply flattness
-      shouldBeFlatCells.forEach((p: Point) => {
-        map[p.x][p.y] = 0;
-      });
+    return map;
+  }
 
-      for (let i = 0; i < n; i++) {
-        lx = i - 1 < 0 ? i : i - 1;
-        rx = i + 1 >= n ? i : i + 1;
+  static smoothHeightMap(heightMap: number[][], flatMap: boolean[][], skipZero: boolean = false): number[][] {
+    const n = heightMap.length;
+    const m = heightMap[0].length;
+    let lx, rx, ty, by, v;
+    let smoothedMap = PatternHelper.createFilled(n, m, 0);
+    let cellHeight: number, minHeight: number, maxHeight: number;
+    let xi: number, yi: number, iHeight: number;
+    let heightSum: number, heighCount: number;
 
-        for (let j = 0; j < m; j++) {
-          ty = j - 1 < 0 ? j : j - 1;
-          by = j + 1 >= m ? j : j + 1;
+    for (let i = 0; i < n; i++) {
+      lx = i - 1 < 0 ? i : i - 1;
+      rx = i + 1 >= n ? i : i + 1;
 
-          if (i === 0 || j === 0 || i === n - 1 || j === m - 1 || flatMap[i][j]) {
-            map[i][j] = 0;
-          } else {
-            map[i][j] = (
-              // TL>TR
-              map[lx][ty] + map[i][ty] + map[rx][ty] +
-              // TR>BR
-              map[rx][j] + map[rx][by] +
-              // BR>BL
-              map[i][by] + map[lx][by] +
-              // BL>TL
-              map[lx][j]
-            ) / 8;
+      for (let j = 0; j < m; j++) {
+        ty = j - 1 < 0 ? j : j - 1;
+        by = j + 1 >= m ? j : j + 1;
+        cellHeight = heightMap[i][j];
+
+        if (i === 0 || j === 0 || i === n - 1 || j === m - 1 || (flatMap && flatMap[i][j]) || (skipZero && cellHeight === 0)) {
+          smoothedMap[i][j] = 0;
+        } else {
+          maxHeight = cellHeight;
+          minHeight = cellHeight;
+          heightSum = 0;
+          heighCount = 0;
+
+          for (xi = lx; xi <= rx; xi++) {
+            for (yi = ty; yi <= by; yi++) {
+              iHeight = heightMap[xi][yi];
+              heighCount ++;
+              heightSum += iHeight;
+              if (iHeight > maxHeight) {
+                maxHeight = iHeight;
+              }
+              if (iHeight < minHeight) {
+                minHeight = iHeight;
+              }
+            }
           }
+
+          // smoothedMap[i][j] = (minHeight + maxHeight) * .5;
+          smoothedMap[i][j] = heightSum / heighCount;
+
+          // smoothedMap[i][j] = (
+          //   // TL>TR
+          //   heightMap[lx][ty] + heightMap[i][ty] + heightMap[rx][ty] +
+          //   // TR>BR
+          //   heightMap[rx][j] + heightMap[rx][by] +
+          //   // BR>BL
+          //   heightMap[i][by] + heightMap[lx][by] +
+          //   // BL>TL
+          //   heightMap[lx][j]
+          // ) / 8;
+
         }
       }
     }
 
-    // apply flattness
-    shouldBeFlatCells.forEach((p: Point) => {
-      map[p.x][p.y] = 0;
-    });
-
-    return map;
+    return smoothedMap;
   }
 
   //

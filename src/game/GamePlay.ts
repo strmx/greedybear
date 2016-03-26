@@ -42,8 +42,6 @@ class GamePlay {
 
     this.agent = this.gameData.things.filter(t => (t.type === ThingType.BEAR))[0];
 
-    this.renderer.createEnvironment(this.gameData.playground);
-
     this.gameData.things.forEach(thing => {
       this.renderer.addThingView(thing);
     });
@@ -105,13 +103,17 @@ class GamePlay {
         bearAniDirection = -bearAniDirection;
       }
 
-      bearAniPos += (sec * bearAniDirection) * 24;
+      bearAniPos += (sec * bearAniDirection) * 16;
 
       bearRHand.rotation.x = (bearAniPos * .5);
       bearLHand.rotation.x = (bearAniPos * .5);
       bearRFoot.rotation.z = (bearAniPos * .5);
       bearLFoot.rotation.z = -(bearAniPos * .5);
       // </BEAR_ANIMATION>
+
+      // setTimeout(() => {
+      //   console.log(this.agent.position);
+      // }, 2000);
 
       this.simulate(sec, this.agent, this.gameData.playground);
       this.renderer.scene.render();
