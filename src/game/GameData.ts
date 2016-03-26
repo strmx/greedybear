@@ -94,7 +94,7 @@ class GameData {
         y = Math.min(tl, tr, br, bl);
 
         // put underground
-        y -= .5;
+        y -= .25;
         let viewScale = scale + .25;
 
         wall = new Thing(ThingType.MOUNTAIN, new V3(centerX, y, centerZ));
@@ -111,7 +111,7 @@ class GameData {
           wall = new Thing(ThingType.FIR, new V3(centerX, y, centerZ));
 
           // put underground
-          wall.position.y -= 1;
+          wall.position.y -= .5;
 
           wall.scaling.x = wall.scaling.z = scale;
           wall.scaling.y = scale * (4 + nextReal() * 3);
@@ -123,8 +123,8 @@ class GameData {
             wall.rotation.y = (360 * nextReal()) * (Math.PI / 180);
           }
 
-          wall.rotation.x = (nextReal() * 10 - 5) * (Math.PI / 180);
-          wall.rotation.y = (nextReal() * 10 - 5) * (Math.PI / 180);
+          wall.rotation.x = (nextReal() * 20 - 10) * (Math.PI / 180);
+          wall.rotation.y = (nextReal() * 20 - 10) * (Math.PI / 180);
 
         } else {
 
@@ -139,8 +139,8 @@ class GameData {
 
           wall.rotation.y = (360 * nextReal()) * (Math.PI / 180);
 
-          wall.rotation.x = (nextReal() * 10 - 5) * (Math.PI / 180);
-          wall.rotation.y = (nextReal() * 10 - 5) * (Math.PI / 180);
+          wall.rotation.x = (nextReal() * 20 - 10) * (Math.PI / 180);
+          wall.rotation.y = (nextReal() * 20 - 10) * (Math.PI / 180);
         }
       }
 
@@ -148,7 +148,7 @@ class GameData {
     });
 
 
-    // agent
+    // agent bear
     let pos2d = this.playground.startPoints[0];
     let agentPos = new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y);
     let agent = new Thing(ThingType.BEAR, agentPos);
@@ -157,9 +157,9 @@ class GameData {
     agent.rotation.y = 0;
     this.thingMap[agent.pos0.x][agent.pos0.z] = agent;
 
-    // hives
+    // hives & bees
     this.playground.startPoints.slice(1).forEach(pos2d => {
-      // agentPath should be > 1
+      // agentPath should be > 1 (betwen bear and hive)
       if (Math.abs(agent.pos0.x - pos2d.x) >= 1 && Math.abs(agent.pos0.z - pos2d.y) >= 1) {
         let companion = new Thing(ThingType.HIVE, new V3(pos2d.x, this.playground.elevationMap[pos2d.x][pos2d.y].height, pos2d.y));
         companion.scaling.x = companion.scaling.y = companion.scaling.z = nextReal() * .25 + .75;
