@@ -724,7 +724,7 @@ class Renderer {
       beeHead.parent = meshResizer;
       beeSting.parent = meshResizer;
       beeWings.parent = meshResizer;
-      meshResizer.scaling.x = meshResizer.scaling.y = meshResizer.scaling.z = .5;
+      meshResizer.scaling.x = meshResizer.scaling.y = meshResizer.scaling.z = .45;
 
       mesh = BABYLON.Mesh.CreatePlane(meshName, 0, this.scene, false);
       mesh.isVisible = false;

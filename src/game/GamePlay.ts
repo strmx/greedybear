@@ -18,6 +18,9 @@ const ANGLE_BOTTOM = 1.5707963267948966;
 const ANGLE_LEFT = 3.141592653589793;
 const ANGLE_TOP = -1.5707963267948966;
 
+const SPEED_MIN = 2;
+const SPEED_MAX = 5;
+
 interface Path {
   x: number;
   y: number;
@@ -30,7 +33,9 @@ class GamePlay {
   gameData: GameData;
   bear: Thing;
   scores = 0;
+
   speed = 0;
+
   distanceFromCell: number = 0;
   aCellPos: BABYLON.Vector3 = null;
   lastPressedNavigationKey = null;
@@ -111,7 +116,8 @@ class GamePlay {
         bearAniDirection = -bearAniDirection;
       }
 
-      bearAniPos += (sec * bearAniDirection) * 16;
+      let speedProc = (this.speed - SPEED_MIN) / (SPEED_MAX - SPEED_MIN);
+      bearAniPos += (sec * bearAniDirection) * (10 + speedProc * 10);
 
       bearRHand.rotation.x = (bearAniPos * .5);
       bearLHand.rotation.x = (bearAniPos * .5);
@@ -144,7 +150,7 @@ class GamePlay {
     let t = beeCount / (hiveCount * .666);
 
     // 66.6% bees = 100% speed = (2 + 3) cell/sec
-    this.speed = 2 + EasingFunctions.easeOutQuad(t > 1 ? 1 : t) * 3;
+    this.speed = SPEED_MIN + EasingFunctions.easeOutQuad(t > 1 ? 1 : t) * (SPEED_MAX - SPEED_MIN);
     console.log(this.speed);
   }
 
