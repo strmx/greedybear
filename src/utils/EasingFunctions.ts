@@ -4,31 +4,31 @@
  */
 class EasingFunctions {
   // no easing, no acceleration
-  static linear(t) { return t };
+  static linear(t: number): number { return t };
   // accelerating from zero velocity
-  static easeInQuad(t) { return t*t };
+  static easeInQuad(t: number): number { return t*t };
   // decelerating to zero velocity
-  static easeOutQuad(t) { return t*(2-t) };
+  static easeOutQuad(t: number): number { return t*(2-t) };
   // acceleration until halfway, then deceleration
-  static easeInOutQuad(t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t };
+  static easeInOutQuad(t: number): number { return t<.5 ? 2*t*t : -1+(4-2*t)*t };
   // accelerating from zero velocity
-  static easeInCubic(t) { return t*t*t };
+  static easeInCubic(t: number): number { return t*t*t };
   // decelerating to zero velocity
-  static easeOutCubic(t) { return (--t)*t*t+1 };
+  static easeOutCubic(t: number): number { return (--t)*t*t+1 };
   // acceleration until halfway, then deceleration
-  static easeInOutCubic(t) { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 };
+  static easeInOutCubic(t: number): number { return t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1 };
   // accelerating from zero velocity
-  static easeInQuart(t) { return t*t*t*t };
+  static easeInQuart(t: number): number { return t*t*t*t };
   // decelerating to zero velocity
-  static easeOutQuart(t) { return 1-(--t)*t*t*t };
+  static easeOutQuart(t: number): number { return 1-(--t)*t*t*t };
   // acceleration until halfway, then deceleration
-  static easeInOutQuart(t) { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t };
+  static easeInOutQuart(t: number): number { return t<.5 ? 8*t*t*t*t : 1-8*(--t)*t*t*t };
   // accelerating from zero velocity
-  static easeInQuint(t) { return t*t*t*t*t };
+  static easeInQuint(t: number): number { return t*t*t*t*t };
   // decelerating to zero velocity
-  static easeOutQuint(t) { return 1+(--t)*t*t*t*t };
+  static easeOutQuint(t: number): number { return 1+(--t)*t*t*t*t };
   // acceleration until halfway, then deceleration
-  static easeInOutQuint(t) { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t };
+  static easeInOutQuint(t: number): number { return t<.5 ? 16*t*t*t*t*t : 1+16*(--t)*t*t*t*t };
 };
 
 export = EasingFunctions;
