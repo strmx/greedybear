@@ -25,6 +25,10 @@ class Renderer {
   stats: {begin: Function, end: Function, setMode: Function, domElement: HTMLElement}
   shadowGenerator: BABYLON.ShadowGenerator
 
+  hiveCollisionParticleSystem: BABYLON.ParticleSystem
+  hiveCollisionParticleAnimation: BABYLON.Animation
+  hiveCollisionAnimation: BABYLON.Animation
+
   constructor(playground: Playground) {
     this.playground = playground;
     const n = this.playground.map.length;
@@ -158,6 +162,73 @@ class Renderer {
     // this.scene.fogColor = new BABYLON.Color3(0.8, 0.83, 0.8);
 
     this._createEnvironment(playground);
+
+    /*
+      PREPARE HIVE COLLISION ANIMATION
+     */
+
+    // Create a particle system
+    this.hiveCollisionParticleSystem = new BABYLON.ParticleSystem("part1", 250, this.scene);
+    this.hiveCollisionParticleSystem.particleTexture = new BABYLON.Texture("textures/bee-particle.png", this.scene);
+    this.hiveCollisionParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
+
+    this.hiveCollisionParticleSystem.minAngularSpeed = 0;
+    this.hiveCollisionParticleSystem.maxAngularSpeed = Math.PI * 2;
+
+    // this.hiveCollisionParticleSystem.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+    // this.hiveCollisionParticleSystem.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+    // this.hiveCollisionParticleSystem.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+    this.hiveCollisionParticleSystem.colorDead = new BABYLON.Color4(1, 1, 0, 0.0);
+    this.hiveCollisionParticleSystem.gravity = new BABYLON.Vector3(0, -9.81, 0);
+
+    this.hiveCollisionParticleSystem.emitter = this.scene;
+    this.hiveCollisionParticleSystem.minSize = 0.15;
+    this.hiveCollisionParticleSystem.maxSize = .25;
+    this.hiveCollisionParticleSystem.minLifeTime = 0.25;
+    this.hiveCollisionParticleSystem.maxLifeTime = .5;
+    //    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
+    this.hiveCollisionParticleSystem.direction1 = new BABYLON.Vector3(-7, 7, 7);
+    this.hiveCollisionParticleSystem.direction2 = new BABYLON.Vector3(7, 0, -7);
+    // Speed
+    this.hiveCollisionParticleSystem.minEmitPower = 1;
+    this.hiveCollisionParticleSystem.maxEmitPower = 3;
+    this.hiveCollisionParticleSystem.updateSpeed = 0.0075;
+    this.hiveCollisionParticleSystem.emitRate = 0;
+
+    this.hiveCollisionParticleSystem.start();
+
+    this.hiveCollisionParticleAnimation = new BABYLON.Animation("part1ani", "emitRate", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+    this.hiveCollisionParticleAnimation.setKeys([{
+        frame: 0,
+        value: 0
+      }, {
+        frame: 4,
+        value: 0
+      }, {
+        frame: 5,
+        value: 128
+      }, {
+        frame: 15,
+        value: 0
+      }, {
+        frame: 30,
+        value: 0
+      }]
+    );
+    this.hiveCollisionParticleSystem.animations.push(this.hiveCollisionParticleAnimation);
+
+    this.hiveCollisionAnimation = new BABYLON.Animation("part2ani", "scaling", 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+    this.hiveCollisionAnimation.setKeys([{
+        frame: 0,
+        value: new BABYLON.Vector3(1, 1, 1)
+      }, {
+        frame: 5,
+        value: new BABYLON.Vector3(1, 1, 1)
+      }, {
+        frame: 30,
+        value: new BABYLON.Vector3(0, 0, 0)
+      }]
+    );
   }
 
   switchCameras() {
@@ -852,7 +923,7 @@ class Renderer {
       	lHandPart.parent = lHand;
       	lHand.position.z = -.1;
       	lHand.position.y = .075 + .5;
-      	lHand.rotation.x = .4;
+      	lHand.rotation.x = -Math.PI / 2.75;
 
       	let rHandPart = BABYLON.Mesh.CreateBox('bearRHandPart', .25, this.scene);
       	rHandPart.scaling.x = rHandPart.scaling.y = .4;
@@ -864,7 +935,7 @@ class Renderer {
       	rHandPart.parent = rHand;
       	rHand.position.z = .1;
       	rHand.position.y = .075 + .5;
-      	rHand.rotation.x = .4;
+      	rHand.rotation.x = -Math.PI / 2.75;
       	rHand.rotation.y = Math.PI;
 
       	let lFootPart = BABYLON.Mesh.CreateBox('bearLFootPart', .2, this.scene);
@@ -925,6 +996,29 @@ class Renderer {
     if (!mesh) {
       debugger;
     }
+  }
+
+  animateHiveCollision(hiveThing: Thing) {
+    let mesh = this.scene.getMeshByID('' + hiveThing.id);
+    this.hiveCollisionParticleSystem.emitter = mesh;
+
+    // unbind hive pos from thing
+    mesh.position = mesh.position.clone();
+    mesh.rotation = mesh.rotation.clone();
+    mesh.scaling = mesh.scaling.clone();
+    // mesh.isVisible = false;
+
+    let event = new BABYLON.AnimationEvent(30, () => {
+      this.removeThingView(hiveThing);
+    }, true);
+
+    // Attach your event to your animation
+    this.hiveCollisionParticleAnimation.addEvent(event);
+    this.scene.beginAnimation(this.hiveCollisionParticleSystem, 0, 30, false);
+
+    // hive scale animation
+    mesh.animations.push(this.hiveCollisionAnimation);
+    this.scene.beginAnimation(mesh, 0, 30, false, 2.5);
   }
 
   destroy() {

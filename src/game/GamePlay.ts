@@ -119,8 +119,10 @@ class GamePlay {
       let speedProc = (this.speed - SPEED_MIN) / (SPEED_MAX - SPEED_MIN);
       bearAniPos += (sec * bearAniDirection) * (10 + speedProc * 10);
 
-      bearRHand.rotation.x = (bearAniPos * .5);
-      bearLHand.rotation.x = (bearAniPos * .5);
+      if (this.bees.length) {
+        bearRHand.rotation.x = (bearAniPos * .5);
+        bearLHand.rotation.x = (bearAniPos * .5);
+      }
       bearRFoot.rotation.z = (bearAniPos * .5);
       bearLFoot.rotation.z = -(bearAniPos * .5);
       // </BEAR_ANIMATION>
@@ -323,7 +325,8 @@ class GamePlay {
           this.scores++;
           this.renderer.updateScoresText(this.scores);
 
-          this.renderer.removeThingView(collidedThing);
+          // this.renderer.removeThingView(collidedThing);
+          this.renderer.animateHiveCollision(collidedThing);
 
           collidedThing.type = ThingType.BEE;
           this.renderer.addThingView(collidedThing);
