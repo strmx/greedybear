@@ -1,6 +1,6 @@
 /// <reference path='./chai.d.ts' />
 /// <reference path="./rx.all.d.ts" />
-/// <reference path="./babylon.2.2.d.ts" />
+/// <reference path="./babylon.d.ts" />
 
 interface GameDataOptions {
   n: number;
