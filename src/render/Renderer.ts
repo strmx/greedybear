@@ -11,6 +11,8 @@ const ThingType = types.ThingType;
 const V2 = BABYLON.Vector2;
 const V3 = BABYLON.Vector3;
 
+const SKY_SIZE = 1000;
+
 class Renderer {
   playground: Playground
   canvas: CanvasElement
@@ -233,6 +235,8 @@ class Renderer {
   }
 
   private _createEnvironment(playground: Playground) {
+    const nextReal = (<any>window).nextReal;
+
     let n = playground.map.length;
     let m = playground.map[0].length;
 
@@ -247,21 +251,36 @@ class Renderer {
 
     var skyboxMaterial = new (<any>BABYLON).SkyMaterial('skyMaterial', this.scene);
     skyboxMaterial.backFaceCulling = false;
-  	skyboxMaterial._cachedDefines.FOG = true;
-    // skyMaterial.turbidity = 1 // 0..20 (maybe 100)
-    // skyMaterial.luminance = 1 // 0..1..190
-    // skyMaterial.inclination = 0.5; // The solar inclination, related to the solar azimuth in interval [0, 1]
-    // skyMaterial.azimuth = 0.25; // The solar azimuth in interval [0, 1]
-    // skyMaterial.rayleigh = 2; // Represents the sky appearance (globally) 0..2
+
+  	// skyboxMaterial._cachedDefines.FOG = nextReal() > .5;
+    skyboxMaterial.turbidity = nextReal() * 2; // 0..20 (maybe 100)
+    skyboxMaterial.luminance = .5 + nextReal() * .5; // 0..1..190
+    skyboxMaterial.inclination = .5 + nextReal() * .25; // The solar inclination, related to the solar azimuth in interval [0, 1]
+    skyboxMaterial.azimuth = 0.5 + nextReal() * .05; // The solar azimuth in interval [0, 1]
+    console.log(skyboxMaterial);
+    // skyboxMaterial.rayleigh = nextReal() * 2; // Represents the sky appearance (globally) 0..2
 
     // // Mie scattering (from [Gustav Mie](https://en.wikipedia.org/wiki/Gustav_Mie))
     // Related to the haze particles in atmosphere
     // The amount of haze particles following the Mie scattering theory
-    // skyMaterial.mieDirectionalG = 0.8;
-    // skyMaterial.mieCoefficient = 0.005; // The mieCoefficient in interval [0, 0.1], affects the property skyMaterial.mieDirectionalG
+    // skyboxMaterial.mieDirectionalG = nextReal(); // 0.8
+    // skyboxMaterial.mieCoefficient = nextReal() * .1; // The mieCoefficient in interval [0, 0.1], affects the property skyMaterial.mieDirectionalG
 
-    var skybox = BABYLON.Mesh.CreateBox('skyBox', 1000.0, this.scene);
+    /*
+    case 49: setSkyConfig("material.inclination", skyboxMaterial.inclination, 0); break; // 1
+    case 50: setSkyConfig("material.inclination", skyboxMaterial.inclination, -0.5); break; // 2
+
+    case 51: setSkyConfig("material.luminance", skyboxMaterial.luminance, 0.1); break; // 3
+    case 52: setSkyConfig("material.luminance", skyboxMaterial.luminance, 1.0); break; // 4
+
+    case 53: setSkyConfig("material.turbidity", skyboxMaterial.turbidity, 40); break; // 5
+    case 54: setSkyConfig("material.turbidity", skyboxMaterial.turbidity, 5); break; // 6
+     */
+
+
+    var skybox = BABYLON.Mesh.CreateBox('skyBox', SKY_SIZE, this.scene, false);
     skybox.material = skyboxMaterial;
+    skybox.position.y = SKY_SIZE / 3;
 
 
 
@@ -297,6 +316,12 @@ class Renderer {
 
     ground.position.x = n / 2 - .5;
     ground.position.z = m / 2 - .5;
+
+
+    // ocean
+
+
+
 
     // base
     // 355117
@@ -361,42 +386,39 @@ class Renderer {
     //
 
     // let waterMat = new BABYLON.StandardMaterial('waterMat', this.scene);
-    // let waterTex = new BABYLON.Texture('textures/tile-water-0.png', this.scene);
-    // waterTex.uScale = 1024;
-    // waterTex.vScale = 1024;
+    // let waterTex = new BABYLON.Texture('textures/tile-water-3.png', this.scene);
+    // waterTex.uScale = SKY_SIZE;
+    // waterTex.vScale = SKY_SIZE;
     // waterMat.diffuseTexture = waterTex;
-    // let water = BABYLON.Mesh.CreatePlane('water', 1024, this.scene, false, BABYLON.Mesh.FRONTSIDE);
+    // let water = BABYLON.Mesh.CreatePlane('water', SKY_SIZE, this.scene, false, BABYLON.Mesh.FRONTSIDE);
     // water.material = waterMat;
-    // water.position.x = n/2;
-    // water.position.z = m/2;
     // water.rotation.x = Math.PI / 2;
+    // water.position.y = -4;
 
 
 
-    /*
-    // Water
-  	var waterMesh = BABYLON.Mesh.CreateGround('waterMesh', 1024, 1024, 1, this.scene, false);
-  	var water = new (<any>BABYLON).WaterMaterial('water', this.scene);
-    // waterMesh.position.y = -1.7;
-    // waterMesh.position.y = -250;
-  	water.bumpTexture = new BABYLON.Texture('textures/waterbump.png', this.scene);
-
-  	// Water properties
-  	water.windForce = 1;
-  	water.waveHeight = .3;
-  	water.windDirection = new BABYLON.Vector2(1, 1);
-  	water.waterColor = new BABYLON.Color3(0.1, 0.1, 0.4);
-  	water.colorBlendFactor = 0;
-  	water.bumpHeight = 0.1;
-  	water.waveLength = 1;
-
-  	// Add skybox and ground to the reflection and refraction
-  	water.addToRenderList(skybox);
-  //	water.addToRenderList(ground);
-
-  	// Assign the water material
-  	waterMesh.material = water;
-    */
+    // Waves Water
+  // 	var waterMesh = BABYLON.Mesh.CreateGround('waterMesh', SKY_SIZE, SKY_SIZE, 1, this.scene, false);
+  // 	var water = new (<any>BABYLON).WaterMaterial('water', this.scene);
+  //   waterMesh.position.y = -1.7;
+  //   // waterMesh.position.y = -250;
+  // 	water.bumpTexture = new BABYLON.Texture('textures/waterbump.png', this.scene);
+  //
+  // 	// Water properties
+  // 	water.windForce = 1;
+  // 	water.waveHeight = .3;
+  // 	water.windDirection = new BABYLON.Vector2(1, 1);
+  // 	water.waterColor = new BABYLON.Color3(0.1, 0.1, 0.4);
+  // 	water.colorBlendFactor = 0;
+  // 	water.bumpHeight = 0.1;
+  // 	water.waveLength = 1;
+  //
+  // 	// Add skybox and ground to the reflection and refraction
+  // 	water.addToRenderList(skybox);
+  // //	water.addToRenderList(ground);
+  //
+  // 	// Assign the water material
+  // 	waterMesh.material = water;
   }
 
 
