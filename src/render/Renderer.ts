@@ -34,21 +34,8 @@ class Renderer {
     const n = this.playground.map.length;
     const m = this.playground.map[0].length;
 
-    // this.engine.runRenderLoop(() => {
-    //   stats.begin();
-    //
-    //   let delta = this.engine.getDeltaTime();
-    //   let distance = (delta * speed) / 1000;
-    //   distanceFromCell += distance;
-    //   shiftAgent();
-    //
-    //   this.scene.render();
-    //   stats.end();
-    // });
-
-
     this.canvas = new CanvasElement(document.body);
-    this.canvas.resize();
+    // this.canvas.resize();
 
 
 
@@ -56,7 +43,14 @@ class Renderer {
     this.engine = new BABYLON.Engine(this.canvas.element, true, {}, true);
     this.scene = new BABYLON.Scene(this.engine);
 
-    // this.engine.resize();
+    // [1 - 4] (.5 for retina etc)
+    // TODO: make autoadjusted
+    this.engine.setHardwareScalingLevel(1);
+
+    (<any>window).addEventListener('resize', () => {
+      this.engine.resize();
+      // refreshTextureRatios();
+    });
 
     //
     // stats
@@ -94,8 +88,8 @@ class Renderer {
     // let pos = agentOrigin.position;
     // var agentCamera = new BABYLON.FollowCamera('agentCamera', new V3(pos.x, 10, pos.z), this.scene);
     this.camera = new BABYLON.FollowCamera('followCamera', new V3(n / 2, 10, m / 2), this.scene);
-    this.camera.radius = 6; // how far from the object to follow
-    this.camera.heightOffset = 4; // how high above the object to place the camera
+    this.camera.radius = 5; // how far from the object to follow
+    this.camera.heightOffset = 7; // how high above the object to place the camera
     this.camera.rotationOffset = 270; // the viewing angle
     this.camera.cameraAcceleration = 0.01 // how fast to move
     this.camera.maxCameraSpeed = .5 // speed limit
@@ -104,10 +98,6 @@ class Renderer {
 
     this.zoomOutCamera = new BABYLON.ArcRotateCamera('zoomOutCamera', 3 * Math.PI / 2, Math.PI / 8, ((n + m) / 2) * 1.1, new BABYLON.Vector3(n / 2, 0, m / 2), this.scene);
   	this.zoomOutCamera.attachControl(this.canvas.element, true);
-
-    // this.zoomOutCamera = new BABYLON.FreeCamera('zoomOutCamera', new V3(n / 3, Math.min(n, m), m / 3), this.scene);
-    // this.zoomOutCamera.setTarget(new V3(n/2, 0, m/2));
-    // this.zoomOutCamera.attachControl(this.canvas.element, true);
 
     //
     // SHADOW
@@ -168,8 +158,8 @@ class Renderer {
      */
 
     // Create a particle system
-    this.hiveCollisionParticleSystem = new BABYLON.ParticleSystem("part1", 250, this.scene);
-    this.hiveCollisionParticleSystem.particleTexture = new BABYLON.Texture("textures/bee-particle.png", this.scene);
+    this.hiveCollisionParticleSystem = new BABYLON.ParticleSystem('part1', 250, this.scene);
+    this.hiveCollisionParticleSystem.particleTexture = new BABYLON.Texture('textures/bee-particle.png', this.scene);
     this.hiveCollisionParticleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
 
     this.hiveCollisionParticleSystem.minAngularSpeed = 0;
@@ -197,7 +187,7 @@ class Renderer {
 
     this.hiveCollisionParticleSystem.start();
 
-    this.hiveCollisionParticleAnimation = new BABYLON.Animation("part1ani", "emitRate", 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+    this.hiveCollisionParticleAnimation = new BABYLON.Animation('part1ani', 'emitRate', 30, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
     this.hiveCollisionParticleAnimation.setKeys([{
         frame: 0,
         value: 0
@@ -217,7 +207,7 @@ class Renderer {
     );
     this.hiveCollisionParticleSystem.animations.push(this.hiveCollisionParticleAnimation);
 
-    this.hiveCollisionAnimation = new BABYLON.Animation("part2ani", "scaling", 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+    this.hiveCollisionAnimation = new BABYLON.Animation('part2ani', 'scaling', 30, BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
     this.hiveCollisionAnimation.setKeys([{
         frame: 0,
         value: new BABYLON.Vector3(1, 1, 1)

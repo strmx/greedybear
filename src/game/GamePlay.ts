@@ -119,6 +119,7 @@ class GamePlay {
       let speedProc = (this.speed - SPEED_MIN) / (SPEED_MAX - SPEED_MIN);
       bearAniPos += (sec * bearAniDirection) * (10 + speedProc * 10);
 
+      // TODO: optimize
       if (this.bees.length) {
         bearRHand.rotation.x = (bearAniPos * .5);
         bearLHand.rotation.x = (bearAniPos * .5);
@@ -132,6 +133,7 @@ class GamePlay {
       // }, 2000);
 
       this.simulate(sec, this.bear, this.gameData.playground);
+
       this.renderer.scene.render();
 
       this.renderer.stats.end();
