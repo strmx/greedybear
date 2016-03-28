@@ -141,7 +141,7 @@ class Renderer {
     this.scoresPlane = BABYLON.Mesh.CreatePlane('ScoresPlane', 1, this.scene);
     this.scoresPlane.material = scoresMat;
 
-    this.scoresPlane.position.z = 8;
+    this.scoresPlane.position.z = 7.5;
     this.scoresPlane.position.y = 2.75;
     this.scoresPlane.parent = this.camera;
 
@@ -230,8 +230,10 @@ class Renderer {
   updateScoresText(scores) {
     let scoresMat = <BABYLON.StandardMaterial>this.scoresPlane.material;
     let scoresTexture = <BABYLON.DynamicTexture>scoresMat.diffuseTexture;
-    scoresTexture.getContext().clearRect(0, 0, 512, 512);
-    scoresTexture.drawText(scores, null, 350, '256px bold Verdana', '#fff', 'transparent');
+    let ctx = scoresTexture.getContext();
+    ctx.clearRect(0, 0, 512, 512);
+    scoresTexture.drawText(scores, null, 245, '220px fantasy', '#000', 'transparent');
+    scoresTexture.drawText(scores, null, 250, '200px fantasy', '#fff', 'transparent');
   }
 
   private _createEnvironment(playground: Playground) {
