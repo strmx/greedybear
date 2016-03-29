@@ -85,6 +85,24 @@ class GamePlay {
           else
             this.renderer.scene.debugLayer.show();
           break;
+
+        // resolution control
+        case KEYS.ZERO:
+          this.renderer.setScreenScale(1 / window.devicePixelRatio);
+          break;
+        case KEYS.ONE:
+          this.renderer.setScreenScale(1);
+          break;
+        case KEYS.TWO:
+          this.renderer.setScreenScale(2);
+          break;
+        case KEYS.THREE:
+          this.renderer.setScreenScale(3);
+          break;
+        case KEYS.FOUR:
+          this.renderer.setScreenScale(4);
+          break;
+
         default:
       }
 

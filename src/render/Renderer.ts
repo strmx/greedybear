@@ -47,7 +47,7 @@ class Renderer {
 
     // [1 - 4] (.5 for retina etc)
     // TODO: make autoadjusted
-    this.engine.setHardwareScalingLevel(1);
+    this.setScreenScale(1);
 
     (<any>window).addEventListener('resize', () => {
       this.engine.resize();
@@ -221,6 +221,14 @@ class Renderer {
         value: new BABYLON.Vector3(0, 0, 0)
       }]
     );
+  }
+
+  /*
+  1 = 1px = devicePixelRatio
+  [(1/devicePixelRatio)..4]
+  */
+  setScreenScale(level) {
+    this.engine.setHardwareScalingLevel(level);
   }
 
   switchCameras() {

@@ -9,6 +9,11 @@ enum KEYS {
   D,
   M,
   Z,
+  ZERO,
+  ONE,
+  TWO,
+  THREE,
+  FOUR,
 }
 
 enum ThingType {

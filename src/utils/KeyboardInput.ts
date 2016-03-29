@@ -16,6 +16,11 @@ class KeyboardInput {
     77: KEYS.M,
     68: KEYS.D,
     90: KEYS.Z,
+    48: KEYS.ZERO,
+    49: KEYS.ONE,
+    50: KEYS.TWO,
+    51: KEYS.THREE,
+    52: KEYS.FOUR,
   }
 
   static get Name() {
@@ -40,8 +45,12 @@ class KeyboardInput {
     });
 
     let keyDownTranslated = keydown
-      .filter((e:KeyboardEvent) => (KeyboardInput.KEY_MAP[e.keyCode] !== undefined))
-      .map((e:KeyboardEvent) => (KeyboardInput.KEY_MAP[e.keyCode]));
+      .map((e:KeyboardEvent) => {
+        console.log(e.keyCode);
+        return e.keyCode;
+      })
+      .filter((keyCode) => (KeyboardInput.KEY_MAP[keyCode] !== undefined))
+      .map((keyCode) => (KeyboardInput.KEY_MAP[keyCode]));
 
     return Rx.Observable.merge(keyDownTranslated, touchTranslated)
       .filter((key) => (key !== null));
