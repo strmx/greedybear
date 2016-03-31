@@ -10,9 +10,10 @@ class CanvasElement {
     private canvas: HTMLCanvasElement;
 
     constructor(parent: HTMLElement) {
-      this.canvas = document.createElement('canvas');
-      this.canvas.setAttribute('style', CSS_STYLES);
-      parent.appendChild(this.canvas);
+      this.canvas = <HTMLCanvasElement>document.querySelector('canvas');
+      // this.canvas = document.createElement('canvas');
+      // this.canvas.setAttribute('style', CSS_STYLES);
+      // parent.appendChild(this.canvas);
     }
 
     public get element(): HTMLCanvasElement {

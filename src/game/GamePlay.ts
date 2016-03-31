@@ -2,6 +2,7 @@
 
 import Renderer = require('../render/Renderer');
 import KeyboardInput = require('../utils/KeyboardInput');
+import FPSCounter = require('../utils/FPSCounter');
 import Thing = require('./Thing');
 import types = require('../types');
 import d2r = require('../tools/d2r');
@@ -29,8 +30,11 @@ interface Path {
 }
 
 class GamePlay {
+  isStarted: boolean = false;
+  fps: FPSCounter = new FPSCounter(document.querySelector('.fps strong'));
   renderer: Renderer;
   gameData: GameData;
+
   bear: Thing;
   scores = 0;
 
@@ -121,43 +125,59 @@ class GamePlay {
 
 
     this.renderer.engine.runRenderLoop(() => {
-      this.renderer.stats.begin();
+      this.fps.begin();
 
       let sec = this.renderer.engine.getDeltaTime() / 1000;
 
-      // <BEAR_ANIMATION>
-      if (bearAniPos > 1) {
-        bearAniPos = 1;
-        bearAniDirection = -bearAniDirection;
-      } else if (bearAniPos < -1) {
-        bearAniPos = -1;
-        bearAniDirection = -bearAniDirection;
+      if (this.isStarted) {
+        // <BEAR_ANIMATION>
+        if (bearAniPos > 1) {
+          bearAniPos = 1;
+          bearAniDirection = -bearAniDirection;
+        } else if (bearAniPos < -1) {
+          bearAniPos = -1;
+          bearAniDirection = -bearAniDirection;
+        }
+
+        let speedProc = (this.speed - SPEED_MIN) / (SPEED_MAX - SPEED_MIN);
+        bearAniPos += (sec * bearAniDirection) * (10 + speedProc * 10);
+
+        // TODO: optimize
+        if (this.bees.length) {
+          bearRHand.rotation.x = (bearAniPos * .5);
+          bearLHand.rotation.x = (bearAniPos * .5);
+        }
+        bearRFoot.rotation.z = (bearAniPos * .5);
+        bearLFoot.rotation.z = -(bearAniPos * .5);
+        // </BEAR_ANIMATION>
+
+        // setTimeout(() => {
+        //   console.log(this.agent.position);
+        // }, 2000);
+
+        this.simulate(sec, this.bear, this.gameData.playground);
       }
-
-      let speedProc = (this.speed - SPEED_MIN) / (SPEED_MAX - SPEED_MIN);
-      bearAniPos += (sec * bearAniDirection) * (10 + speedProc * 10);
-
-      // TODO: optimize
-      if (this.bees.length) {
-        bearRHand.rotation.x = (bearAniPos * .5);
-        bearLHand.rotation.x = (bearAniPos * .5);
-      }
-      bearRFoot.rotation.z = (bearAniPos * .5);
-      bearLFoot.rotation.z = -(bearAniPos * .5);
-      // </BEAR_ANIMATION>
-
-      // setTimeout(() => {
-      //   console.log(this.agent.position);
-      // }, 2000);
-
-      this.simulate(sec, this.bear, this.gameData.playground);
 
       this.renderer.scene.render();
 
-      this.renderer.stats.end();
+      this.fps.end();
     });
 
     this.updateSpeed();
+  }
+
+  start() {
+    this.renderer.zoomIn();
+    this.isStarted = true;
+  }
+
+  pause() {
+    this.renderer.zoomOut();
+    this.isStarted = false;
+  }
+
+  togglePause() {
+    this.isStarted = !this.isStarted;
   }
 
   simulate(sec: number, agent: Thing, playground: Playground) {

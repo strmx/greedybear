@@ -24,7 +24,6 @@ class Renderer {
   surface: BABYLON.AbstractMesh;
 
   scoresPlane: BABYLON.AbstractMesh
-  stats: {begin: Function, end: Function, setMode: Function, domElement: HTMLElement}
   shadowGenerator: BABYLON.ShadowGenerator
 
   hiveCollisionParticleSystem: BABYLON.ParticleSystem
@@ -33,6 +32,8 @@ class Renderer {
 
   constructor(playground: Playground) {
     this.playground = playground;
+
+    const nextReal = (<any>window).nextReal;
     const n = this.playground.map.length;
     const m = this.playground.map[0].length;
 
@@ -55,33 +56,26 @@ class Renderer {
     });
 
     //
-    // stats
-    //
-    this.stats = new Stats();
-    this.stats.setMode(0);
-    this.stats.domElement.style.cssText='position:fixed;left:0;top:0;z-index:10000';
-    document.body.appendChild(this.stats.domElement);
-
-    //
     // LIGHT
     //
 
     // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-    let light = new BABYLON.HemisphericLight('light1', new V3(n, 100, m), this.scene);
+    // let light = new BABYLON.HemisphericLight('light1', new V3(n, 50, m), this.scene);
     // var light = new BABYLON.DirectionalLight('Dir0', new V3(0, -1, 0), this.scene);
     // light.diffuse = new BABYLON.Color3(1, 1, 1);
     // light.specular = new BABYLON.Color3(1, 1, 1);
-    light.intensity = 0.6; // .7
+    // light.intensity = 1; // .7
 
-    // let h = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0, 1, 0), this.scene);
-    // h.intensity = 0.5;
+    let h = new BABYLON.HemisphericLight('hemi', new BABYLON.Vector3(0, 1, 0), this.scene);
+    h.intensity = 1.25;
     // let directLight = new BABYLON.DirectionalLight('dir', new BABYLON.Vector3(2, 5, 3), this.scene);
-    // directLight.position = new BABYLON.Vector3(0, 100, 0);
+    // directLight.position = new BABYLON.Vector3(0, 50, 0);
+    // directLight.intensity = 1;
 
-    var pl = new BABYLON.PointLight('pl', new BABYLON.Vector3(n, 100, m), this.scene);
+    // var pl = new BABYLON.PointLight('pl', new BABYLON.Vector3(0, 50, 0), this.scene);
     // pl.diffuse = new BABYLON.Color3(1, 1, 1);
     // pl.specular = new BABYLON.Color3(1, 1, 1);
-    pl.intensity = .5; // .8
+    // pl.intensity = .6; // .8
 
     //
     // CAMERAS
@@ -96,10 +90,20 @@ class Renderer {
     this.camera.cameraAcceleration = 0.01 // how fast to move
     this.camera.maxCameraSpeed = .5 // speed limit
 
-    this.scene.activeCamera = this.camera;
+    // this.scene.activeCamera = this.camera;
 
     this.zoomOutCamera = new BABYLON.ArcRotateCamera('zoomOutCamera', 3 * Math.PI / 2, Math.PI / 8, ((n + m) / 2) * 1.1, new BABYLON.Vector3(n / 2, 0, m / 2), this.scene);
   	this.zoomOutCamera.attachControl(this.canvas.element, true);
+    this.zoomOutCamera.lowerBetaLimit = .2;
+    this.zoomOutCamera.upperBetaLimit = (Math.PI * 2) / 5;
+    this.zoomOutCamera.alpha = nextReal() * (Math.PI * 2);
+    this.zoomOutCamera.beta = 1.1;
+
+    this.zoomOutCamera.lowerRadiusLimit = 20;
+    this.zoomOutCamera.upperRadiusLimit = 100;
+    this.zoomOutCamera.radius = 40 + nextReal() * (100 - 40);
+
+    this.scene.activeCamera = this.zoomOutCamera;
 
     //
     // SHADOW
@@ -235,13 +239,23 @@ class Renderer {
     this.scene.activeCamera = this.scene.activeCamera !== this.camera ? this.camera : this.zoomOutCamera;
   }
 
+  zoomOut() {
+    this.scene.activeCamera = this.zoomOutCamera;
+  }
+
+  zoomIn() {
+    this.scene.activeCamera = this.camera;
+  }
+
   updateScoresText(scores) {
-    let scoresMat = <BABYLON.StandardMaterial>this.scoresPlane.material;
-    let scoresTexture = <BABYLON.DynamicTexture>scoresMat.diffuseTexture;
-    let ctx = scoresTexture.getContext();
-    ctx.clearRect(0, 0, 512, 512);
-    scoresTexture.drawText(scores, null, 245, '220px fantasy', '#000', 'transparent');
-    scoresTexture.drawText(scores, null, 250, '200px fantasy', '#fff', 'transparent');
+    document.querySelector('.scores strong').textContent = scores;
+
+    // let scoresMat = <BABYLON.StandardMaterial>this.scoresPlane.material;
+    // let scoresTexture = <BABYLON.DynamicTexture>scoresMat.diffuseTexture;
+    // let ctx = scoresTexture.getContext();
+    // ctx.clearRect(0, 0, 512, 512);
+    // scoresTexture.drawText(scores, null, 245, '220px fantasy', '#000', 'transparent');
+    // scoresTexture.drawText(scores, null, 250, '200px fantasy', '#fff', 'transparent');
   }
 
   private _createEnvironment(playground: Playground) {
