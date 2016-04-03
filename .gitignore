@@ -2,3 +2,5 @@ node_modules
 temp/
 build/js/
 build/css/
+bundle.min.js
+bundle.js
