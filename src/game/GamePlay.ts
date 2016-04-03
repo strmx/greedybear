@@ -156,6 +156,9 @@ class GamePlay {
         // }, 2000);
 
         this.simulate(sec, this.bear, this.gameData.playground);
+
+      } else {
+        this.renderer.zoomOutCamera.alpha += sec * Math.PI / 100;
       }
 
       this.renderer.scene.render();
@@ -190,6 +193,11 @@ class GamePlay {
     let hiveCount = this.initialHives.length;
     let beeCount = this.bees.length;
     let t = beeCount / (hiveCount * .666);
+
+    // spped up to prevent long-play boredom =)
+    if (hiveCount > 100) {
+      hiveCount = 100;
+    }
 
     // 66.6% bees = 100% speed = (2 + 3) cell/sec
     this.speed = SPEED_MIN + EasingFunctions.easeOutQuad(t > 1 ? 1 : t) * (SPEED_MAX - SPEED_MIN);
