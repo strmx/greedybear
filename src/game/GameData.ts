@@ -103,6 +103,13 @@ class GameData {
 
         correctOutOfBounds(wall, scale, viewScale, n, m);
 
+        // update thingMap
+        for (let i = x; i < x + w; i++) {
+          for (let j = z; j < z + h; j++) {
+            this.thingMap[i][j] = wall;
+          }
+        }
+
       } else {
 
         if (nextReal() < .5) {
@@ -142,6 +149,8 @@ class GameData {
           wall.rotation.x = (nextReal() * 20 - 10) * (Math.PI / 180);
           wall.rotation.y = (nextReal() * 20 - 10) * (Math.PI / 180);
         }
+
+        this.thingMap[wall.pos0.x][wall.pos0.z] = wall;
       }
 
       this.things.push(wall);

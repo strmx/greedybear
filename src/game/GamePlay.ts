@@ -31,6 +31,8 @@ interface Path {
 
 class GamePlay {
   isStarted: boolean = false;
+  gameOverCallback: Function = null;
+
   fps: FPSCounter = new FPSCounter(document.querySelector('.fps strong'));
   renderer: Renderer;
   gameData: GameData;
@@ -169,7 +171,8 @@ class GamePlay {
     this.updateSpeed();
   }
 
-  start() {
+  start(gameOverCallback: Function) {
+    this.gameOverCallback = gameOverCallback;
     this.renderer.zoomIn();
     this.isStarted = true;
   }
@@ -193,6 +196,12 @@ class GamePlay {
     let hiveCount = this.initialHives.length;
     let beeCount = this.bees.length;
     let t = beeCount / (hiveCount * .666);
+
+    // win
+    if (beeCount >= hiveCount) {
+      this.pause();
+      this.gameOverCallback(this.scores, true);
+    }
 
     // spped up to prevent long-play boredom =)
     if (hiveCount > 100) {
@@ -251,43 +260,49 @@ class GamePlay {
       agent.rotation.y = agentRotationY;
 
       //
-      // update party mesh position
+      // update bees position
       //
 
       for (let i = 0, l = this.bees.length, pathLength = this.agentPath.length; i < l; i++) {
         // prev as agent.current cell
         let pathCell = this.agentPath[pathLength - 1 - (i + 1)];
-        let member = this.bees[i];
+        let bee = this.bees[i];
         let pathRotation = pathCell.rotation;
         x = pathCell.x;
         y = pathCell.y;
         z = pathCell.z;
-        pos = member.position;
+        pos = bee.position;
+
+        // TODO: find more reliable solution (1)
+        thingMap[Math.round(x)][Math.round(z)] = null;
 
         // update direction and position on pg
         if (pathRotation === ANGLE_RIGHT) {
           pos.x = x + distanceFromCell;
           pos.y = y + map3d[x][z].directionRight.y * distanceFromCell;
           pos.z = z;
-          member.rotation.y = pathRotation;
+          bee.rotation.y = pathRotation;
 
         } else if (pathRotation === ANGLE_BOTTOM) {
           pos.x = x;
           pos.y = y + map3d[x][z].directionBottom.y * distanceFromCell;
           pos.z = z - distanceFromCell;
-          member.rotation.y = pathRotation;
+          bee.rotation.y = pathRotation;
 
         } else if (pathRotation === ANGLE_LEFT) {
           pos.x = x - distanceFromCell;
           pos.y = y + map3d[x][z].directionLeft.y * distanceFromCell;
           pos.z = z;
-          member.rotation.y = pathRotation;
+          bee.rotation.y = pathRotation;
 
         } else if (pathRotation === ANGLE_TOP) {
           pos.x = x;
           pos.y = y + map3d[x][z].directionTop.y * distanceFromCell;
           pos.z = z + distanceFromCell;
-          member.rotation.y = pathRotation;
+          bee.rotation.y = pathRotation;
+
+          // TODO: find more reliable solution (2)
+          thingMap[Math.round(pos.x)][Math.round(pos.z)] = bee;
 
         } else debugger;
       }
@@ -364,6 +379,7 @@ class GamePlay {
 
       let collidedThing = thingMap[nextCell.x][nextCell.z];
       if (collidedThing) {
+        console.log(collidedThing);
         switch(collidedThing.type) {
 
           // hive
@@ -385,14 +401,14 @@ class GamePlay {
           this.updateSpeed();
           break;
 
-          // wall
-          case ThingType.MOUNTAIN:
-          console.warn('BAAADAABOOOOOOOOM!!!', nextCell);
-          break;
-
           // unknown thing
           default:
-          debugger;
+            this.pause();
+            this.renderer.switchCameras();
+
+            window.setTimeout(() => {
+              this.gameOverCallback(this.scores, false);
+            }, 500);
         }
       }
 
