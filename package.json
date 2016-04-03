@@ -12,7 +12,8 @@
   },
   "scripts": {
     "server": "http-server ./build/",
-    "dev-build": "tsc -w"
+    "dev-build": "tsc -w",
+    "publish": "r.js -o require-build.js; uglifyjs --compress --mangle --screw-ie8  -- build/bundle.js  > build/bundle.min.js"
   },
   "author": "m.strasinskis@gmail.com"
 }
