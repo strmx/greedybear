@@ -183,8 +183,8 @@ class Renderer {
     this.hiveCollisionParticleSystem.minLifeTime = 0.25;
     this.hiveCollisionParticleSystem.maxLifeTime = .5;
     //    particleSystem.blendMode = BABYLON.ParticleSystem.BLENDMODE_ONEONE;
-    this.hiveCollisionParticleSystem.direction1 = new BABYLON.Vector3(-7, 7, 7);
-    this.hiveCollisionParticleSystem.direction2 = new BABYLON.Vector3(7, 0, -7);
+    this.hiveCollisionParticleSystem.direction1 = new BABYLON.Vector3(-1, 20, 1);
+    this.hiveCollisionParticleSystem.direction2 = new BABYLON.Vector3(1, 10, -1);
     // Speed
     this.hiveCollisionParticleSystem.minEmitPower = 1;
     this.hiveCollisionParticleSystem.maxEmitPower = 3;
