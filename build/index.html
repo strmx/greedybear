@@ -93,20 +93,6 @@
 </head>
 <body>
   <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
-  <script src="vendors/modernizr.js"></script>
-  <script src="vendors/jquery-2.1.4.min.js"></script>
-  <script src="vendors/rx.all.js"></script>
-  <script src="vendors/stats.js"></script>
-  <script src="vendors/babylon.js"></script>
-  <script src="vendors/babylon.skyMaterial.min.js"></script>
-  <script src="vendors/random.js"></script>
-  <script data-main="js/app" src="vendors/require.js"></script>
-  <script>
-    // buster
-    window.require.config({
-        // urlArgs: Date.now()
-    });
-  </script>
 
   <div class="top-menu">
     <div class="scores"><img src="images/scores.svg" height="22" /><strong>0</strong></div>
@@ -142,4 +128,19 @@
     <div class="info"><span>[ < ] - turn left / [ > ] - turn right</span></div>
     <div class="fps"><span>FPS: <span><strong></strong></div>
   </div>
+
+  <!-- dev -->
+  <script src="vendors/modernizr.js"></script>
+  <script src="vendors/rx.all.js"></script>
+  <script src="vendors/babylon.js"></script>
+  <script src="vendors/random.js"></script>
+  <script data-main="js/app" src="vendors/require.js"></script>
+
+  <!-- prod --
+  <script src="vendors/random.js"></script>
+  <script src="bundle.js"></script>
+  <script>
+    require(['app'])
+  </script>
+  -->
 </body>
