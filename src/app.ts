@@ -12,7 +12,6 @@ import CanvasElement = require('./render/CanvasElement');
 function generateNewMap() {
   let seed = (Math.round(Math.random() * 1000000000)).toString(36).toUpperCase();
   window.location.hash = seed;
-  window.location.reload();
 }
 
 
@@ -20,13 +19,16 @@ function generateNewMap() {
 
 let initialHash = window.location.hash.replace(/#/g, '');
 
+window.onhashchange = () => {
+  window.location.reload();
+};
+
 if (!initialHash) {
   generateNewMap();
 }
 
 let seed = parseInt(initialHash, 36);
 (<any>window).nextReal = Randomizer.generateNextRealFunction(seed);
-
 
 
 let first = document.querySelector('[firstScreen]');
