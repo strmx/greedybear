@@ -101,7 +101,7 @@ class Renderer {
 
     this.zoomOutCamera.lowerRadiusLimit = 20;
     this.zoomOutCamera.upperRadiusLimit = 100;
-    this.zoomOutCamera.radius = 40 + nextReal() * (100 - 40);
+    this.zoomOutCamera.radius = 60 + nextReal() * (100 - 60);
 
     this.scene.activeCamera = this.zoomOutCamera;
 
@@ -264,24 +264,24 @@ class Renderer {
     let n = playground.map.length;
     let m = playground.map[0].length;
 
-    // let skyboxMat = new BABYLON.StandardMaterial('skyboxMat', this.scene);
-    // skyboxMat.backFaceCulling = false;
-    // skyboxMat.reflectionTexture = new BABYLON.CubeTexture('textures/TropicalSunnyDay', this.scene);
-    // skyboxMat.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-    // skyboxMat.disableLighting = true;
+    let skyboxMaterial = new BABYLON.StandardMaterial('skyboxMaterial', this.scene);
+    skyboxMaterial.backFaceCulling = false;
+    skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture('textures/skybox/skybox', this.scene);
+    skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+    skyboxMaterial.disableLighting = true;
     // let skybox = BABYLON.Mesh.CreateBox('skybox', 1024, this.scene);
     // skybox.material = skyboxMat;
 
 
-    var skyboxMaterial = new (<any>BABYLON).SkyMaterial('skyMaterial', this.scene);
-    skyboxMaterial.backFaceCulling = false;
-
-  	// skyboxMaterial._cachedDefines.FOG = nextReal() > .5;
-    skyboxMaterial.turbidity = nextReal() * 2; // 0..20 (maybe 100)
-    skyboxMaterial.luminance = .5 + nextReal() * .5; // 0..1..190
-    skyboxMaterial.inclination = .5 + nextReal() * .25; // The solar inclination, related to the solar azimuth in interval [0, 1]
-    skyboxMaterial.azimuth = 0.5 + nextReal() * .05; // The solar azimuth in interval [0, 1]
-    console.log(skyboxMaterial);
+    // var skyboxMaterial = new (<any>BABYLON).SkyMaterial('skyMaterial', this.scene);
+    // skyboxMaterial.backFaceCulling = false;
+    //
+  	// // skyboxMaterial._cachedDefines.FOG = nextReal() > .5;
+    // skyboxMaterial.turbidity = nextReal() * 2; // 0..20 (maybe 100)
+    // skyboxMaterial.luminance = .5 + nextReal() * .5; // 0..1..190
+    // skyboxMaterial.inclination = .5 + nextReal() * .25; // The solar inclination, related to the solar azimuth in interval [0, 1]
+    // skyboxMaterial.azimuth = 0.5 + nextReal() * .05; // The solar azimuth in interval [0, 1]
+    // console.log(skyboxMaterial);
     // skyboxMaterial.rayleigh = nextReal() * 2; // Represents the sky appearance (globally) 0..2
 
     // // Mie scattering (from [Gustav Mie](https://en.wikipedia.org/wiki/Gustav_Mie))
@@ -304,7 +304,7 @@ class Renderer {
 
     var skybox = BABYLON.Mesh.CreateBox('skyBox', SKY_SIZE, this.scene, false);
     skybox.material = skyboxMaterial;
-    skybox.position.y = SKY_SIZE / 3;
+    skybox.position.y = SKY_SIZE / 4;
 
 
 
