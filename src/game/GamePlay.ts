@@ -199,8 +199,7 @@ class GamePlay {
 
     // win
     if (beeCount >= hiveCount) {
-      this.pause();
-      this.gameOverCallback(this.scores, true);
+      this.gameOver(false, false);
     }
 
     // spped up to prevent long-play boredom =)
@@ -273,9 +272,6 @@ class GamePlay {
         z = pathCell.z;
         pos = bee.position;
 
-        // TODO: find more reliable solution (1)
-        thingMap[Math.round(x)][Math.round(z)] = null;
-
         // update direction and position on pg
         if (pathRotation === ANGLE_RIGHT) {
           pos.x = x + distanceFromCell;
@@ -300,9 +296,6 @@ class GamePlay {
           pos.y = y + map3d[x][z].directionTop.y * distanceFromCell;
           pos.z = z + distanceFromCell;
           bee.rotation.y = pathRotation;
-
-          // TODO: find more reliable solution (2)
-          thingMap[Math.round(pos.x)][Math.round(pos.z)] = bee;
 
         } else debugger;
       }
@@ -377,7 +370,24 @@ class GamePlay {
       else if (agentRotationY === ANGLE_TOP)    nextCell.z++;
       else debugger;
 
-      let collidedThing = thingMap[nextCell.x][nextCell.z];
+      let nextCellX = nextCell.x;
+      let nextCellz = nextCell.z;
+
+      // out of bounds
+      if (nextCellX < 0 || nextCellz < 0 || nextCellX >= map.length || nextCellz >= map[0].length) {
+        this.gameOver(false, true);
+        return;
+      }
+
+      // collide with bee
+      for (let i = 0, l = Math.min(this.bees.length, this.agentPath.length), pathCount = this.agentPath.length; i < l; i++) {
+        let path = this.agentPath[pathCount - 1 - (i + 1)];
+        if (path.x === nextCellX && path.z === nextCellz) {
+          this.gameOver(true, false);
+        }
+      }
+
+      let collidedThing = thingMap[nextCellX][nextCellz];
       if (collidedThing) {
         console.log(collidedThing);
         switch(collidedThing.type) {
@@ -395,20 +405,15 @@ class GamePlay {
           collidedThing.type = ThingType.BEE;
           this.renderer.addThingView(collidedThing);
 
-          thingMap[nextCell.x][nextCell.z] = null;
+          thingMap[nextCellX][nextCellz] = null;
           this.bees.push(collidedThing);
 
           this.updateSpeed();
           break;
 
-          // unknown thing
+          // unknown thing (not a bee)
           default:
-            this.pause();
-            this.renderer.switchCameras();
-
-            window.setTimeout(() => {
-              this.gameOverCallback(this.scores, false);
-            }, 500);
+          this.gameOver(true, false);
         }
       }
 
@@ -416,6 +421,21 @@ class GamePlay {
       // move further
       //
       this.shiftAgent(agent, map, thingMap, map3d);
+    }
+  }
+
+  gameOver(isCollision: boolean, isOutOfBounds: boolean) {
+    let isSuccess = !isCollision && !isOutOfBounds;
+    let killTheGame = () => {
+      this.pause();
+      this.gameOverCallback(this.scores, isSuccess);
+    };
+
+    if (isOutOfBounds || isSuccess) {
+      killTheGame();
+
+    } else {
+      window.setTimeout(killTheGame, 25);
     }
   }
 

@@ -48,7 +48,6 @@ playButton.addEventListener('click', () => {
   });
 });
 
-
 // NEW GAME
 
 let gameOptions = GameOptionsGenerator.generate();
