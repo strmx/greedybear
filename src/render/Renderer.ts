@@ -86,7 +86,7 @@ class Renderer {
     this.camera = new BABYLON.FollowCamera('followCamera', new V3(n / 2, 10, m / 2), this.scene);
     this.camera.radius = 5; // how far from the object to follow
     this.camera.heightOffset = 7; // how high above the object to place the camera
-    this.camera.rotationOffset = 270; // the viewing angle
+    // this.camera.rotationOffset = 270; // the viewing angle
     this.camera.cameraAcceleration = 0.01 // how fast to move
     this.camera.maxCameraSpeed = .5 // speed limit
 
@@ -244,7 +244,32 @@ class Renderer {
   }
 
   zoomIn() {
+    // this.camera.radius = this.zoomOutCamera.radius;
     this.scene.activeCamera = this.camera;
+
+    var i = window.setInterval(() => {
+      let readyCount = 0;
+
+      if (this.camera.rotationOffset < 270) {
+        this.camera.rotationOffset += 20;
+      } else {
+        this.camera.rotationOffset = 270;
+        readyCount = readyCount | 1;
+      }
+
+      // TODO: animate radius from zoomOutCam
+      // if (this.camera.radius > 5) {
+      //   this.camera.radius -= 10;
+      // } else {
+      //   this.camera.radius = 5;
+      //   readyCount = readyCount | 2;
+      //   console.log(2, readyCount);
+      // }
+
+      if (readyCount >= 1) {
+        window.clearInterval(i);
+      }
+    }, 32);
   }
 
   updateScoresText(scores) {
