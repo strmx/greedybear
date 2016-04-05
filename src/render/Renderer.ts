@@ -476,13 +476,14 @@ class Renderer {
     let mesh = this.scene.getMeshByName(meshName);
     let mat = this.scene.getMaterialByName(matName);
 
-
-    let testMat: BABYLON.Material = this.scene.getMaterialByName('testMat');
-    if (!testMat) {
-      testMat = new BABYLON.StandardMaterial('testMat', this.scene);
-      let testTex = new BABYLON.Texture('textures/UVTextureChecker512.png', this.scene);
-      (<BABYLON.StandardMaterial>testMat).diffuseTexture = testTex;
-    }
+    // TEST MATERIAL
+    // -------------
+    // let testMat: BABYLON.Material = this.scene.getMaterialByName('testMat');
+    // if (!testMat) {
+    //   testMat = new BABYLON.StandardMaterial('testMat', this.scene);
+    //   let testTex = new BABYLON.Texture('textures/UVTextureChecker512.png', this.scene);
+    //   (<BABYLON.StandardMaterial>testMat).diffuseTexture = testTex;
+    // }
 
     switch(thing.type) {
 
@@ -867,8 +868,8 @@ class Renderer {
           mat = new BABYLON.StandardMaterial(matName, this.scene);
           (<BABYLON.StandardMaterial>mat).diffuseColor = BABYLON.Color3.Green();
 
-          let mountainTex = new BABYLON.Texture('textures/orient.jpg', this.scene);
-          (<BABYLON.StandardMaterial>mat).diffuseTexture = mountainTex;
+          // let mountainTex = new BABYLON.Texture('textures/orient.jpg', this.scene);
+          // (<BABYLON.StandardMaterial>mat).diffuseTexture = mountainTex;
         }
 
         let bearMat = new BABYLON.StandardMaterial('bearMat', this.scene);

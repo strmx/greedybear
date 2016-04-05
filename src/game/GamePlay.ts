@@ -33,7 +33,7 @@ class GamePlay {
   isStarted: boolean = false;
   gameOverCallback: Function = null;
 
-  fps: FPSCounter = new FPSCounter(document.querySelector('.fps strong'));
+  fps: FPSCounter = new FPSCounter(document.querySelector('.js-fps'));
   renderer: Renderer;
   gameData: GameData;
 
@@ -77,10 +77,10 @@ class GamePlay {
           break;
         case KEYS.UP:
           // this.speed (TODO: remove for production)
-          this.speed += 1;
+          // this.speed += 1;
           break;
         case KEYS.DOWN:
-          this.speed -= 1;
+          // this.speed -= 1;
           break;
         case KEYS.M:
           // this.speed (TODO: remove for production)
@@ -113,6 +113,15 @@ class GamePlay {
 
         default:
       }
+    });
+
+    // graphic options
+    document.querySelector('.js-graphic-index').addEventListener('change', (e) => {
+      let value = parseInt((<any>e.target).value, 10);
+      if (value === 0) {
+        value = 1 / window.devicePixelRatio;
+      }
+      this.renderer.setScreenScale(value);
     });
 
 
@@ -436,7 +445,7 @@ class GamePlay {
   }
 
   updateScoresView() {
-    let el = document.querySelector('.scores strong');
+    let el = document.querySelector('.js-scores');
     let currentValue = parseInt(el.textContent, 10) || 0;
     let newValue = this.scores;
 
