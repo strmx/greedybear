@@ -17,19 +17,18 @@ function generateNewMap() {
 
 // PREPARE RANDOMIZER (#)
 
-let initialHash = window.location.hash.replace(/#/g, '');
-
 window.onhashchange = () => {
   window.location.reload();
 };
 
-if (!initialHash) {
+let hash = window.location.hash.replace(/#/g, '');
+let seed = parseInt(hash, 36);
+
+if (isNaN(seed)) {
   generateNewMap();
 }
 
-let seed = parseInt(initialHash, 36);
 (<any>window).nextReal = Randomizer.generateNextRealFunction(seed);
-
 
 let first = document.querySelector('[firstScreen]');
 let newMapButton = first.querySelector('[newMapButton]');
