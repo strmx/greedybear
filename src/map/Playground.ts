@@ -106,9 +106,10 @@ class Playground {
         if (pickInfo && pickInfo.pickedPoint) {
           yPosMap[i][j] = pickInfo.pickedPoint.y;
 
+          // VISUAL TESTING OF ELEVATION SURFACE
+          // -----------------------------------
           // let cube = cubeBlueprint.createInstance('box');
           // cube.position = new BABYLON.Vector3(i, pickInfo.pickedPoint.y, j);
-
           // if (thingMap && thingMap[i] && thingMap[i][j]) {
           //   let thing = thingMap[i][j];
           //   thing.pos0.y = thing.position.y = pickInfo.pickedPoint.y;

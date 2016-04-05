@@ -38,7 +38,6 @@ class KeyboardInput {
         let isLeftSide = pageX < window.innerWidth / 2;
         return isLeftSide ? KEYS.LEFT : KEYS.RIGHT;
       } catch (err) {
-        console.log(err);
         alert('touch translation problem:' + err.message);
       }
       return null;
@@ -46,7 +45,6 @@ class KeyboardInput {
 
     let keyDownTranslated = keydown
       .map((e:KeyboardEvent) => {
-        console.log(e.keyCode);
         return e.keyCode;
       })
       .filter((keyCode) => (KeyboardInput.KEY_MAP[keyCode] !== undefined))

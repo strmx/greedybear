@@ -156,6 +156,12 @@ class GameData {
       this.things.push(wall);
     });
 
+    // add lake cells to things
+    // this.playground.lakes.forEach((area: LakeArea) => {
+    //   this.things.push();
+    //   area.cells.forEach((p: Point) => {
+    //   });
+    // });
 
     // agent bear
     let pos2d = this.playground.startPoints[0];

@@ -495,7 +495,7 @@ class Renderer {
       if (!mesh) {
         if (!mat) {
           let firMat = new BABYLON.StandardMaterial(matName, this.scene);
-          console.info('+', matName, firMat);
+          // console.info('+', matName, firMat);
 
           // TODO: make specular as autoadjustment option
           // firMat.specularColor = new BABYLON.Color3(.5, .5, .25);
@@ -509,7 +509,7 @@ class Renderer {
           mat = firMat;
         }
 
-        console.info('+', meshName);
+        // console.info('+', meshName);
         mesh = CustomMesh.createTree(meshName, this.scene);
         mesh.material = mat;
         mesh.isVisible = false;
@@ -534,7 +534,7 @@ class Renderer {
 
       if (!mesh) {
         if (!mat) {
-          console.info('+', matName);
+          // console.info('+', matName);
           let firMat = new BABYLON.StandardMaterial(matName, this.scene);
 
           // TODO: make specular as autoadjustment option
@@ -548,7 +548,7 @@ class Renderer {
           mat = firMat;
         }
 
-        console.info('+', meshName);
+        // console.info('+', meshName);
         mesh = CustomMesh.createPyramid(meshName, this.scene);
         mesh.material = mat;
         mesh.isVisible = false;
@@ -573,7 +573,7 @@ class Renderer {
 
       if (!mesh) {
         if (!mat) {
-          console.info('+', matName);
+          // console.info('+', matName);
           let mountainMat = new BABYLON.StandardMaterial(matName, this.scene);
 
           // mountainMat.specularColor = new BABYLON.Color3(.5, .5, .25);
@@ -585,7 +585,7 @@ class Renderer {
           mat = mountainMat;
         }
 
-        console.info('+', meshName);
+        // console.info('+', meshName);
         mesh = CustomMesh.createPyramid(meshName, this.scene);
         mesh.material = mat;
         mesh.isVisible = false;
@@ -608,7 +608,7 @@ class Renderer {
 
       if (!mesh) {
         if (!mat) {
-          console.info('+', matName);
+          // console.info('+', matName);
           let hiveMat = new BABYLON.StandardMaterial(matName, this.scene);
 
           // mountainMat.specularColor = new BABYLON.Color3(.5, .5, .25);

@@ -113,8 +113,6 @@ class GamePlay {
 
         default:
       }
-
-      console.log('speed:', this.speed);
     });
 
 
@@ -211,7 +209,6 @@ class GamePlay {
 
     // 66.6% bees = 100% speed = (2 + 3) cell/sec
     this.speed = SPEED_MIN + EasingFunctions.easeOutQuad(t > 1 ? 1 : t) * (SPEED_MAX - SPEED_MIN);
-    console.log(this.speed);
   }
 
   shiftAgent(agent: Thing, map: number[][], thingMap: Thing[][], map3d: Map3DCell[][]) {
@@ -343,8 +340,6 @@ class GamePlay {
             break;
         }
 
-        console.log('new direction:', agentRotationY * 180/Math.PI);
-
         agent.rotation.y = agentRotationY;
         this.lastPressedNavigationKey = null;
 
@@ -373,25 +368,32 @@ class GamePlay {
       else debugger;
 
       let nextCellX = nextCell.x;
-      let nextCellz = nextCell.z;
+      let nextCellZ = nextCell.z;
 
       // out of bounds
-      if (nextCellX < 0 || nextCellz < 0 || nextCellX >= map.length || nextCellz >= map[0].length) {
+      if (nextCellX < 0 || nextCellZ < 0 || nextCellX >= map.length || nextCellZ >= map[0].length) {
         this.gameOver(false, true);
+        return;
+      }
+
+      // check collisions with static objects
+      if (this.gameData.playground.boundaries[nextCellX][nextCellZ]) {
+        this.gameOver(true, false);
         return;
       }
 
       // collide with bee
       for (let i = 0, l = Math.min(this.bees.length, this.agentPath.length), pathCount = this.agentPath.length; i < l; i++) {
         let path = this.agentPath[pathCount - 1 - (i + 1)];
-        if (path.x === nextCellX && path.z === nextCellz) {
+        if (path.x === nextCellX && path.z === nextCellZ) {
           this.gameOver(true, false);
         }
       }
 
-      let collidedThing = thingMap[nextCellX][nextCellz];
+      // TODO: get rid of static object duplication check
+      // e.g. walls in boundaries and in thingMap
+      let collidedThing = thingMap[nextCellX][nextCellZ];
       if (collidedThing) {
-        console.log(collidedThing);
         switch(collidedThing.type) {
 
           // hive
@@ -414,7 +416,7 @@ class GamePlay {
           collidedThing.type = ThingType.BEE;
           this.renderer.addThingView(collidedThing);
 
-          thingMap[nextCellX][nextCellz] = null;
+          thingMap[nextCellX][nextCellZ] = null;
           this.bees.push(collidedThing);
 
           this.updateSpeed();
