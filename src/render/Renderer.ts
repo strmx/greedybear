@@ -272,17 +272,6 @@ class Renderer {
     }, 32);
   }
 
-  updateScoresText(scores) {
-    document.querySelector('.scores strong').textContent = scores;
-
-    // let scoresMat = <BABYLON.StandardMaterial>this.scoresPlane.material;
-    // let scoresTexture = <BABYLON.DynamicTexture>scoresMat.diffuseTexture;
-    // let ctx = scoresTexture.getContext();
-    // ctx.clearRect(0, 0, 512, 512);
-    // scoresTexture.drawText(scores, null, 245, '220px fantasy', '#000', 'transparent');
-    // scoresTexture.drawText(scores, null, 250, '200px fantasy', '#fff', 'transparent');
-  }
-
   private _createEnvironment(playground: Playground) {
     const nextReal = (<any>window).nextReal;
 

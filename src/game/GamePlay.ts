@@ -50,6 +50,8 @@ class GamePlay {
   initialHives: Thing[] = [];
   bees: Thing[] = [];
 
+  updateScoresInterval: number;
+
   constructor(gameData: GameData, renderer: Renderer) {
     this.gameData = gameData;
     this.renderer = renderer;
@@ -396,8 +398,15 @@ class GamePlay {
           case ThingType.HIVE:
 
           // update scores
-          this.scores++;
-          this.renderer.updateScoresText(this.scores);
+          // Delta >= 1
+          let hiveCount = this.initialHives.length;
+          let beeCount = this.bees.length;
+          let beeScoresDelta = beeCount / hiveCount;
+          let speedScoresDelta = this.speed - SPEED_MIN + 1;
+
+          let rawScores = Math.ceil(100 * ((1 + (beeScoresDelta * 1.5)) * speedScoresDelta));
+          this.scores += rawScores - (rawScores % 10);
+          this.updateScoresView();
 
           // this.renderer.removeThingView(collidedThing);
           this.renderer.animateHiveCollision(collidedThing);
@@ -422,6 +431,28 @@ class GamePlay {
       //
       this.shiftAgent(agent, map, thingMap, map3d);
     }
+  }
+
+  updateScoresView() {
+    let el = document.querySelector('.scores strong');
+    let currentValue = parseInt(el.textContent, 10) || 0;
+    let newValue = this.scores;
+
+    if (this.updateScoresInterval) {
+      window.clearInterval(this.updateScoresInterval);
+    }
+
+    this.updateScoresInterval = window.setInterval(() => {
+      currentValue += (newValue - currentValue) / 10;
+
+      if (newValue - currentValue <= 1) {
+        currentValue = newValue;
+        window.clearInterval(this.updateScoresInterval);
+        this.updateScoresInterval = 0;
+      }
+
+      el.textContent = currentValue.toFixed(0);
+    }, 32);
   }
 
   gameOver(isCollision: boolean, isOutOfBounds: boolean) {

@@ -43,7 +43,7 @@ newMapButton.addEventListener('click', () => {
 playButton.addEventListener('click', () => {
   first.parentNode.removeChild(first);
   gameplay.start((scores: number, isSuccess: boolean) => {
-    alert(isSuccess ? 'You Win!' : 'Game Over');
+    alert(isSuccess ? `You Win!\nYour scores: ${scores}` : `Game Over\nYour scores: ${scores}`);
     window.location.reload();
   });
 });
