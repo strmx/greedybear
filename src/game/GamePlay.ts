@@ -19,7 +19,9 @@ const ANGLE_BOTTOM = 1.5707963267948966;
 const ANGLE_LEFT = 3.141592653589793;
 const ANGLE_TOP = -1.5707963267948966;
 
-const SPEED_MIN = 2;
+
+const SPEED_INITIAL = 2;
+const SPEED_MIN = 3;
 const SPEED_MAX = 5;
 
 interface Path {
@@ -177,7 +179,7 @@ class GamePlay {
       this.fps.end();
     });
 
-    this.updateSpeed();
+    this.speed = SPEED_INITIAL;
   }
 
   start(gameOverCallback: Function) {
@@ -422,6 +424,10 @@ class GamePlay {
           // this.renderer.removeThingView(collidedThing);
           this.renderer.animateHiveCollision(collidedThing);
 
+          if (this.bees.length === 0) {
+            this.renderer.startAmbientSound();
+          }
+
           collidedThing.type = ThingType.BEE;
           this.renderer.addThingView(collidedThing);
 
@@ -469,6 +475,16 @@ class GamePlay {
   gameOver(isCollision: boolean, isOutOfBounds: boolean) {
     let isSuccess = !isCollision && !isOutOfBounds;
     let killTheGame = () => {
+
+      this.renderer.stopAmbientSound();
+
+      // play sound
+      if (isSuccess) {
+        this.renderer.scene.getSoundByName('victory').play();
+      } else {
+        this.renderer.scene.getSoundByName('final').play();
+      }
+
       this.pause();
       this.gameOverCallback(this.scores, isSuccess);
     };

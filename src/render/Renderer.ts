@@ -46,6 +46,14 @@ class Renderer {
     this.engine = new BABYLON.Engine(this.canvas.element, true, {}, true);
     this.scene = new BABYLON.Scene(this.engine);
 
+
+
+
+    this.preloadSound();
+
+
+
+
     // [1 - 4] (.5 for retina etc)
     // TODO: make autoadjusted
     this.setScreenScale(1);
@@ -225,6 +233,40 @@ class Renderer {
         value: new BABYLON.Vector3(0, 0, 0)
       }]
     );
+  }
+
+  preloadSound() {
+    let soundSource = [
+      {id: 'forest', src: 'sounds/forest.mp3', options: {loop: true, autoplay: true}},
+      {id: 'bgStart', src: 'sounds/bg-start.mp3'},
+      {id: 'bgLoop', src: 'sounds/bg-loop.mp3', options: {loop: true}},
+      // {id: 'bzzz', src: 'sounds/bzzz.mp3', options: {spatialSound: true, loop: true}},
+      {id: 'scores', src: 'sounds/scores.mp3'},
+      {id: 'final', src: 'sounds/final.mp3'},
+      {id: 'victory', src: 'sounds/victory.mp3'}
+    ];
+
+    soundSource.forEach( (so: any) => {
+      new BABYLON.Sound(so.id, so.src, this.scene, null, so.options || null)
+    });
+  }
+
+  startAmbientSound() {
+    let forest = this.scene.getSoundByName('forest');
+    let bgStart = this.scene.getSoundByName('bgStart');
+    let bgLoop = this.scene.getSoundByName('bgLoop');
+    forest.stop();
+    bgStart.play();
+    bgStart.onended = () => {
+      bgLoop.play();
+    };
+  }
+
+  stopAmbientSound() {
+    let bgStart = this.scene.getSoundByName('bgStart');
+    let bgLoop = this.scene.getSoundByName('bgLoop');
+    bgStart.stop();
+    bgLoop.stop();
   }
 
   /*
@@ -643,6 +685,13 @@ class Renderer {
       // ignore thing rotation
       // mesh.rotation = thing.rotation;
       mesh.scaling = thing.scaling;
+
+      // let bzzSnd = this.scene.getSoundByName('bzzz').clone();
+      // bzzSnd.spatialSound = true;
+      // bzzSnd.loop = true;
+      // bzzSnd.maxDistance = 2;
+      // bzzSnd.attachToMesh(mesh);
+
 
       // this.shadowGenerator.getShadowMap().renderList.push(mesh);
       break;
@@ -1070,6 +1119,8 @@ class Renderer {
     // hive scale animation
     mesh.animations.push(this.hiveCollisionAnimation);
     this.scene.beginAnimation(mesh, 0, 30, false, 2.5);
+
+    this.scene.getSoundByName('scores').play();
   }
 
   destroy() {
