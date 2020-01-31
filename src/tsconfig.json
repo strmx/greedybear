@@ -1,9 +1,10 @@
 {
 	"compilerOptions": {
-		"target": "es5",
+		"target": "ES6",
 		"module": "amd",
 		"jsx": "react",
-		"outDir": "../build/js"
+		"outDir": "../build/js",
+		"skipDefaultLibCheck": true,
 	},
 	"compileOnSave": false,
 	"filesGlob": [
@@ -18,7 +19,7 @@
 		"game/Thing.ts",
 		"map/CavePatternGenerator.ts",
 		"map/PatternHelper.ts",
-		"map/PlaygroundGenerator.ts",
+		// "map/PlaygroundGenerator.ts",
 		"render/CanvasElement.ts",
 		"render/Renderer.ts",
 		"test/PatternHelper.ts",

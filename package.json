@@ -1,7 +1,7 @@
 {
-  "name": "snake3d",
+  "name": "greedybear",
   "version": "0.0.1",
-  "description": "A snake like game",
+  "description": "bear -> honey -> bees",
   "dependencies": {
     "react": "^0.14.6",
     "react-dom": "^0.14.6",
@@ -15,5 +15,5 @@
     "dev-build": "tsc -w",
     "publish": "r.js -o require-build.js; uglifyjs --compress --mangle --screw-ie8  -- build/bundle.js  > build/bundle.min.js"
   },
-  "author": "m.strasinskis@gmail.com"
+  "author": "E57244850MS@gmail.com"
 }

@@ -309,6 +309,7 @@ interface Document {
     msCancelFullScreen(): void;
     mozFullScreen: boolean;
     msIsFullScreen: boolean;
+    // @ts-ignore
     fullscreen: boolean;
     mozPointerLockElement: HTMLElement;
     msPointerLockElement: HTMLElement;
@@ -371,6 +372,7 @@ interface Navigator {
     isCocoonJS: boolean;
 }
 interface Screen {
+    // @ts-ignore
     orientation: string;
     mozOrientation: string;
 }
