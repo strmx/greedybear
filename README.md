@@ -1,58 +1,12 @@
-# README #
+# Greedy Bear (🍯 🐻🐝🐝🐝🐝🐝)
 
-This README would normally document whatever steps are necessary to get your application up and running.
+Experiments with JS(ts) and 3D(Babel).
 
-### What is this repository for? ###
+## Generate the map
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+![Generate the Map](https://raw.githubusercontent.com/E57244850MS/greedybear/master/graphics/screenshots/m1.png)
+![Generate the Map](https://raw.githubusercontent.com/E57244850MS/greedybear/master/graphics/screenshots/m2.png)
 
+## Play on it
 
-### How do I get set up? ###
-
-** install webpack **
-  npm install -g webpack
-  npm install webpack  
-  webpack -w
-
-** install babel only **
-
-npm install --save-dev babel-loader
-npm install babel-preset-es2015
-npm install babel-preset-react
-webpack --display-error-details
-
-
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
-
-### JSX in TS ###
-
-* JSX.IntrinsicElements
-
-### hand.js ###
-- pointerdown
-- pointermove
-- pointerup
-- pointercancel
-- pointerenter
-- pointerleave
-- pointerout
-- pointerover
+![Generate the Map](https://raw.githubusercontent.com/E57244850MS/greedybear/master/graphics/screenshots/p1.png)
