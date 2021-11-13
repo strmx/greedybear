@@ -2,7 +2,7 @@
 
 Experiments with JS(ts) and 3D(Babel).
 
-[demo](https://e57244850ms.github.io/greedybear)
+[demo](https://strmx.github.io/)
 
 ## 1. Generate new map
 
